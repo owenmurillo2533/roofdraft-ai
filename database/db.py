@@ -117,6 +117,20 @@ def init_db():
             except Exception:
                 pass
 
+        # drafts table
+        try:
+            pg_run("""CREATE TABLE IF NOT EXISTS drafts (
+                id SERIAL PRIMARY KEY,
+                user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+                tool_name VARCHAR(100) NOT NULL,
+                title VARCHAR(255) NOT NULL,
+                result TEXT NOT NULL,
+                created_at TIMESTAMP DEFAULT NOW()
+            )""")
+            pg_run("CREATE INDEX IF NOT EXISTS idx_drafts_user ON drafts(user_id)")
+        except Exception as e:
+            print(f"[DB] Drafts table note: {e}")
+
         migrations = [
             "ALTER TABLE users ADD COLUMN IF NOT EXISTS generations_this_month INTEGER DEFAULT 0",
             "ALTER TABLE users ADD COLUMN IF NOT EXISTS last_reset_month VARCHAR(7) DEFAULT ''",
@@ -170,8 +184,18 @@ def init_db():
             created_at TEXT DEFAULT (datetime('now')),
             FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
         );
+        CREATE TABLE IF NOT EXISTS drafts (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            tool_name TEXT NOT NULL,
+            title TEXT NOT NULL,
+            result TEXT NOT NULL,
+            created_at TEXT DEFAULT (datetime('now')),
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+        );
         CREATE INDEX IF NOT EXISTS idx_sessions_token ON sessions(token);
         CREATE INDEX IF NOT EXISTS idx_logs_user ON generation_logs(user_id);
+        CREATE INDEX IF NOT EXISTS idx_drafts_user ON drafts(user_id);
         """)
         conn.commit()
         conn.close()
@@ -368,6 +392,80 @@ def require_auth():
         print(f"[Auth] require_auth error: {e}")
         _tb.print_exc()
         return None
+
+
+# ---------------------------------------------------------------------------
+# Drafts
+# ---------------------------------------------------------------------------
+
+def save_draft(user_id: int, tool_name: str, title: str, result: str) -> int:
+    if USE_POSTGRES:
+        rows = pg_run(
+            "INSERT INTO drafts (user_id, tool_name, title, result) VALUES ($1, $2, $3, $4) RETURNING id",
+            [user_id, tool_name, title, result]
+        )
+        return rows[0]['id'] if rows else None
+    else:
+        conn = get_db()
+        cur = conn.cursor()
+        cur.execute(
+            "INSERT INTO drafts (user_id, tool_name, title, result) VALUES (?, ?, ?, ?)",
+            (user_id, tool_name, title, result)
+        )
+        conn.commit()
+        draft_id = cur.lastrowid
+        conn.close()
+        return draft_id
+
+
+def get_drafts(user_id: int):
+    if USE_POSTGRES:
+        return pg_run(
+            "SELECT id, tool_name, title, created_at FROM drafts WHERE user_id = $1 ORDER BY created_at DESC",
+            [user_id]
+        )
+    else:
+        conn = get_db()
+        rows = conn.execute(
+            "SELECT id, tool_name, title, created_at FROM drafts WHERE user_id = ? ORDER BY created_at DESC",
+            (user_id,)
+        ).fetchall()
+        conn.close()
+        return [row_to_dict(r) for r in rows]
+
+
+def get_draft_by_id(user_id: int, draft_id: int):
+    if USE_POSTGRES:
+        rows = pg_run(
+            "SELECT id, tool_name, title, result, created_at FROM drafts WHERE id = $1 AND user_id = $2",
+            [draft_id, user_id]
+        )
+        return rows[0] if rows else None
+    else:
+        conn = get_db()
+        row = conn.execute(
+            "SELECT id, tool_name, title, result, created_at FROM drafts WHERE id = ? AND user_id = ?",
+            (draft_id, user_id)
+        ).fetchone()
+        conn.close()
+        return row_to_dict(row)
+
+
+def delete_draft(user_id: int, draft_id: int) -> bool:
+    if USE_POSTGRES:
+        pg_run(
+            "DELETE FROM drafts WHERE id = $1 AND user_id = $2",
+            [draft_id, user_id]
+        )
+    else:
+        conn = get_db()
+        conn.execute(
+            "DELETE FROM drafts WHERE id = ? AND user_id = ?",
+            (draft_id, user_id)
+        )
+        conn.commit()
+        conn.close()
+    return True
 
 
 if __name__ == '__main__':

@@ -29,9 +29,11 @@ if USE_POSTGRES:
 
 from routes.auth import auth_bp
 from routes.tools import tools_bp
+from routes.drafts import drafts_bp
 
 app.register_blueprint(auth_bp)
 app.register_blueprint(tools_bp)
+app.register_blueprint(drafts_bp)
 
 
 # ---------------------------------------------------------------------------
@@ -93,7 +95,7 @@ def debug_db():
         return jsonify({'error': 'postgres not active'})
     try:
         counts = {}
-        for t in ['users', 'sessions', 'generation_logs']:
+        for t in ['users', 'sessions', 'generation_logs', 'drafts']:
             try:
                 counts[t] = pg_run(f"SELECT COUNT(*) AS cnt FROM {t}")[0]['cnt']
             except Exception as e:

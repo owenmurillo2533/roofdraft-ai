@@ -467,6 +467,111 @@
       color: #fff !important;
     }
 
+    /* ---- Draft saved indicator ---- */
+    .draft-saved-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--success);
+      margin-top: 10px;
+    }
+
+    /* ---- Drafts page ---- */
+    .drafts-empty {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--slate);
+    }
+    .drafts-empty-icon {
+      font-size: 40px;
+      margin-bottom: 16px;
+      opacity: 0.4;
+    }
+    .drafts-empty h3 {
+      font-family: 'Oswald', sans-serif;
+      font-size: 22px;
+      color: var(--near-black);
+      margin-bottom: 8px;
+    }
+    .drafts-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .draft-item {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 18px 22px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      cursor: pointer;
+    }
+    .draft-item:hover { border-color: var(--roof-red); box-shadow: 0 2px 8px rgba(192,57,43,0.08); }
+    .draft-tool-badge {
+      flex-shrink: 0;
+      padding: 3px 10px;
+      border-radius: 3px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      background: #fdf0ee;
+      color: var(--roof-red);
+      border: 1px solid #f5c6c6;
+      white-space: nowrap;
+    }
+    .draft-info { flex: 1; min-width: 0; }
+    .draft-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--near-black);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 3px;
+    }
+    .draft-date { font-size: 13px; color: var(--slate); }
+    .draft-delete-btn {
+      flex-shrink: 0;
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--slate-light);
+      border-radius: var(--radius);
+      padding: 6px 10px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.12s;
+    }
+    .draft-delete-btn:hover { border-color: var(--roof-red); color: var(--roof-red); background: #fdf0ee; }
+
+    /* ---- Draft viewer ---- */
+    .draft-viewer-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--slate);
+      cursor: pointer;
+      border: none;
+      background: none;
+      padding: 0;
+      margin-bottom: 20px;
+      font-family: 'Source Sans 3', sans-serif;
+    }
+    .draft-viewer-back:hover { color: var(--roof-red); }
+    .draft-viewer-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
     /* ---- Welcome ---- */
     .welcome-greeting { margin-bottom: 28px; }
     .welcome-greeting h2 {
@@ -1195,7 +1300,7 @@
     // ---------------------------------------------------------------------------
     // Result Card
     // ---------------------------------------------------------------------------
-    function ResultCard({ result }) {
+    function ResultCard({ result, draftSaved }) {
       const [copied, setCopied] = useState(false);
 
       function handleCopy() {
@@ -1208,7 +1313,12 @@
       return (
         <div className="result-card">
           <div className="result-header">
-            <div className="result-title">Your Result</div>
+            <div>
+              <div className="result-title">Your Result</div>
+              {draftSaved && (
+                <div className="draft-saved-indicator">✓ Saved to Drafts</div>
+              )}
+            </div>
             <button
               className={`btn btn-sm btn-outline-red${copied ? ' copy-btn-success' : ''}`}
               onClick={handleCopy}
@@ -1234,6 +1344,7 @@
         license_number: '', start_date: '', completion_days: ''
       });
       const [result, setResult] = useState('');
+      const [draftSaved, setDraftSaved] = useState(false);
       const [loading, setLoading] = useState(false);
       const [error, setError] = useState('');
 
@@ -1241,13 +1352,14 @@
 
       async function handleSubmit(e) {
         e.preventDefault();
-        setError(''); setResult('');
+        setError(''); setResult(''); setDraftSaved(false);
         setLoading(true);
         try {
           const { ok, status, data } = await API.call('/api/tools/proposal', 'POST', form, token);
           if (status === 403) { onUpgradeNeeded(); return; }
           if (!ok) { setError(data.error || 'Generation failed'); return; }
           setResult(data.result);
+          setDraftSaved(!!data.draft_id);
         } catch (err) {
           setError('Connection error — please try again');
         } finally {
@@ -1356,7 +1468,7 @@
               </button>
             </form>
           </div>
-          {result && <ResultCard result={result} />}
+          {result && <ResultCard result={result} draftSaved={draftSaved} />}
         </div>
       );
     }
@@ -1370,6 +1482,7 @@
         job_type: '', contractor_name: '', company_name: '', contractor_phone: ''
       });
       const [result, setResult] = useState('');
+      const [draftSaved, setDraftSaved] = useState(false);
       const [loading, setLoading] = useState(false);
       const [error, setError] = useState('');
 
@@ -1377,13 +1490,14 @@
 
       async function handleSubmit(e) {
         e.preventDefault();
-        setError(''); setResult('');
+        setError(''); setResult(''); setDraftSaved(false);
         setLoading(true);
         try {
           const { ok, status, data } = await API.call('/api/tools/followup', 'POST', form, token);
           if (status === 403) { onUpgradeNeeded(); return; }
           if (!ok) { setError(data.error || 'Generation failed'); return; }
           setResult(data.result);
+          setDraftSaved(!!data.draft_id);
         } catch (err) {
           setError('Connection error — please try again');
         } finally {
@@ -1434,7 +1548,7 @@
               </button>
             </form>
           </div>
-          {result && <ResultCard result={result} />}
+          {result && <ResultCard result={result} draftSaved={draftSaved} />}
         </div>
       );
     }
@@ -1447,6 +1561,7 @@
         customer_name: '', job_type: '', contractor_name: '', company_name: '', review_link: ''
       });
       const [result, setResult] = useState('');
+      const [draftSaved, setDraftSaved] = useState(false);
       const [loading, setLoading] = useState(false);
       const [error, setError] = useState('');
 
@@ -1454,13 +1569,14 @@
 
       async function handleSubmit(e) {
         e.preventDefault();
-        setError(''); setResult('');
+        setError(''); setResult(''); setDraftSaved(false);
         setLoading(true);
         try {
           const { ok, status, data } = await API.call('/api/tools/review', 'POST', form, token);
           if (status === 403) { onUpgradeNeeded(); return; }
           if (!ok) { setError(data.error || 'Generation failed'); return; }
           setResult(data.result);
+          setDraftSaved(!!data.draft_id);
         } catch (err) {
           setError('Connection error — please try again');
         } finally {
@@ -1503,7 +1619,7 @@
               </button>
             </form>
           </div>
-          {result && <ResultCard result={result} />}
+          {result && <ResultCard result={result} draftSaved={draftSaved} />}
         </div>
       );
     }
@@ -1517,6 +1633,7 @@
         company_name: '', referral_incentive: '', phone_number: ''
       });
       const [result, setResult] = useState('');
+      const [draftSaved, setDraftSaved] = useState(false);
       const [loading, setLoading] = useState(false);
       const [error, setError] = useState('');
 
@@ -1524,13 +1641,14 @@
 
       async function handleSubmit(e) {
         e.preventDefault();
-        setError(''); setResult('');
+        setError(''); setResult(''); setDraftSaved(false);
         setLoading(true);
         try {
           const { ok, status, data } = await API.call('/api/tools/referral', 'POST', form, token);
           if (status === 403) { onUpgradeNeeded(); return; }
           if (!ok) { setError(data.error || 'Generation failed'); return; }
           setResult(data.result);
+          setDraftSaved(!!data.draft_id);
         } catch (err) {
           setError('Connection error — please try again');
         } finally {
@@ -1577,7 +1695,7 @@
               </button>
             </form>
           </div>
-          {result && <ResultCard result={result} />}
+          {result && <ResultCard result={result} draftSaved={draftSaved} />}
         </div>
       );
     }
@@ -1647,6 +1765,129 @@
     }
 
     // ---------------------------------------------------------------------------
+    // DraftsPage
+    // ---------------------------------------------------------------------------
+    const TOOL_LABELS = {
+      proposal: 'Proposal',
+      followup: 'Follow-Up',
+      review: 'Review Request',
+      referral: 'Referral',
+    };
+
+    function formatDate(str) {
+      if (!str) return '';
+      const d = new Date(str);
+      return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+
+    function DraftsPage({ token }) {
+      const [drafts, setDrafts] = useState(null);
+      const [selected, setSelected] = useState(null);
+      const [loading, setLoading] = useState(true);
+      const [deleting, setDeleting] = useState(null);
+      const [copied, setCopied] = useState(false);
+
+      useEffect(() => {
+        API.call('/api/drafts', 'GET', null, token).then(({ ok, data }) => {
+          if (ok) setDrafts(data.drafts || []);
+          else setDrafts([]);
+          setLoading(false);
+        }).catch(() => { setDrafts([]); setLoading(false); });
+      }, [token]);
+
+      async function handleDelete(e, id) {
+        e.stopPropagation();
+        if (!window.confirm('Delete this draft?')) return;
+        setDeleting(id);
+        await API.call(`/api/drafts/${id}`, 'DELETE', null, token);
+        setDrafts(d => d.filter(x => x.id !== id));
+        if (selected && selected.id === id) setSelected(null);
+        setDeleting(null);
+      }
+
+      async function handleOpen(draft) {
+        const { ok, data } = await API.call(`/api/drafts/${draft.id}`, 'GET', null, token);
+        if (ok) setSelected(data.draft);
+      }
+
+      function handleCopy() {
+        if (!selected) return;
+        navigator.clipboard.writeText(selected.result).then(() => {
+          setCopied(true);
+          setTimeout(() => setCopied(false), 2000);
+        });
+      }
+
+      if (loading) {
+        return (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '40px 0', color: 'var(--slate)' }}>
+            <Spinner dark /><span>Loading drafts...</span>
+          </div>
+        );
+      }
+
+      if (selected) {
+        return (
+          <div>
+            <button className="draft-viewer-back" onClick={() => setSelected(null)}>
+              ← Back to Saved Drafts
+            </button>
+            <div className="draft-viewer-meta">
+              <span className="draft-tool-badge">{TOOL_LABELS[selected.tool_name] || selected.tool_name}</span>
+              <span className="draft-date">{formatDate(selected.created_at)}</span>
+            </div>
+            <div className="page-title" style={{ fontSize: '26px', marginBottom: 20 }}>{selected.title}</div>
+            <div className="result-card">
+              <div className="result-header">
+                <div className="result-title">Saved Draft</div>
+                <button
+                  className={`btn btn-sm btn-outline-red${copied ? ' copy-btn-success' : ''}`}
+                  onClick={handleCopy}
+                >
+                  {copied ? '✓ Copied!' : 'Copy to Clipboard'}
+                </button>
+              </div>
+              <div className="result-text">{selected.result}</div>
+            </div>
+          </div>
+        );
+      }
+
+      return (
+        <div>
+          <div className="page-title">Saved Drafts</div>
+          <div className="page-subtitle">All your generated content, saved automatically. Click any draft to view and copy.</div>
+          {drafts.length === 0 ? (
+            <div className="drafts-empty">
+              <div className="drafts-empty-icon">◻</div>
+              <h3>No saved drafts yet</h3>
+              <p>Every proposal, follow-up, review request, and referral you generate is automatically saved here.</p>
+            </div>
+          ) : (
+            <div className="drafts-list">
+              {drafts.map(d => (
+                <div key={d.id} className="draft-item" onClick={() => handleOpen(d)}>
+                  <span className="draft-tool-badge">{TOOL_LABELS[d.tool_name] || d.tool_name}</span>
+                  <div className="draft-info">
+                    <div className="draft-title">{d.title}</div>
+                    <div className="draft-date">{formatDate(d.created_at)}</div>
+                  </div>
+                  <button
+                    className="draft-delete-btn"
+                    disabled={deleting === d.id}
+                    onClick={e => handleDelete(e, d.id)}
+                  >
+                    {deleting === d.id ? '...' : 'Delete'}
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // ---------------------------------------------------------------------------
     // Sidebar
     // ---------------------------------------------------------------------------
     function Sidebar({ user, activeTab, onSelectTab, onLogout }) {
@@ -1654,12 +1895,14 @@
       const genCount = user.generations_this_month || 0;
       const pct = isFree ? Math.min(100, (genCount / FREE_LIMIT) * 100) : 0;
 
+      const isPaying = user.is_admin || user.plan === 'starter' || user.plan === 'pro';
       const navItems = [
-        { key: 'home',     label: 'Dashboard',          icon: '▦' },
-        { key: 'proposal', label: 'Proposal Generator', icon: '◻' },
-        { key: 'followup', label: 'Follow-Up Email',    icon: '✉' },
-        { key: 'review',   label: 'Review Request',     icon: '★' },
-        { key: 'referral', label: 'Referral Message',   icon: '↗' },
+        { key: 'home',     label: 'Dashboard',          icon: '▦', always: true },
+        { key: 'proposal', label: 'Proposal Generator', icon: '◻', always: true },
+        { key: 'followup', label: 'Follow-Up Email',    icon: '✉', always: false },
+        { key: 'review',   label: 'Review Request',     icon: '★', always: false },
+        { key: 'referral', label: 'Referral Message',   icon: '↗', always: false },
+        ...(isPaying ? [{ key: 'drafts', label: 'Saved Drafts', icon: '⊟', always: true }] : []),
       ];
 
       return (
@@ -1669,7 +1912,7 @@
           </div>
           <nav className="sidebar-nav">
             {navItems.map(item => {
-              const accessible = item.key === 'home' || item.key === 'proposal' || canUseTool(user, item.key);
+              const accessible = item.always || canUseTool(user, item.key);
               return (
                 <button
                   key={item.key}
@@ -1724,6 +1967,7 @@
             {activeTab === 'followup' && <FollowUpTool {...toolProps} />}
             {activeTab === 'review'   && <ReviewTool {...toolProps} />}
             {activeTab === 'referral' && <ReferralTool {...toolProps} />}
+            {activeTab === 'drafts'   && <DraftsPage token={token} />}
           </main>
           {showUpgrade && <UpgradeModal onClose={() => setShowUpgrade(false)} />}
         </div>

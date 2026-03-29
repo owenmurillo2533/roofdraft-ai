@@ -4,7 +4,7 @@ RoofDraft AI — Tools Routes
 import os
 from flask import Blueprint, request, jsonify
 from anthropic import Anthropic
-from database.db import require_auth, log_generation, get_monthly_count, USE_POSTGRES, pg_run
+from database.db import require_auth, log_generation, get_monthly_count, save_draft, USE_POSTGRES, pg_run
 
 tools_bp = Blueprint('tools', __name__)
 
@@ -24,6 +24,11 @@ TOOL_ACCESS = {
 }
 
 FREE_LIMIT = 5
+PAYING_PLANS = {'starter', 'pro'}
+
+
+def is_paying(user):
+    return bool(user.get('is_admin')) or user.get('plan', 'free') in PAYING_PLANS
 
 
 def check_access(user, tool_name):
@@ -139,7 +144,11 @@ Estimated Completion: {completion_days} business days"""
         )
         result = message.content[0].text
         log_generation(user['id'], 'proposal')
-        return jsonify({"result": result, "tool": "proposal"})
+        draft_id = None
+        if is_paying(user):
+            title = f"Proposal — {customer_name}" + (f", {customer_address}" if customer_address else "")
+            draft_id = save_draft(user['id'], 'proposal', title[:255], result)
+        return jsonify({"result": result, "tool": "proposal", "draft_id": draft_id})
     except Exception as e:
         print(f"[Tools/proposal] Error: {e}")
         import traceback; traceback.print_exc()
@@ -190,7 +199,11 @@ Phone: {contractor_phone}"""
         )
         result = message.content[0].text
         log_generation(user['id'], 'followup')
-        return jsonify({"result": result, "tool": "followup"})
+        draft_id = None
+        if is_paying(user):
+            title = f"Follow-Up — {customer_name}" + (f" ({job_type})" if job_type else "")
+            draft_id = save_draft(user['id'], 'followup', title[:255], result)
+        return jsonify({"result": result, "tool": "followup", "draft_id": draft_id})
     except Exception as e:
         print(f"[Tools/followup] Error: {e}")
         import traceback; traceback.print_exc()
@@ -235,7 +248,11 @@ Google Review Link: {review_link}"""
         )
         result = message.content[0].text
         log_generation(user['id'], 'review')
-        return jsonify({"result": result, "tool": "review"})
+        draft_id = None
+        if is_paying(user):
+            title = f"Review Request — {customer_name}" + (f" ({job_type})" if job_type else "")
+            draft_id = save_draft(user['id'], 'review', title[:255], result)
+        return jsonify({"result": result, "tool": "review", "draft_id": draft_id})
     except Exception as e:
         print(f"[Tools/review] Error: {e}")
         import traceback; traceback.print_exc()
@@ -282,7 +299,11 @@ Phone: {phone_number}"""
         )
         result = message.content[0].text
         log_generation(user['id'], 'referral')
-        return jsonify({"result": result, "tool": "referral"})
+        draft_id = None
+        if is_paying(user):
+            title = f"Referral — {customer_name}" + (f" ({job_completed})" if job_completed else "")
+            draft_id = save_draft(user['id'], 'referral', title[:255], result)
+        return jsonify({"result": result, "tool": "referral", "draft_id": draft_id})
     except Exception as e:
         print(f"[Tools/referral] Error: {e}")
         import traceback; traceback.print_exc()
