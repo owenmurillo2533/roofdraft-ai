@@ -4,6 +4,24 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>RoofDraft AI — Professional Roofing Proposals in 60 Seconds</title>
+  <meta name="description" content="RoofDraft AI generates professional roofing proposals, follow-up emails, review requests, and referral messages in under 60 seconds. Built for roofing contractors." />
+  <meta name="robots" content="index, follow" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://roofdraftai.com/" />
+  <meta property="og:title" content="RoofDraft AI — Win More Roofing Jobs With Better Proposals" />
+  <meta property="og:description" content="Generate professional roofing proposals, follow-up emails, and review requests in under 60 seconds. Built specifically for roofing contractors. Try free — no card needed." />
+  <meta property="og:site_name" content="RoofDraft AI" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="RoofDraft AI — Professional Roofing Proposals in 60 Seconds" />
+  <meta name="twitter:description" content="Generate professional roofing proposals in under 60 seconds. Built for roofing contractors. Try free — no card needed." />
+
+  <!-- Favicon (SVG inline) -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%23C0392B'/><path d='M16 7L4 17h4v8h16v-8h4L16 7z' fill='white'/></svg>" />
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet" />
@@ -442,8 +460,9 @@
     }
     .result-header {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: space-between;
+      gap: 12px;
       margin-bottom: 18px;
       padding-bottom: 14px;
       border-bottom: 1px solid var(--border);
@@ -1040,6 +1059,49 @@
       margin-bottom: 4px;
     }
 
+    /* ---- Mobile Nav Toggle ---- */
+    .mobile-nav-bar {
+      display: none;
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      padding: 0 16px;
+      height: 56px;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .mobile-nav-logo {
+      font-family: 'Oswald', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--near-black);
+    }
+    .mobile-nav-logo span { color: var(--roof-red); }
+    .mobile-nav-btn {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 7px 10px;
+      cursor: pointer;
+      font-size: 18px;
+      color: var(--charcoal);
+      line-height: 1;
+    }
+    .mobile-nav-btn:hover { border-color: var(--charcoal); }
+
+    /* Sidebar overlay on mobile */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(26,23,21,0.45);
+      z-index: 300;
+    }
+    .sidebar-overlay.open { display: block; }
+
     /* ---- Responsive ---- */
     @media (max-width: 960px) {
       .landing-nav { padding: 0 24px; }
@@ -1058,7 +1120,19 @@
       .faq-item:nth-last-child(1) { border-bottom: none; }
       .faq-item:nth-last-child(2) { border-bottom: 1px solid var(--border); }
       .landing-footer { flex-direction: column; gap: 10px; text-align: center; padding: 28px 24px; }
-      .sidebar { display: none; }
+
+      /* Mobile dashboard layout */
+      .dashboard { flex-direction: column; height: auto; min-height: 100vh; overflow: visible; }
+      .mobile-nav-bar { display: flex; }
+      .sidebar {
+        position: fixed;
+        top: 0; left: 0; bottom: 0;
+        z-index: 400;
+        transform: translateX(-100%);
+        transition: transform 0.25s ease;
+        box-shadow: 4px 0 24px rgba(26,23,21,0.15);
+      }
+      .sidebar.mobile-open { transform: translateX(0); }
       .main-content { padding: 20px 16px; }
       .tool-form-grid { grid-template-columns: 1fr; }
       .tool-form-grid .span-2 { grid-column: span 1; }
@@ -1191,6 +1265,11 @@
             <div className="modal-switch">
               Don't have an account?{' '}
               <button onClick={onSwitchToRegister}>Create one free</button>
+            </div>
+            <div style={{ textAlign: 'center', marginTop: '12px' }}>
+              <a href="mailto:owen.murillo2533@gmail.com?subject=Forgot Password — RoofDraft AI" style={{ fontSize: '13px', color: 'var(--slate)', textDecoration: 'underline' }}>
+                Forgot your password?
+              </a>
             </div>
           </div>
         </div>
@@ -1890,7 +1969,7 @@
     // ---------------------------------------------------------------------------
     // Sidebar
     // ---------------------------------------------------------------------------
-    function Sidebar({ user, activeTab, onSelectTab, onLogout }) {
+    function Sidebar({ user, activeTab, onSelectTab, onLogout, mobileOpen, onMobileClose }) {
       const isFree = user.plan === 'free' && !user.is_admin;
       const genCount = user.generations_this_month || 0;
       const pct = isFree ? Math.min(100, (genCount / FREE_LIMIT) * 100) : 0;
@@ -1906,9 +1985,12 @@
       ];
 
       return (
-        <div className="sidebar">
-          <div className="sidebar-logo">
+        <div className={`sidebar${mobileOpen ? ' mobile-open' : ''}`}>
+          <div className="sidebar-logo" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div className="sidebar-logo-text">Roof<span>Draft</span> AI</div>
+            {onMobileClose && (
+              <button onClick={onMobileClose} style={{ background:'none', border:'none', cursor:'pointer', fontSize:'20px', color:'var(--slate-light)', padding:'4px', lineHeight:1 }} aria-label="Close menu">✕</button>
+            )}
           </div>
           <nav className="sidebar-nav">
             {navItems.map(item => {
@@ -1954,13 +2036,35 @@
     function Dashboard({ user, token, onLogout, onUserUpdate }) {
       const [activeTab, setActiveTab] = useState('home');
       const [showUpgrade, setShowUpgrade] = useState(false);
+      const [sidebarOpen, setSidebarOpen] = useState(false);
 
       function handleUpgradeNeeded() { setShowUpgrade(true); }
       const toolProps = { token, onUpgradeNeeded: handleUpgradeNeeded };
 
+      function handleSelectTab(tab) {
+        setActiveTab(tab);
+        setSidebarOpen(false);
+      }
+
       return (
         <div className="dashboard">
-          <Sidebar user={user} activeTab={activeTab} onSelectTab={setActiveTab} onLogout={onLogout} />
+          {/* Mobile top bar */}
+          <div className="mobile-nav-bar">
+            <div className="mobile-nav-logo">Roof<span>Draft</span> AI</div>
+            <button className="mobile-nav-btn" onClick={() => setSidebarOpen(true)} aria-label="Open menu">☰</button>
+          </div>
+
+          {/* Sidebar overlay (mobile) */}
+          <div className={`sidebar-overlay${sidebarOpen ? ' open' : ''}`} onClick={() => setSidebarOpen(false)} />
+
+          <Sidebar
+            user={user}
+            activeTab={activeTab}
+            onSelectTab={handleSelectTab}
+            onLogout={onLogout}
+            mobileOpen={sidebarOpen}
+            onMobileClose={() => setSidebarOpen(false)}
+          />
           <main className="main-content">
             {activeTab === 'home'     && <DashboardHome user={user} onSelectTab={setActiveTab} />}
             {activeTab === 'proposal' && <ProposalTool {...toolProps} />}
@@ -1975,9 +2079,64 @@
     }
 
     // ---------------------------------------------------------------------------
+    // Terms & Privacy Modals
+    // ---------------------------------------------------------------------------
+    function TermsModal({ onClose }) {
+      return (
+        <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
+          <div className="modal-box" style={{ maxWidth: '560px', maxHeight: '80vh', overflowY: 'auto' }}>
+            <button className="modal-close" onClick={onClose}>✕</button>
+            <div className="modal-title" style={{ marginBottom: 20 }}>Terms of Service</div>
+            <div style={{ fontSize: '14px', lineHeight: '1.7', color: 'var(--slate)' }}>
+              <p style={{ marginBottom: 14 }}><strong style={{ color: 'var(--near-black)' }}>Effective date:</strong> March 2026</p>
+              <p style={{ marginBottom: 14 }}>By using RoofDraft AI ("the Service"), you agree to the following terms.</p>
+              <p style={{ marginBottom: 8 }}><strong style={{ color: 'var(--near-black)' }}>Use of the Service</strong></p>
+              <p style={{ marginBottom: 14 }}>RoofDraft AI is a tool that helps roofing contractors generate professional written content. You are responsible for reviewing and customizing all generated content before sending it to customers. Do not use the Service to generate misleading or fraudulent content.</p>
+              <p style={{ marginBottom: 8 }}><strong style={{ color: 'var(--near-black)' }}>Account</strong></p>
+              <p style={{ marginBottom: 14 }}>You are responsible for keeping your account credentials secure. One account per person. We may terminate accounts that violate these terms.</p>
+              <p style={{ marginBottom: 8 }}><strong style={{ color: 'var(--near-black)' }}>Billing</strong></p>
+              <p style={{ marginBottom: 14 }}>Paid plans are billed monthly. Cancel any time by contacting us at owen.murillo2533@gmail.com. No refunds for partial months.</p>
+              <p style={{ marginBottom: 8 }}><strong style={{ color: 'var(--near-black)' }}>Content</strong></p>
+              <p style={{ marginBottom: 14 }}>You retain ownership of the content you generate. We do not claim rights to your proposals or emails.</p>
+              <p style={{ marginBottom: 8 }}><strong style={{ color: 'var(--near-black)' }}>Limitation of Liability</strong></p>
+              <p style={{ marginBottom: 14 }}>RoofDraft AI is provided "as is." We are not liable for any lost business, errors in generated content, or damages arising from use of the Service.</p>
+              <p style={{ marginBottom: 8 }}><strong style={{ color: 'var(--near-black)' }}>Contact</strong></p>
+              <p>Questions? Email owen.murillo2533@gmail.com</p>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    function PrivacyModal({ onClose }) {
+      return (
+        <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
+          <div className="modal-box" style={{ maxWidth: '560px', maxHeight: '80vh', overflowY: 'auto' }}>
+            <button className="modal-close" onClick={onClose}>✕</button>
+            <div className="modal-title" style={{ marginBottom: 20 }}>Privacy Policy</div>
+            <div style={{ fontSize: '14px', lineHeight: '1.7', color: 'var(--slate)' }}>
+              <p style={{ marginBottom: 14 }}><strong style={{ color: 'var(--near-black)' }}>Effective date:</strong> March 2026</p>
+              <p style={{ marginBottom: 8 }}><strong style={{ color: 'var(--near-black)' }}>What we collect</strong></p>
+              <p style={{ marginBottom: 14 }}>We collect your email address, username, and the content you enter into our tools (job details, customer names, etc.) in order to provide the Service. We store a record of each generation so you can access your saved drafts.</p>
+              <p style={{ marginBottom: 8 }}><strong style={{ color: 'var(--near-black)' }}>How we use it</strong></p>
+              <p style={{ marginBottom: 14 }}>Your data is used solely to operate RoofDraft AI. We do not sell your data. We do not share it with third parties except the AI provider (Anthropic) used to generate your content, and our database provider (Neon).</p>
+              <p style={{ marginBottom: 8 }}><strong style={{ color: 'var(--near-black)' }}>Cookies & storage</strong></p>
+              <p style={{ marginBottom: 14 }}>We use browser localStorage to store your session token. No tracking cookies are used.</p>
+              <p style={{ marginBottom: 8 }}><strong style={{ color: 'var(--near-black)' }}>Data retention</strong></p>
+              <p style={{ marginBottom: 14 }}>Your account and saved drafts are retained as long as your account is active. You can request deletion at any time by emailing us.</p>
+              <p style={{ marginBottom: 8 }}><strong style={{ color: 'var(--near-black)' }}>Contact</strong></p>
+              <p>Email owen.murillo2533@gmail.com to request data deletion or with any privacy questions.</p>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ---------------------------------------------------------------------------
     // Landing Page
     // ---------------------------------------------------------------------------
     function LandingPage({ onShowLogin, onShowRegister }) {
+      const [legalModal, setLegalModal] = useState(null);
       const tools = [
         { name: 'Proposal Generator', desc: 'Complete, professional proposal letters that win jobs. Fill out the job details and get a client-ready document in under 60 seconds.' },
         { name: 'Follow-Up Email',    desc: '3 variations of follow-up emails for prospects who haven\'t responded. Human tone, no pressure, one clear call to action.' },
@@ -2027,6 +2186,7 @@
               <li><a href="#tools">Tools</a></li>
               <li><a href="#pricing">Pricing</a></li>
               <li><a href="#faq">FAQ</a></li>
+              <li><a href="mailto:owen.murillo2533@gmail.com">Contact</a></li>
             </ul>
             <div className="landing-nav-actions">
               <button className="btn btn-ghost" onClick={onShowLogin}
@@ -2040,21 +2200,24 @@
           <section className="hero">
             <div className="hero-inner">
               <h1 className="hero-headline">
-                Win More Roofing Jobs<br />With Better Proposals
+                Stop Losing Jobs to<br />Better-Looking Proposals
               </h1>
               <p className="hero-sub">
-                Generate professional proposals, follow-ups, and review requests in under 60 seconds. Built specifically for roofing contractors.
+                RoofDraft AI generates professional proposals, follow-ups, and review requests in under 60 seconds — so you spend less time writing and more time on roofs.
               </p>
               <div className="hero-actions">
                 <button className="btn btn-primary" onClick={onShowRegister}
-                  style={{ padding: '13px 26px', fontSize: '16px' }}>
-                  Start Free — No Card Needed
+                  style={{ padding: '14px 30px', fontSize: '17px', fontFamily: 'Oswald, sans-serif', letterSpacing: '0.03em', textTransform: 'uppercase' }}>
+                  Try Free — No Card Needed
                 </button>
                 <a href="#tools" className="btn btn-outline"
-                  style={{ padding: '13px 26px', fontSize: '16px' }}>
-                  See How It Works
+                  style={{ padding: '14px 26px', fontSize: '16px' }}>
+                  See the Tools
                 </a>
               </div>
+              <p style={{ marginTop: '16px', fontSize: '13px', color: 'var(--slate-light)' }}>
+                5 free generations. No credit card. Cancel any time.
+              </p>
             </div>
           </section>
 
@@ -2085,15 +2248,15 @@
           <section className="problem-section">
             <div className="problem-inner">
               <div>
-                <h2 className="problem-heading">You're Losing Jobs You Should Be Winning</h2>
+                <h2 className="problem-heading">Your Work Is Good.<br />Your Proposals Aren't.</h2>
                 <p className="problem-text">
-                  Your work is good. Your price is fair. But your competitor sent a clean, professional proposal and you sent a handwritten estimate on a form from the hardware store.
+                  The job goes to the contractor who shows up with a clean, professional proposal — not the best roofer. Homeowners don't know the difference until the work is done. They buy the proposal first.
                 </p>
                 <p className="problem-text">
-                  Homeowners make decisions based on trust. A professional proposal builds that trust before you ever set foot on the roof. RoofDraft AI generates that proposal for you in under a minute.
+                  Writing a good proposal takes 30–45 minutes. Most contractors skip it or send a basic quote that looks like everyone else's. RoofDraft AI does it in under 60 seconds.
                 </p>
                 <p className="problem-text" style={{marginBottom:0}}>
-                  No writing skills required. No templates to fill in. Just answer the questions about the job and get a finished document.
+                  Fill out what you know about the job. Click generate. You'll have a complete, client-ready proposal letter — one that actually wins work.
                 </p>
               </div>
               <div>
@@ -2197,8 +2360,9 @@
                     <button
                       className={`btn ${plan.popular ? 'btn-primary' : 'btn-outline-red'} btn-full`}
                       onClick={onShowRegister}
+                      style={plan.popular ? { fontFamily:'Oswald, sans-serif', letterSpacing:'0.03em', textTransform:'uppercase', padding:'13px' } : {}}
                     >
-                      Get Started
+                      {plan.name === 'Free' ? 'Start Free Trial' : `Get ${plan.name}`}
                     </button>
                   </div>
                 ))}
@@ -2227,8 +2391,16 @@
           <footer className="landing-footer">
             <div className="footer-logo">Roof<span>Draft</span> AI</div>
             <div className="footer-tagline">Built for roofers.</div>
-            <div className="footer-copy">© {new Date().getFullYear()} RoofDraft AI. All rights reserved.</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '18px', flexWrap: 'wrap', justifyContent: 'center' }}>
+              <div className="footer-copy">© {new Date().getFullYear()} RoofDraft AI. All rights reserved.</div>
+              <button onClick={() => setLegalModal('terms')} style={{ background:'none', border:'none', color:'#888', fontSize:'13px', cursor:'pointer', padding:0, textDecoration:'underline' }}>Terms</button>
+              <button onClick={() => setLegalModal('privacy')} style={{ background:'none', border:'none', color:'#888', fontSize:'13px', cursor:'pointer', padding:0, textDecoration:'underline' }}>Privacy</button>
+              <a href="mailto:owen.murillo2533@gmail.com" style={{ color:'#888', fontSize:'13px' }}>Contact</a>
+            </div>
           </footer>
+
+          {legalModal === 'terms'   && <TermsModal   onClose={() => setLegalModal(null)} />}
+          {legalModal === 'privacy' && <PrivacyModal onClose={() => setLegalModal(null)} />}
         </div>
       );
     }

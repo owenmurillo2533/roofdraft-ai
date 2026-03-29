@@ -1,8 +1,11 @@
 """
 RoofDraft AI — Auth Routes
 """
+import re
 from flask import Blueprint, request, jsonify
 from datetime import datetime
+
+_EMAIL_RE = re.compile(r'^[^@\s]+@[^@\s]+\.[^@\s]+$')
 from database.db import (
     hash_password, verify_password, generate_token,
     USE_POSTGRES, pg_run, get_db, row_to_dict,
@@ -33,10 +36,14 @@ def register():
 
     if not email or not username or not password:
         return jsonify({"error": "Email, username and password are required"}), 400
+    if not _EMAIL_RE.match(email):
+        return jsonify({"error": "Please enter a valid email address"}), 400
     if len(password) < 6:
         return jsonify({"error": "Password must be at least 6 characters"}), 400
     if len(username) < 3:
         return jsonify({"error": "Username must be at least 3 characters"}), 400
+    if len(username) > 50:
+        return jsonify({"error": "Username must be 50 characters or less"}), 400
 
     try:
         # Check duplicates
