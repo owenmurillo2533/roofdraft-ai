@@ -6,7 +6,7 @@
   <title>RoofDraft AI — Professional Roofing Proposals in 60 Seconds</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet" />
   <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -14,155 +14,192 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #0a0a0a;
-      --card: #111111;
-      --card2: #161616;
-      --orange: #E8500A;
-      --orange-hover: #d44408;
-      --white: #f5f0eb;
-      --muted: #888888;
-      --border: rgba(255,255,255,0.08);
-      --radius: 8px;
+      --white: #FFFFFF;
+      --off-white: #F8F6F3;
+      --light-gray: #F0EDE8;
+      --mid-gray: #E2DDD6;
+      --dark-gray: #6B6560;
+      --charcoal: #2C2825;
+      --near-black: #1A1715;
+      --roof-red: #C0392B;
+      --roof-red-dark: #A93226;
+      --roof-red-light: #E74C3C;
+      --slate: #4A5568;
+      --slate-light: #718096;
+      --warm-tan: #D4A853;
+      --success: #27AE60;
+      --background: #F8F6F3;
+      --card-bg: #FFFFFF;
+      --border: #E2DDD6;
+      --radius: 4px;
     }
 
     html, body, #root { height: 100%; }
 
     body {
-      background: var(--bg);
-      color: var(--white);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 15px;
+      background: var(--background);
+      color: var(--charcoal);
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 16px;
       line-height: 1.6;
       -webkit-font-smoothing: antialiased;
     }
 
-    h1, h2, h3, h4 { font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.02em; }
+    h1, h2, h3, h4, h5 {
+      font-family: 'Oswald', sans-serif;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      color: var(--near-black);
+    }
 
-    a { color: var(--orange); text-decoration: none; }
+    a { color: var(--roof-red); text-decoration: none; }
+    a:hover { text-decoration: underline; }
 
-    ::selection { background: var(--orange); color: #fff; }
+    ::selection { background: var(--roof-red); color: #fff; }
 
     ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: var(--bg); }
-    ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+    ::-webkit-scrollbar-track { background: var(--light-gray); }
+    ::-webkit-scrollbar-thumb { background: var(--mid-gray); border-radius: 3px; }
 
     /* ---- Buttons ---- */
     .btn {
       display: inline-flex; align-items: center; justify-content: center;
       gap: 8px;
-      padding: 12px 24px;
+      padding: 11px 22px;
       border-radius: var(--radius);
       border: none;
       cursor: pointer;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 14px;
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 15px;
       font-weight: 600;
-      transition: all 0.18s ease;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
       white-space: nowrap;
+      text-decoration: none;
     }
     .btn-primary {
-      background: var(--orange);
+      background: var(--roof-red);
       color: #fff;
+      border: 2px solid var(--roof-red);
     }
-    .btn-primary:hover { background: var(--orange-hover); transform: translateY(-1px); }
-    .btn-primary:active { transform: translateY(0); }
+    .btn-primary:hover { background: var(--roof-red-dark); border-color: var(--roof-red-dark); text-decoration: none; color: #fff; }
+    .btn-primary:active { background: var(--roof-red-dark); }
+    .btn-outline {
+      background: transparent;
+      color: var(--charcoal);
+      border: 2px solid var(--border);
+    }
+    .btn-outline:hover { border-color: var(--charcoal); text-decoration: none; color: var(--charcoal); }
+    .btn-outline-red {
+      background: transparent;
+      color: var(--roof-red);
+      border: 2px solid var(--roof-red);
+    }
+    .btn-outline-red:hover { background: var(--roof-red); color: #fff; text-decoration: none; }
     .btn-ghost {
       background: transparent;
-      color: var(--white);
+      color: var(--slate);
       border: 1px solid var(--border);
     }
-    .btn-ghost:hover { border-color: rgba(255,255,255,0.2); background: rgba(255,255,255,0.04); }
-    .btn-outline-orange {
-      background: transparent;
-      color: var(--orange);
-      border: 1px solid var(--orange);
-    }
-    .btn-outline-orange:hover { background: rgba(232,80,10,0.08); }
-    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+    .btn-ghost:hover { border-color: var(--slate); color: var(--charcoal); text-decoration: none; }
+    .btn:disabled { opacity: 0.55; cursor: not-allowed; }
     .btn-full { width: 100%; }
+    .btn-sm { padding: 8px 16px; font-size: 14px; }
 
     /* ---- Form elements ---- */
-    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group { display: flex; flex-direction: column; gap: 5px; }
     .form-label {
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--charcoal);
+      font-family: 'Source Sans 3', sans-serif;
     }
     .form-input, .form-select, .form-textarea {
-      background: var(--card2);
-      border: 1px solid var(--border);
+      background: var(--white);
+      border: 1.5px solid var(--border);
       border-radius: var(--radius);
-      color: var(--white);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 14px;
-      padding: 10px 14px;
+      color: var(--charcoal);
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 15px;
+      padding: 10px 13px;
       transition: border-color 0.15s;
       outline: none;
       width: 100%;
     }
     .form-input:focus, .form-select:focus, .form-textarea:focus {
-      border-color: var(--orange);
+      border-color: var(--roof-red);
+      box-shadow: 0 0 0 3px rgba(192,57,43,0.08);
     }
-    .form-input::placeholder, .form-textarea::placeholder { color: #444; }
-    .form-select { appearance: none; cursor: pointer; }
-    .form-select option { background: #1a1a1a; }
+    .form-input::placeholder, .form-textarea::placeholder { color: #aaa; }
+    .form-select { appearance: none; cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236B6560' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px; }
     .form-textarea { resize: vertical; min-height: 80px; }
 
     /* ---- Modal overlay ---- */
     .modal-overlay {
       position: fixed; inset: 0;
-      background: rgba(0,0,0,0.8);
-      backdrop-filter: blur(4px);
+      background: rgba(26,23,21,0.55);
       display: flex; align-items: center; justify-content: center;
       z-index: 1000;
       padding: 20px;
     }
     .modal-box {
-      background: var(--card);
+      background: var(--white);
       border: 1px solid var(--border);
-      border-radius: 12px;
+      border-radius: 6px;
       padding: 40px;
       width: 100%;
       max-width: 420px;
+      position: relative;
+      box-shadow: 0 8px 32px rgba(26,23,21,0.12);
     }
+    .modal-close {
+      position: absolute; top: 16px; right: 16px;
+      background: none; border: none; cursor: pointer;
+      font-size: 20px; color: var(--slate-light); line-height: 1;
+      padding: 4px;
+    }
+    .modal-close:hover { color: var(--charcoal); }
     .modal-title {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 28px;
-      letter-spacing: 0.02em;
-      margin-bottom: 8px;
+      font-family: 'Oswald', sans-serif;
+      font-size: 26px;
+      font-weight: 600;
+      color: var(--near-black);
+      margin-bottom: 6px;
     }
-    .modal-subtitle { color: var(--muted); font-size: 14px; margin-bottom: 28px; }
+    .modal-subtitle { color: var(--slate); font-size: 15px; margin-bottom: 28px; }
     .modal-form { display: flex; flex-direction: column; gap: 16px; }
     .modal-error {
-      background: rgba(220,38,38,0.1);
-      border: 1px solid rgba(220,38,38,0.3);
+      background: #fdf2f2;
+      border: 1px solid #f5c6c6;
       border-radius: var(--radius);
       padding: 10px 14px;
-      font-size: 13px;
-      color: #f87171;
+      font-size: 14px;
+      color: #c0392b;
     }
     .modal-switch {
       text-align: center;
-      font-size: 13px;
-      color: var(--muted);
-      margin-top: 16px;
+      font-size: 14px;
+      color: var(--slate);
+      margin-top: 18px;
     }
     .modal-switch button {
-      background: none; border: none; color: var(--orange); cursor: pointer;
-      font-size: 13px; padding: 0; font-family: 'DM Sans', sans-serif;
+      background: none; border: none; color: var(--roof-red); cursor: pointer;
+      font-size: 14px; padding: 0; font-family: 'Source Sans 3', sans-serif;
+      font-weight: 600;
     }
     .modal-switch button:hover { text-decoration: underline; }
 
     /* ---- Spinner ---- */
     .spinner {
-      width: 18px; height: 18px;
-      border: 2px solid rgba(255,255,255,0.2);
+      width: 17px; height: 17px;
+      border: 2px solid rgba(255,255,255,0.35);
       border-top-color: #fff;
       border-radius: 50%;
       animation: spin 0.7s linear infinite;
       flex-shrink: 0;
+    }
+    .spinner-dark {
+      border-color: rgba(44,40,37,0.2);
+      border-top-color: var(--charcoal);
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
@@ -175,9 +212,9 @@
 
     /* ---- Sidebar ---- */
     .sidebar {
-      width: 240px;
+      width: 248px;
       flex-shrink: 0;
-      background: var(--card);
+      background: var(--white);
       border-right: 1px solid var(--border);
       display: flex;
       flex-direction: column;
@@ -185,20 +222,21 @@
       overflow-y: auto;
     }
     .sidebar-logo {
-      padding: 24px 20px 20px;
+      padding: 22px 20px 18px;
       border-bottom: 1px solid var(--border);
       flex-shrink: 0;
     }
     .sidebar-logo-text {
-      font-family: 'Bebas Neue', sans-serif;
+      font-family: 'Oswald', sans-serif;
       font-size: 22px;
-      letter-spacing: 0.04em;
-      color: var(--white);
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      color: var(--near-black);
     }
-    .sidebar-logo-text span { color: var(--orange); }
+    .sidebar-logo-text span { color: var(--roof-red); }
     .sidebar-nav {
       flex: 1;
-      padding: 16px 12px;
+      padding: 14px 12px;
       display: flex;
       flex-direction: column;
       gap: 2px;
@@ -208,84 +246,107 @@
       padding: 10px 12px;
       border-radius: var(--radius);
       cursor: pointer;
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--muted);
-      transition: all 0.15s;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--charcoal);
+      transition: all 0.12s;
       border: none;
+      border-left: 3px solid transparent;
       background: none;
       width: 100%;
       text-align: left;
+      font-family: 'Source Sans 3', sans-serif;
     }
-    .nav-item:hover { background: rgba(255,255,255,0.04); color: var(--white); }
-    .nav-item.active { background: rgba(232,80,10,0.12); color: var(--orange); }
-    .nav-icon { width: 16px; text-align: center; flex-shrink: 0; }
+    .nav-item:hover { background: var(--light-gray); color: var(--near-black); }
+    .nav-item.active {
+      background: #fdf0ee;
+      color: var(--roof-red);
+      border-left-color: var(--roof-red);
+    }
+    .nav-icon { width: 18px; text-align: center; flex-shrink: 0; font-style: normal; }
     .sidebar-bottom {
       padding: 16px;
       border-top: 1px solid var(--border);
       flex-shrink: 0;
     }
     .user-info { margin-bottom: 12px; }
-    .user-name { font-size: 13px; font-weight: 600; color: var(--white); margin-bottom: 4px; }
+    .user-name { font-size: 14px; font-weight: 700; color: var(--near-black); margin-bottom: 5px; }
     .plan-badge {
       display: inline-block;
-      padding: 2px 8px;
-      border-radius: 4px;
+      padding: 2px 9px;
+      border-radius: 3px;
       font-size: 11px;
-      font-weight: 600;
+      font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.06em;
+      font-family: 'Source Sans 3', sans-serif;
+      border: 1.5px solid;
     }
-    .badge-free { background: rgba(136,136,136,0.2); color: var(--muted); }
-    .badge-starter { background: rgba(59,130,246,0.2); color: #60a5fa; }
-    .badge-pro { background: rgba(232,80,10,0.2); color: var(--orange); }
-    .badge-admin { background: rgba(232,80,10,0.3); color: var(--orange); }
-    .gen-counter {
-      margin-top: 10px;
-      margin-bottom: 12px;
-    }
-    .gen-counter-text {
-      font-size: 12px;
-      color: var(--muted);
+    .badge-free { border-color: var(--dark-gray); color: var(--dark-gray); }
+    .badge-starter { border-color: var(--slate); color: var(--slate); }
+    .badge-pro { border-color: var(--roof-red); color: var(--roof-red); }
+    .badge-admin { border-color: var(--roof-red); color: var(--roof-red); background: #fdf0ee; }
+    .gen-counter { margin-top: 10px; margin-bottom: 12px; }
+    .gen-counter-label {
+      font-size: 13px;
+      color: var(--slate);
       margin-bottom: 6px;
+      font-weight: 600;
     }
     .progress-bar {
-      height: 4px;
-      background: rgba(255,255,255,0.08);
-      border-radius: 2px;
+      height: 6px;
+      background: var(--light-gray);
+      border-radius: 3px;
       overflow: hidden;
+      border: 1px solid var(--border);
     }
     .progress-fill {
       height: 100%;
-      background: var(--orange);
-      border-radius: 2px;
+      background: var(--roof-red);
+      border-radius: 3px;
       transition: width 0.3s ease;
     }
     .logout-btn {
-      background: none; border: 1px solid var(--border);
-      color: var(--muted); width: 100%; padding: 8px;
-      border-radius: var(--radius); cursor: pointer;
-      font-family: 'DM Sans', sans-serif; font-size: 13px;
-      transition: all 0.15s;
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--slate);
+      width: 100%; padding: 9px;
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.12s;
     }
-    .logout-btn:hover { border-color: #555; color: var(--white); }
+    .logout-btn:hover { border-color: var(--charcoal); color: var(--charcoal); }
 
     /* ---- Main content ---- */
     .main-content {
       flex: 1;
       overflow-y: auto;
-      padding: 32px 40px;
+      padding: 36px 44px;
+      background: var(--off-white);
     }
     .page-title {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 42px;
-      letter-spacing: 0.02em;
+      font-family: 'Oswald', sans-serif;
+      font-size: 34px;
+      font-weight: 600;
+      color: var(--near-black);
       margin-bottom: 4px;
     }
     .page-subtitle {
-      color: var(--muted);
-      font-size: 14px;
-      margin-bottom: 32px;
+      color: var(--slate);
+      font-size: 15px;
+      margin-bottom: 28px;
+    }
+
+    /* ---- Content card ---- */
+    .content-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 28px;
+      box-shadow: 0 1px 4px rgba(26,23,21,0.06);
     }
 
     /* ---- Tool cards grid ---- */
@@ -293,52 +354,58 @@
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 16px;
-      margin-bottom: 32px;
+      margin-bottom: 0;
     }
     .tool-card {
-      background: var(--card);
+      background: var(--white);
       border: 1px solid var(--border);
-      border-radius: 10px;
+      border-radius: 6px;
       padding: 24px;
-      transition: border-color 0.2s;
+      transition: border-color 0.15s, box-shadow 0.15s;
       cursor: pointer;
+      box-shadow: 0 1px 3px rgba(26,23,21,0.05);
     }
-    .tool-card:hover { border-color: rgba(232,80,10,0.3); }
-    .tool-card-icon {
-      font-size: 24px;
-      margin-bottom: 12px;
+    .tool-card:hover { border-color: var(--roof-red); box-shadow: 0 2px 8px rgba(192,57,43,0.1); }
+    .tool-card-accent {
+      width: 18px; height: 18px;
+      background: var(--roof-red);
+      border-radius: 2px;
+      margin-bottom: 14px;
+      flex-shrink: 0;
     }
     .tool-card-name {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 20px;
-      letter-spacing: 0.02em;
+      font-family: 'Oswald', sans-serif;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--near-black);
       margin-bottom: 6px;
     }
     .tool-card-desc {
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.5;
-      margin-bottom: 16px;
+      color: var(--slate);
+      font-size: 14px;
+      line-height: 1.55;
+      margin-bottom: 18px;
     }
     .tool-card-locked {
-      opacity: 0.4;
+      opacity: 0.45;
       cursor: not-allowed;
     }
-    .tool-card-locked:hover { border-color: var(--border); }
+    .tool-card-locked:hover { border-color: var(--border); box-shadow: none; }
     .locked-badge {
-      display: inline-flex; align-items: center; gap: 6px;
-      font-size: 11px; color: var(--muted);
-      background: rgba(255,255,255,0.04);
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 12px; color: var(--dark-gray); font-weight: 600;
+      background: var(--light-gray);
       border: 1px solid var(--border);
-      padding: 4px 10px; border-radius: 4px;
+      padding: 4px 10px; border-radius: 3px;
     }
 
     /* ---- Upgrade banner ---- */
     .upgrade-banner {
-      background: linear-gradient(135deg, rgba(232,80,10,0.12), rgba(232,80,10,0.06));
-      border: 1px solid rgba(232,80,10,0.3);
-      border-radius: 10px;
-      padding: 20px 24px;
+      background: #fdf0ee;
+      border: 1.5px solid #f5c6c6;
+      border-left: 4px solid var(--roof-red);
+      border-radius: 6px;
+      padding: 18px 22px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -348,11 +415,11 @@
     .upgrade-banner-text strong {
       display: block;
       font-size: 15px;
-      font-weight: 600;
-      color: var(--white);
+      font-weight: 700;
+      color: var(--near-black);
       margin-bottom: 2px;
     }
-    .upgrade-banner-text span { font-size: 13px; color: var(--muted); }
+    .upgrade-banner-text span { font-size: 14px; color: var(--slate); }
     .upgrade-actions { display: flex; gap: 8px; flex-shrink: 0; }
 
     /* ---- Tool form ---- */
@@ -363,111 +430,250 @@
       margin-bottom: 24px;
     }
     .tool-form-grid .span-2 { grid-column: span 2; }
+
+    /* ---- Result card ---- */
     .result-card {
-      background: var(--card);
+      background: var(--white);
       border: 1px solid var(--border);
-      border-radius: 10px;
+      border-radius: 6px;
       padding: 24px;
       margin-top: 24px;
+      box-shadow: 0 1px 4px rgba(26,23,21,0.06);
     }
     .result-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 16px;
+      margin-bottom: 18px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border);
     }
     .result-title {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 18px;
-      letter-spacing: 0.02em;
+      font-family: 'Oswald', sans-serif;
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--near-black);
     }
     .result-text {
       white-space: pre-wrap;
-      font-size: 14px;
-      line-height: 1.7;
-      color: var(--white);
-      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      line-height: 1.75;
+      color: var(--charcoal);
+      font-family: 'Source Sans 3', sans-serif;
+    }
+    .copy-btn-success {
+      background: var(--success) !important;
+      border-color: var(--success) !important;
+      color: #fff !important;
     }
 
-    /* ---- Landing page ---- */
-    .landing { min-height: 100vh; }
+    /* ---- Welcome ---- */
+    .welcome-greeting { margin-bottom: 28px; }
+    .welcome-greeting h2 {
+      font-family: 'Oswald', sans-serif;
+      font-size: 30px;
+      font-weight: 600;
+      color: var(--near-black);
+      margin-bottom: 4px;
+    }
+    .welcome-greeting p { color: var(--slate); font-size: 15px; }
+    .section-header { margin-bottom: 16px; }
+    .section-header h3 {
+      font-family: 'Oswald', sans-serif;
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--charcoal);
+    }
 
+    /* ============================================================
+       LANDING PAGE
+    ============================================================ */
+    .landing { min-height: 100vh; background: var(--off-white); }
+
+    /* Nav */
     .landing-nav {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 20px 60px;
+      padding: 0 60px;
+      height: 64px;
       border-bottom: 1px solid var(--border);
       position: sticky; top: 0; z-index: 100;
-      background: rgba(10,10,10,0.92);
-      backdrop-filter: blur(12px);
+      background: var(--white);
     }
     .landing-logo {
-      font-family: 'Bebas Neue', sans-serif;
+      font-family: 'Oswald', sans-serif;
       font-size: 24px;
-      letter-spacing: 0.04em;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      color: var(--near-black);
     }
-    .landing-logo span { color: var(--orange); }
+    .landing-logo span { color: var(--roof-red); }
     .landing-nav-links {
-      display: flex; align-items: center; gap: 32px;
+      display: flex; align-items: center; gap: 36px;
       list-style: none;
     }
     .landing-nav-links a {
-      color: var(--muted); font-size: 14px; font-weight: 500;
-      transition: color 0.15s;
+      color: var(--slate); font-size: 15px; font-weight: 600;
+      transition: color 0.12s; text-decoration: none;
     }
-    .landing-nav-links a:hover { color: var(--white); }
-    .landing-nav-actions { display: flex; gap: 12px; align-items: center; }
+    .landing-nav-links a:hover { color: var(--near-black); text-decoration: none; }
+    .landing-nav-actions { display: flex; gap: 10px; align-items: center; }
 
     /* Hero */
     .hero {
-      padding: 100px 60px 80px;
-      max-width: 900px;
-      margin: 0 auto;
-      text-align: center;
+      padding: 80px 60px 70px;
+      background: var(--off-white);
+      border-bottom: 1px solid var(--border);
     }
-    .hero-eyebrow {
-      display: inline-block;
-      font-size: 12px; font-weight: 600;
-      text-transform: uppercase; letter-spacing: 0.12em;
-      color: var(--orange);
-      background: rgba(232,80,10,0.1);
-      border: 1px solid rgba(232,80,10,0.2);
-      padding: 4px 14px; border-radius: 20px;
-      margin-bottom: 28px;
+    .hero-inner {
+      max-width: 700px;
     }
     .hero-headline {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: clamp(52px, 8vw, 96px);
-      letter-spacing: 0.02em;
-      line-height: 0.95;
-      margin-bottom: 24px;
-      color: var(--white);
+      font-family: 'Oswald', sans-serif;
+      font-size: clamp(40px, 5vw, 60px);
+      font-weight: 700;
+      line-height: 1.1;
+      margin-bottom: 20px;
+      color: var(--near-black);
     }
-    .hero-headline span { color: var(--orange); }
     .hero-sub {
       font-size: 18px;
-      color: var(--muted);
-      max-width: 560px;
-      margin: 0 auto 40px;
+      color: var(--slate);
+      max-width: 540px;
+      margin-bottom: 36px;
       line-height: 1.65;
     }
-    .hero-actions { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+    .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; }
 
-    /* Tool cards on landing */
-    .landing-tools {
-      padding: 60px;
+    /* Trust bar */
+    .trust-bar {
+      background: var(--white);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 28px 60px;
+    }
+    .trust-bar-label {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--slate-light);
+      margin-bottom: 20px;
+    }
+    .trust-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+    }
+    .trust-stat {
+      padding: 0 28px 0 0;
+      border-right: 1px solid var(--border);
+    }
+    .trust-stat:first-child { padding-left: 0; }
+    .trust-stat:last-child { border-right: none; padding-right: 0; }
+    .trust-stat-num {
+      font-family: 'Oswald', sans-serif;
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--roof-red);
+      line-height: 1.1;
+      margin-bottom: 3px;
+    }
+    .trust-stat-label {
+      font-size: 13px;
+      color: var(--slate);
+      font-weight: 600;
+    }
+
+    /* Problem section */
+    .problem-section {
+      background: var(--white);
+      padding: 80px 60px;
+      border-bottom: 1px solid var(--border);
+    }
+    .problem-inner {
       max-width: 1100px;
       margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
     }
-    .section-label {
-      font-size: 12px; font-weight: 600;
-      text-transform: uppercase; letter-spacing: 0.12em;
-      color: var(--orange); margin-bottom: 16px;
+    .problem-heading {
+      font-family: 'Oswald', sans-serif;
+      font-size: clamp(28px, 3vw, 40px);
+      font-weight: 700;
+      color: var(--near-black);
+      margin-bottom: 20px;
+      line-height: 1.15;
+    }
+    .problem-text {
+      color: var(--slate);
+      font-size: 16px;
+      line-height: 1.7;
+      margin-bottom: 14px;
+    }
+    .problem-doc {
+      background: var(--white);
+      border: 1.5px solid var(--border);
+      border-radius: 6px;
+      padding: 28px;
+      box-shadow: 0 4px 16px rgba(26,23,21,0.08);
+    }
+    .problem-doc-header {
+      font-family: 'Oswald', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--roof-red);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .problem-doc-line {
+      display: flex;
+      justify-content: space-between;
+      padding: 7px 0;
+      border-bottom: 1px solid var(--light-gray);
+      font-size: 14px;
+      color: var(--charcoal);
+    }
+    .problem-doc-line:last-child { border-bottom: none; }
+    .problem-doc-key { font-weight: 600; color: var(--slate); }
+    .problem-doc-total {
+      font-family: 'Oswald', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--near-black);
+      display: flex;
+      justify-content: space-between;
+      padding-top: 14px;
+      margin-top: 4px;
+      border-top: 2px solid var(--near-black);
+    }
+
+    /* Tools section */
+    .tools-section {
+      background: var(--off-white);
+      padding: 80px 60px;
+      border-bottom: 1px solid var(--border);
+    }
+    .tools-section-inner { max-width: 1100px; margin: 0 auto; }
+    .section-eyebrow {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--roof-red);
+      margin-bottom: 10px;
     }
     .section-title {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: clamp(32px, 4vw, 48px);
-      letter-spacing: 0.02em;
+      font-family: 'Oswald', sans-serif;
+      font-size: clamp(26px, 3vw, 38px);
+      font-weight: 700;
+      color: var(--near-black);
       margin-bottom: 40px;
+      line-height: 1.2;
     }
     .landing-tools-grid {
       display: grid;
@@ -475,161 +681,282 @@
       gap: 20px;
     }
     .landing-tool-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 10px;
+      background: var(--white);
+      border: 1.5px solid var(--border);
+      border-radius: 6px;
       padding: 28px;
+      box-shadow: 0 1px 4px rgba(26,23,21,0.05);
     }
-    .landing-tool-card-number {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 48px;
-      color: rgba(232,80,10,0.2);
-      line-height: 1;
-      margin-bottom: 8px;
+    .landing-tool-card-top {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .landing-tool-card-accent {
+      width: 16px; height: 16px;
+      background: var(--roof-red);
+      border-radius: 2px;
+      flex-shrink: 0;
     }
     .landing-tool-card-name {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 22px;
-      letter-spacing: 0.02em;
-      margin-bottom: 8px;
+      font-family: 'Oswald', sans-serif;
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--near-black);
     }
     .landing-tool-card-desc {
-      color: var(--muted);
-      font-size: 14px;
+      color: var(--slate);
+      font-size: 15px;
       line-height: 1.6;
+    }
+
+    /* Testimonials */
+    .testimonials-section {
+      background: var(--white);
+      padding: 80px 60px;
+      border-bottom: 1px solid var(--border);
+    }
+    .testimonials-inner { max-width: 1100px; margin: 0 auto; }
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-top: 40px;
+    }
+    .testimonial-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--roof-red);
+      border-radius: 6px;
+      padding: 24px 24px 24px 22px;
+      box-shadow: 0 1px 4px rgba(26,23,21,0.05);
+    }
+    .testimonial-quote {
+      font-size: 15px;
+      line-height: 1.7;
+      color: var(--charcoal);
+      margin-bottom: 16px;
+      font-style: italic;
+    }
+    .testimonial-author {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--near-black);
+    }
+    .testimonial-location {
+      font-size: 13px;
+      color: var(--slate-light);
+      margin-top: 2px;
     }
 
     /* Pricing */
     .pricing-section {
+      background: var(--off-white);
       padding: 80px 60px;
-      max-width: 1100px;
-      margin: 0 auto;
+      border-bottom: 1px solid var(--border);
     }
+    .pricing-section-inner { max-width: 1000px; margin: 0 auto; }
     .pricing-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 24px;
+      gap: 20px;
+      align-items: start;
     }
     .pricing-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 32px;
-      position: relative;
+      background: var(--white);
+      border: 1.5px solid var(--border);
+      border-radius: 6px;
+      padding: 28px;
       display: flex;
       flex-direction: column;
+      box-shadow: 0 1px 4px rgba(26,23,21,0.05);
     }
     .pricing-card.popular {
-      border-color: var(--orange);
-      background: linear-gradient(160deg, #161616, #111111);
+      border-top: 3px solid var(--roof-red);
+      box-shadow: 0 4px 16px rgba(192,57,43,0.1);
+      position: relative;
+      margin-top: -6px;
+      padding-top: 34px;
     }
     .popular-badge {
-      position: absolute;
-      top: -12px; left: 50%; transform: translateX(-50%);
-      background: var(--orange);
+      display: inline-block;
+      background: var(--roof-red);
       color: #fff;
-      font-size: 11px; font-weight: 700;
-      text-transform: uppercase; letter-spacing: 0.08em;
-      padding: 4px 14px; border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      padding: 3px 10px;
+      border-radius: 3px;
+      margin-bottom: 14px;
     }
     .pricing-plan {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 20px; letter-spacing: 0.04em;
-      margin-bottom: 8px; color: var(--muted);
+      font-family: 'Oswald', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--slate);
+      margin-bottom: 6px;
     }
     .pricing-amount {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 52px; letter-spacing: -0.01em;
+      font-family: 'Oswald', sans-serif;
+      font-size: 48px;
+      font-weight: 700;
+      color: var(--near-black);
       line-height: 1;
       margin-bottom: 4px;
     }
-    .pricing-period { font-size: 13px; color: var(--muted); margin-bottom: 24px; }
-    .pricing-features { list-style: none; margin-bottom: 32px; flex: 1; }
+    .pricing-period { font-size: 14px; color: var(--slate); margin-bottom: 22px; }
+    .pricing-divider { border: none; border-top: 1px solid var(--border); margin: 0 0 18px 0; }
+    .pricing-features { list-style: none; margin-bottom: 28px; flex: 1; }
     .pricing-features li {
-      padding: 8px 0;
-      font-size: 14px;
-      border-bottom: 1px solid var(--border);
-      display: flex; align-items: center; gap: 8px;
+      padding: 7px 0;
+      font-size: 15px;
+      color: var(--charcoal);
+      display: flex; align-items: flex-start; gap: 9px;
+      border-bottom: 1px solid var(--light-gray);
     }
     .pricing-features li:last-child { border-bottom: none; }
-    .check { color: var(--orange); font-size: 12px; }
+    .check { color: var(--roof-red); font-size: 14px; font-weight: 700; flex-shrink: 0; margin-top: 2px; }
+    .pricing-note {
+      text-align: center;
+      font-size: 14px;
+      color: var(--slate);
+      margin-top: 24px;
+    }
+
+    /* FAQ */
+    .faq-section {
+      background: var(--white);
+      padding: 80px 60px;
+      border-bottom: 1px solid var(--border);
+    }
+    .faq-inner { max-width: 1000px; margin: 0 auto; }
+    .faq-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+      margin-top: 36px;
+    }
+    .faq-item {
+      padding: 24px;
+      border-bottom: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+    }
+    .faq-item:nth-child(even) { border-right: none; }
+    .faq-item:nth-last-child(1), .faq-item:nth-last-child(2) { border-bottom: none; }
+    .faq-q {
+      font-family: 'Oswald', sans-serif;
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--near-black);
+      margin-bottom: 8px;
+    }
+    .faq-a {
+      font-size: 15px;
+      color: var(--slate);
+      line-height: 1.65;
+    }
 
     /* Footer */
     .landing-footer {
-      border-top: 1px solid var(--border);
-      padding: 40px 60px;
+      background: var(--near-black);
+      padding: 36px 60px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      color: var(--muted);
-      font-size: 13px;
+      color: var(--dark-gray);
+      font-size: 14px;
     }
+    .footer-logo {
+      font-family: 'Oswald', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--white);
+    }
+    .footer-logo span { color: var(--roof-red); }
+    .footer-tagline {
+      font-size: 14px;
+      color: #888;
+    }
+    .footer-copy { font-size: 13px; color: #666; }
 
-    /* Divider */
-    .divider {
-      border: none;
-      border-top: 1px solid var(--border);
-      margin: 0 60px;
-    }
-
-    /* Upgrade modal */
-    .upgrade-modal-box {
-      max-width: 480px;
-    }
+    /* ---- Upgrade modal ---- */
+    .upgrade-modal-box { max-width: 460px; }
     .upgrade-modal-options {
       display: flex;
       flex-direction: column;
       gap: 12px;
-      margin-top: 24px;
+      margin-top: 22px;
     }
     .upgrade-option {
-      background: var(--card2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
+      background: var(--white);
+      border: 1.5px solid var(--border);
+      border-radius: 6px;
       padding: 16px 20px;
       display: flex; align-items: center; justify-content: space-between;
       text-decoration: none;
       transition: border-color 0.15s;
     }
-    .upgrade-option:hover { border-color: var(--orange); }
-    .upgrade-option-name { font-weight: 600; color: var(--white); font-size: 15px; }
-    .upgrade-option-desc { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .upgrade-option:hover { border-color: var(--roof-red); text-decoration: none; }
+    .upgrade-option.featured { border-color: var(--roof-red); }
+    .upgrade-option-name { font-weight: 700; color: var(--near-black); font-size: 16px; font-family: 'Source Sans 3', sans-serif; }
+    .upgrade-option-desc { font-size: 13px; color: var(--slate); margin-top: 2px; }
     .upgrade-option-price {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 22px;
-      color: var(--orange);
+      font-family: 'Oswald', sans-serif;
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--roof-red);
     }
 
-    /* Welcome section */
-    .welcome-greeting {
-      margin-bottom: 32px;
+    /* ---- Loading screen ---- */
+    .loading-screen {
+      display: flex; align-items: center; justify-content: center;
+      height: 100vh; gap: 14px;
+      background: var(--off-white);
     }
-    .welcome-greeting h2 {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 36px;
-      margin-bottom: 6px;
-    }
-    .welcome-greeting p { color: var(--muted); font-size: 14px; }
-
-    /* Section header */
-    .section-header { margin-bottom: 20px; }
-    .section-header h3 {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 22px;
-      letter-spacing: 0.02em;
+    .loading-screen span {
+      color: var(--slate); font-size: 15px; font-weight: 600;
     }
 
-    @media (max-width: 900px) {
-      .landing-nav { padding: 16px 24px; }
+    /* ---- Inline form error ---- */
+    .form-error {
+      background: #fdf2f2;
+      border: 1px solid #f5c6c6;
+      border-radius: var(--radius);
+      padding: 10px 14px;
+      font-size: 14px;
+      color: var(--roof-red);
+      margin-bottom: 4px;
+    }
+
+    /* ---- Responsive ---- */
+    @media (max-width: 960px) {
+      .landing-nav { padding: 0 24px; }
       .landing-nav-links { display: none; }
-      .hero { padding: 60px 24px; }
-      .landing-tools, .pricing-section { padding: 40px 24px; }
+      .hero { padding: 50px 24px 50px; }
+      .trust-bar { padding: 24px; }
+      .trust-stats { grid-template-columns: repeat(2, 1fr); gap: 18px; }
+      .trust-stat { border-right: none; padding: 0; }
+      .problem-section, .tools-section, .testimonials-section,
+      .pricing-section, .faq-section { padding: 56px 24px; }
+      .problem-inner { grid-template-columns: 1fr; gap: 32px; }
       .landing-tools-grid, .pricing-grid, .tools-grid { grid-template-columns: 1fr; }
-      .main-content { padding: 20px; }
+      .testimonials-grid { grid-template-columns: 1fr; }
+      .faq-grid { grid-template-columns: 1fr; }
+      .faq-item { border-right: none !important; }
+      .faq-item:nth-last-child(1) { border-bottom: none; }
+      .faq-item:nth-last-child(2) { border-bottom: 1px solid var(--border); }
+      .landing-footer { flex-direction: column; gap: 10px; text-align: center; padding: 28px 24px; }
+      .sidebar { display: none; }
+      .main-content { padding: 20px 16px; }
       .tool-form-grid { grid-template-columns: 1fr; }
       .tool-form-grid .span-2 { grid-column: span 1; }
-      .sidebar { display: none; }
-      .landing-footer { flex-direction: column; gap: 12px; text-align: center; }
     }
   </style>
 </head>
@@ -678,8 +1005,8 @@
     // ---------------------------------------------------------------------------
     // Spinner
     // ---------------------------------------------------------------------------
-    function Spinner() {
-      return <div className="spinner" />;
+    function Spinner({ dark }) {
+      return <div className={`spinner${dark ? ' spinner-dark' : ''}`} />;
     }
 
     // ---------------------------------------------------------------------------
@@ -710,12 +1037,13 @@
       return (
         <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
           <div className="modal-box">
+            <button className="modal-close" onClick={onClose}>✕</button>
             <div className="modal-title">Welcome Back</div>
             <div className="modal-subtitle">Sign in to your RoofDraft AI account</div>
             <form className="modal-form" onSubmit={handleSubmit}>
               {error && <div className="modal-error">{error}</div>}
               <div className="form-group">
-                <label className="form-label">Email</label>
+                <label className="form-label">Email Address</label>
                 <input className="form-input" type="email" value={email}
                   onChange={e => setEmail(e.target.value)} placeholder="you@company.com" required />
               </div>
@@ -724,8 +1052,8 @@
                 <input className="form-input" type="password" value={password}
                   onChange={e => setPassword(e.target.value)} placeholder="••••••••" required />
               </div>
-              <button className="btn btn-primary btn-full" type="submit" disabled={loading}>
-                {loading ? <><Spinner /> Signing in...</> : 'Sign In'}
+              <button className="btn btn-primary btn-full" style={{ padding: '13px', fontSize: '16px' }} type="submit" disabled={loading}>
+                {loading ? <><Spinner /> Signing In...</> : 'Sign In'}
               </button>
             </form>
             <div className="modal-switch">
@@ -766,12 +1094,13 @@
       return (
         <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
           <div className="modal-box">
+            <button className="modal-close" onClick={onClose}>✕</button>
             <div className="modal-title">Start Free Trial</div>
-            <div className="modal-subtitle">Get 5 free generations — no card needed</div>
+            <div className="modal-subtitle">5 free generations — no credit card required</div>
             <form className="modal-form" onSubmit={handleSubmit}>
               {error && <div className="modal-error">{error}</div>}
               <div className="form-group">
-                <label className="form-label">Email</label>
+                <label className="form-label">Email Address</label>
                 <input className="form-input" type="email" value={email}
                   onChange={e => setEmail(e.target.value)} placeholder="you@company.com" required />
               </div>
@@ -783,10 +1112,10 @@
               <div className="form-group">
                 <label className="form-label">Password</label>
                 <input className="form-input" type="password" value={password}
-                  onChange={e => setPassword(e.target.value)} placeholder="Min. 6 characters" required />
+                  onChange={e => setPassword(e.target.value)} placeholder="Minimum 6 characters" required />
               </div>
-              <button className="btn btn-primary btn-full" type="submit" disabled={loading}>
-                {loading ? <><Spinner /> Creating account...</> : 'Create Free Account'}
+              <button className="btn btn-primary btn-full" style={{ padding: '13px', fontSize: '16px' }} type="submit" disabled={loading}>
+                {loading ? <><Spinner /> Creating Account...</> : 'Create Free Account'}
               </button>
             </form>
             <div className="modal-switch">
@@ -799,45 +1128,37 @@
     }
 
     // ---------------------------------------------------------------------------
-    // Upgrade Modal (403)
+    // Upgrade Modal
     // ---------------------------------------------------------------------------
     function UpgradeModal({ onClose }) {
       return (
         <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
           <div className="modal-box upgrade-modal-box">
+            <button className="modal-close" onClick={onClose}>✕</button>
             <div className="modal-title">Upgrade Your Plan</div>
             <div className="modal-subtitle">
-              You've used all your free generations this month. Choose a plan to keep generating.
+              You've used your free generations this month. Choose a plan to keep generating.
             </div>
             <div className="upgrade-modal-options">
-              <a
-                className="upgrade-option"
-                href="mailto:owen.murillo2533@gmail.com?subject=Upgrade Request — Starter Plan"
-              >
+              <a className="upgrade-option"
+                href="mailto:owen.murillo2533@gmail.com?subject=Upgrade Request — Starter Plan">
                 <div>
                   <div className="upgrade-option-name">Starter Plan</div>
                   <div className="upgrade-option-desc">Unlimited generations · Proposal tool</div>
                 </div>
-                <div className="upgrade-option-price">$49/mo</div>
+                <div className="upgrade-option-price">$49<span style={{fontSize:'14px',color:'var(--slate)',fontFamily:'Source Sans 3'}}/mo</span></div>
               </a>
-              <a
-                className="upgrade-option"
-                href="mailto:owen.murillo2533@gmail.com?subject=Upgrade Request — Pro Plan"
-                style={{ borderColor: 'var(--orange)' }}
-              >
+              <a className="upgrade-option featured"
+                href="mailto:owen.murillo2533@gmail.com?subject=Upgrade Request — Pro Plan">
                 <div>
                   <div className="upgrade-option-name">Pro Plan</div>
-                  <div className="upgrade-option-desc">Unlimited generations · All 4 tools</div>
+                  <div className="upgrade-option-desc">Unlimited generations · All 4 tools included</div>
                 </div>
-                <div className="upgrade-option-price">$79/mo</div>
+                <div className="upgrade-option-price">$79<span style={{fontSize:'14px',color:'var(--slate)',fontFamily:'Source Sans 3'}}>/mo</span></div>
               </a>
             </div>
-            <button
-              className="btn btn-ghost btn-full"
-              style={{ marginTop: '16px' }}
-              onClick={onClose}
-            >
-              Maybe later
+            <button className="btn btn-ghost btn-full" style={{ marginTop: '14px' }} onClick={onClose}>
+              Not right now
             </button>
           </div>
         </div>
@@ -860,8 +1181,11 @@
       return (
         <div className="result-card">
           <div className="result-header">
-            <div className="result-title">Generated Result</div>
-            <button className="btn btn-ghost" style={{ padding: '8px 16px', fontSize: '13px' }} onClick={handleCopy}>
+            <div className="result-title">Your Result</div>
+            <button
+              className={`btn btn-sm btn-outline-red${copied ? ' copy-btn-success' : ''}`}
+              onClick={handleCopy}
+            >
               {copied ? '✓ Copied!' : 'Copy to Clipboard'}
             </button>
           </div>
@@ -907,101 +1231,104 @@
       return (
         <div>
           <div className="page-title">Proposal Generator</div>
-          <div className="page-subtitle">Fill out the job details below and get a complete, professional proposal letter.</div>
-          <form onSubmit={handleSubmit}>
-            <div className="tool-form-grid">
-              <div className="form-group">
-                <label className="form-label">Customer Name</label>
-                <input className="form-input" type="text" value={form.customer_name} onChange={set('customer_name')} placeholder="John Smith" required />
+          <div className="page-subtitle">Fill in the job details and get a complete, client-ready proposal letter.</div>
+          <div className="content-card">
+            <form onSubmit={handleSubmit}>
+              <div className="tool-form-grid">
+                <div className="form-group">
+                  <label className="form-label">Customer Name</label>
+                  <input className="form-input" type="text" value={form.customer_name} onChange={set('customer_name')} placeholder="John Smith" required />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Property Address</label>
+                  <input className="form-input" type="text" value={form.customer_address} onChange={set('customer_address')} placeholder="123 Main St, City, ST 00000" required />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Roof Type</label>
+                  <select className="form-select" value={form.roof_type} onChange={set('roof_type')}>
+                    <option>Asphalt Shingle</option>
+                    <option>Metal Roofing</option>
+                    <option>Flat / TPO</option>
+                    <option>Tile</option>
+                    <option>Cedar Shake</option>
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Square Footage</label>
+                  <input className="form-input" type="number" value={form.square_footage} onChange={set('square_footage')} placeholder="2400" required />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Roof Pitch</label>
+                  <select className="form-select" value={form.pitch} onChange={set('pitch')}>
+                    <option>Low (1–3/12)</option>
+                    <option>Medium (4–6/12)</option>
+                    <option>Steep (7+/12)</option>
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Estimated Start Date</label>
+                  <input className="form-input" type="date" value={form.start_date} onChange={set('start_date')} />
+                </div>
+                <div className="form-group span-2">
+                  <label className="form-label">Materials Used</label>
+                  <textarea className="form-textarea" value={form.materials} onChange={set('materials')} placeholder="e.g. GAF Timberline HDZ Charcoal, 30-year architectural shingles, ice & water shield, synthetic underlayment..." required />
+                </div>
+                <div className="form-group span-2">
+                  <label className="form-label">Scope of Work</label>
+                  <textarea className="form-textarea" style={{ minHeight: '100px' }} value={form.scope} onChange={set('scope')} placeholder="e.g. Full tear-off of existing shingles, inspect and repair decking as needed, install new roofing system..." required />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Total Price ($)</label>
+                  <input className="form-input" type="number" value={form.price_total} onChange={set('price_total')} placeholder="12500" required />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Deposit Required ($)</label>
+                  <input className="form-input" type="number" value={form.deposit_required} onChange={set('deposit_required')} placeholder="4000" required />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Payment Terms</label>
+                  <input className="form-input" type="text" value={form.payment_terms} onChange={set('payment_terms')} placeholder="e.g. 50% deposit, balance upon completion" required />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Estimated Days to Complete</label>
+                  <input className="form-input" type="number" value={form.completion_days} onChange={set('completion_days')} placeholder="3" required />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Labor Warranty</label>
+                  <input className="form-input" type="text" value={form.warranty_labor} onChange={set('warranty_labor')} placeholder="e.g. 5 years" required />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Materials Warranty</label>
+                  <input className="form-input" type="text" value={form.warranty_materials} onChange={set('warranty_materials')} placeholder="e.g. 30-year manufacturer" required />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Company Name</label>
+                  <input className="form-input" type="text" value={form.company_name} onChange={set('company_name')} placeholder="Peak Roofing Co." required />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Your Name</label>
+                  <input className="form-input" type="text" value={form.contractor_name} onChange={set('contractor_name')} placeholder="Mike Johnson" required />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Your Phone</label>
+                  <input className="form-input" type="tel" value={form.contractor_phone} onChange={set('contractor_phone')} placeholder="(555) 000-0000" required />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Your Email</label>
+                  <input className="form-input" type="email" value={form.contractor_email} onChange={set('contractor_email')} placeholder="mike@peakroofing.com" required />
+                </div>
+                <div className="form-group span-2">
+                  <label className="form-label">License Number <span style={{ color: 'var(--slate-light)', fontWeight: 400 }}>(optional)</span></label>
+                  <input className="form-input" type="text" value={form.license_number} onChange={set('license_number')} placeholder="ROC-123456" />
+                </div>
               </div>
-              <div className="form-group">
-                <label className="form-label">Property Address</label>
-                <input className="form-input" type="text" value={form.customer_address} onChange={set('customer_address')} placeholder="123 Main St, City, ST 00000" required />
-              </div>
-              <div className="form-group">
-                <label className="form-label">Roof Type</label>
-                <select className="form-select" value={form.roof_type} onChange={set('roof_type')}>
-                  <option>Asphalt Shingle</option>
-                  <option>Metal Roofing</option>
-                  <option>Flat / TPO</option>
-                  <option>Tile</option>
-                  <option>Cedar Shake</option>
-                </select>
-              </div>
-              <div className="form-group">
-                <label className="form-label">Square Footage</label>
-                <input className="form-input" type="number" value={form.square_footage} onChange={set('square_footage')} placeholder="2400" required />
-              </div>
-              <div className="form-group">
-                <label className="form-label">Roof Pitch</label>
-                <select className="form-select" value={form.pitch} onChange={set('pitch')}>
-                  <option>Low (1–3/12)</option>
-                  <option>Medium (4–6/12)</option>
-                  <option>Steep (7+/12)</option>
-                </select>
-              </div>
-              <div className="form-group">
-                <label className="form-label">Estimated Start Date</label>
-                <input className="form-input" type="date" value={form.start_date} onChange={set('start_date')} />
-              </div>
-              <div className="form-group span-2">
-                <label className="form-label">Materials Used</label>
-                <textarea className="form-textarea" value={form.materials} onChange={set('materials')} placeholder="e.g. GAF Timberline HDZ Charcoal, 30-year architectural shingles, ice & water shield, synthetic underlayment..." required />
-              </div>
-              <div className="form-group span-2">
-                <label className="form-label">Scope of Work</label>
-                <textarea className="form-textarea" style={{ minHeight: '100px' }} value={form.scope} onChange={set('scope')} placeholder="e.g. Full tear-off of existing shingles, inspect and repair decking as needed, install new roofing system..." required />
-              </div>
-              <div className="form-group">
-                <label className="form-label">Total Price ($)</label>
-                <input className="form-input" type="number" value={form.price_total} onChange={set('price_total')} placeholder="12500" required />
-              </div>
-              <div className="form-group">
-                <label className="form-label">Deposit Required ($)</label>
-                <input className="form-input" type="number" value={form.deposit_required} onChange={set('deposit_required')} placeholder="4000" required />
-              </div>
-              <div className="form-group">
-                <label className="form-label">Payment Terms</label>
-                <input className="form-input" type="text" value={form.payment_terms} onChange={set('payment_terms')} placeholder="e.g. 50% deposit, balance upon completion" required />
-              </div>
-              <div className="form-group">
-                <label className="form-label">Estimated Days to Complete</label>
-                <input className="form-input" type="number" value={form.completion_days} onChange={set('completion_days')} placeholder="3" required />
-              </div>
-              <div className="form-group">
-                <label className="form-label">Labor Warranty</label>
-                <input className="form-input" type="text" value={form.warranty_labor} onChange={set('warranty_labor')} placeholder="e.g. 5 years" required />
-              </div>
-              <div className="form-group">
-                <label className="form-label">Materials Warranty</label>
-                <input className="form-input" type="text" value={form.warranty_materials} onChange={set('warranty_materials')} placeholder="e.g. 30-year manufacturer" required />
-              </div>
-              <div className="form-group">
-                <label className="form-label">Company Name</label>
-                <input className="form-input" type="text" value={form.company_name} onChange={set('company_name')} placeholder="Peak Roofing Co." required />
-              </div>
-              <div className="form-group">
-                <label className="form-label">Your Name</label>
-                <input className="form-input" type="text" value={form.contractor_name} onChange={set('contractor_name')} placeholder="Mike Johnson" required />
-              </div>
-              <div className="form-group">
-                <label className="form-label">Your Phone</label>
-                <input className="form-input" type="tel" value={form.contractor_phone} onChange={set('contractor_phone')} placeholder="(555) 000-0000" required />
-              </div>
-              <div className="form-group">
-                <label className="form-label">Your Email</label>
-                <input className="form-input" type="email" value={form.contractor_email} onChange={set('contractor_email')} placeholder="mike@peakroofing.com" required />
-              </div>
-              <div className="form-group span-2">
-                <label className="form-label">License Number <span style={{ color: '#555', fontWeight: 400 }}>(optional)</span></label>
-                <input className="form-input" type="text" value={form.license_number} onChange={set('license_number')} placeholder="ROC-123456" />
-              </div>
-            </div>
-            {error && <div className="modal-error" style={{ marginBottom: '16px' }}>{error}</div>}
-            <button className="btn btn-primary btn-full" type="submit" disabled={loading} style={{ padding: '14px', fontSize: '15px' }}>
-              {loading ? <><Spinner /> Generating Proposal...</> : 'Generate Proposal'}
-            </button>
-          </form>
+              {error && <div className="form-error" style={{ marginBottom: '16px' }}>{error}</div>}
+              <button className="btn btn-primary btn-full" type="submit" disabled={loading}
+                style={{ padding: '15px', fontSize: '16px', fontFamily: 'Oswald, sans-serif', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+                {loading ? <><Spinner /> Generating Proposal...</> : 'Generate Proposal'}
+              </button>
+            </form>
+          </div>
           {result && <ResultCard result={result} />}
         </div>
       );
@@ -1041,42 +1368,45 @@
         <div>
           <div className="page-title">Follow-Up Email</div>
           <div className="page-subtitle">Get 3 ready-to-send follow-up email variations for prospects who haven't responded.</div>
-          <form onSubmit={handleSubmit}>
-            <div className="tool-form-grid">
-              <div className="form-group">
-                <label className="form-label">Customer Name</label>
-                <input className="form-input" type="text" value={form.customer_name} onChange={set('customer_name')} placeholder="Sarah Johnson" required />
+          <div className="content-card">
+            <form onSubmit={handleSubmit}>
+              <div className="tool-form-grid">
+                <div className="form-group">
+                  <label className="form-label">Customer Name</label>
+                  <input className="form-input" type="text" value={form.customer_name} onChange={set('customer_name')} placeholder="Sarah Johnson" required />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Days Since Proposal Sent</label>
+                  <input className="form-input" type="number" value={form.days_since_proposal} onChange={set('days_since_proposal')} placeholder="7" required />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Proposal Amount ($)</label>
+                  <input className="form-input" type="number" value={form.proposal_amount} onChange={set('proposal_amount')} placeholder="8500" required />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Job Type</label>
+                  <input className="form-input" type="text" value={form.job_type} onChange={set('job_type')} placeholder="e.g. Full reroof, asphalt shingle" required />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Your Name</label>
+                  <input className="form-input" type="text" value={form.contractor_name} onChange={set('contractor_name')} placeholder="Mike Johnson" required />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Company Name</label>
+                  <input className="form-input" type="text" value={form.company_name} onChange={set('company_name')} placeholder="Peak Roofing Co." required />
+                </div>
+                <div className="form-group span-2">
+                  <label className="form-label">Your Phone</label>
+                  <input className="form-input" type="tel" value={form.contractor_phone} onChange={set('contractor_phone')} placeholder="(555) 000-0000" required />
+                </div>
               </div>
-              <div className="form-group">
-                <label className="form-label">Days Since Proposal Sent</label>
-                <input className="form-input" type="number" value={form.days_since_proposal} onChange={set('days_since_proposal')} placeholder="7" required />
-              </div>
-              <div className="form-group">
-                <label className="form-label">Proposal Amount ($)</label>
-                <input className="form-input" type="number" value={form.proposal_amount} onChange={set('proposal_amount')} placeholder="8500" required />
-              </div>
-              <div className="form-group">
-                <label className="form-label">Job Type</label>
-                <input className="form-input" type="text" value={form.job_type} onChange={set('job_type')} placeholder="e.g. Full reroof, asphalt shingle" required />
-              </div>
-              <div className="form-group">
-                <label className="form-label">Your Name</label>
-                <input className="form-input" type="text" value={form.contractor_name} onChange={set('contractor_name')} placeholder="Mike Johnson" required />
-              </div>
-              <div className="form-group">
-                <label className="form-label">Company Name</label>
-                <input className="form-input" type="text" value={form.company_name} onChange={set('company_name')} placeholder="Peak Roofing Co." required />
-              </div>
-              <div className="form-group span-2">
-                <label className="form-label">Your Phone</label>
-                <input className="form-input" type="tel" value={form.contractor_phone} onChange={set('contractor_phone')} placeholder="(555) 000-0000" required />
-              </div>
-            </div>
-            {error && <div className="modal-error" style={{ marginBottom: '16px' }}>{error}</div>}
-            <button className="btn btn-primary btn-full" type="submit" disabled={loading} style={{ padding: '14px', fontSize: '15px' }}>
-              {loading ? <><Spinner /> Generating Emails...</> : 'Generate Follow-Up Emails'}
-            </button>
-          </form>
+              {error && <div className="form-error" style={{ marginBottom: '16px' }}>{error}</div>}
+              <button className="btn btn-primary btn-full" type="submit" disabled={loading}
+                style={{ padding: '15px', fontSize: '16px', fontFamily: 'Oswald, sans-serif', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+                {loading ? <><Spinner /> Generating Emails...</> : 'Generate Follow-Up Emails'}
+              </button>
+            </form>
+          </div>
           {result && <ResultCard result={result} />}
         </div>
       );
@@ -1115,34 +1445,37 @@
         <div>
           <div className="page-title">Review Request</div>
           <div className="page-subtitle">Generate a text and email version of a Google review request — personal, not corporate.</div>
-          <form onSubmit={handleSubmit}>
-            <div className="tool-form-grid">
-              <div className="form-group">
-                <label className="form-label">Customer First Name</label>
-                <input className="form-input" type="text" value={form.customer_name} onChange={set('customer_name')} placeholder="Sarah" required />
+          <div className="content-card">
+            <form onSubmit={handleSubmit}>
+              <div className="tool-form-grid">
+                <div className="form-group">
+                  <label className="form-label">Customer First Name</label>
+                  <input className="form-input" type="text" value={form.customer_name} onChange={set('customer_name')} placeholder="Sarah" required />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Job Type</label>
+                  <input className="form-input" type="text" value={form.job_type} onChange={set('job_type')} placeholder="e.g. Full reroof, metal roofing" required />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Your Name</label>
+                  <input className="form-input" type="text" value={form.contractor_name} onChange={set('contractor_name')} placeholder="Mike Johnson" required />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Company Name</label>
+                  <input className="form-input" type="text" value={form.company_name} onChange={set('company_name')} placeholder="Peak Roofing Co." required />
+                </div>
+                <div className="form-group span-2">
+                  <label className="form-label">Google Review Link</label>
+                  <input className="form-input" type="url" value={form.review_link} onChange={set('review_link')} placeholder="Paste your Google review URL here" required />
+                </div>
               </div>
-              <div className="form-group">
-                <label className="form-label">Job Type</label>
-                <input className="form-input" type="text" value={form.job_type} onChange={set('job_type')} placeholder="e.g. Full reroof, metal roofing" required />
-              </div>
-              <div className="form-group">
-                <label className="form-label">Your Name</label>
-                <input className="form-input" type="text" value={form.contractor_name} onChange={set('contractor_name')} placeholder="Mike Johnson" required />
-              </div>
-              <div className="form-group">
-                <label className="form-label">Company Name</label>
-                <input className="form-input" type="text" value={form.company_name} onChange={set('company_name')} placeholder="Peak Roofing Co." required />
-              </div>
-              <div className="form-group span-2">
-                <label className="form-label">Google Review Link</label>
-                <input className="form-input" type="url" value={form.review_link} onChange={set('review_link')} placeholder="Paste your Google review URL here" required />
-              </div>
-            </div>
-            {error && <div className="modal-error" style={{ marginBottom: '16px' }}>{error}</div>}
-            <button className="btn btn-primary btn-full" type="submit" disabled={loading} style={{ padding: '14px', fontSize: '15px' }}>
-              {loading ? <><Spinner /> Generating Messages...</> : 'Generate Review Request'}
-            </button>
-          </form>
+              {error && <div className="form-error" style={{ marginBottom: '16px' }}>{error}</div>}
+              <button className="btn btn-primary btn-full" type="submit" disabled={loading}
+                style={{ padding: '15px', fontSize: '16px', fontFamily: 'Oswald, sans-serif', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+                {loading ? <><Spinner /> Generating Messages...</> : 'Generate Review Request'}
+              </button>
+            </form>
+          </div>
           {result && <ResultCard result={result} />}
         </div>
       );
@@ -1182,38 +1515,41 @@
         <div>
           <div className="page-title">Referral Message</div>
           <div className="page-subtitle">Ask happy customers for referrals — naturally, without being awkward.</div>
-          <form onSubmit={handleSubmit}>
-            <div className="tool-form-grid">
-              <div className="form-group">
-                <label className="form-label">Customer First Name</label>
-                <input className="form-input" type="text" value={form.customer_name} onChange={set('customer_name')} placeholder="Sarah" required />
+          <div className="content-card">
+            <form onSubmit={handleSubmit}>
+              <div className="tool-form-grid">
+                <div className="form-group">
+                  <label className="form-label">Customer First Name</label>
+                  <input className="form-input" type="text" value={form.customer_name} onChange={set('customer_name')} placeholder="Sarah" required />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Job Completed</label>
+                  <input className="form-input" type="text" value={form.job_completed} onChange={set('job_completed')} placeholder="e.g. Full reroof, asphalt shingle" required />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Your Name</label>
+                  <input className="form-input" type="text" value={form.contractor_name} onChange={set('contractor_name')} placeholder="Mike Johnson" required />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Company Name</label>
+                  <input className="form-input" type="text" value={form.company_name} onChange={set('company_name')} placeholder="Peak Roofing Co." required />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Referral Incentive <span style={{ color: 'var(--slate-light)', fontWeight: 400 }}>(optional)</span></label>
+                  <input className="form-input" type="text" value={form.referral_incentive} onChange={set('referral_incentive')} placeholder="e.g. $100 gift card — leave blank if none" />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Your Phone</label>
+                  <input className="form-input" type="tel" value={form.phone_number} onChange={set('phone_number')} placeholder="(555) 000-0000" required />
+                </div>
               </div>
-              <div className="form-group">
-                <label className="form-label">Job Completed</label>
-                <input className="form-input" type="text" value={form.job_completed} onChange={set('job_completed')} placeholder="e.g. Full reroof, asphalt shingle" required />
-              </div>
-              <div className="form-group">
-                <label className="form-label">Your Name</label>
-                <input className="form-input" type="text" value={form.contractor_name} onChange={set('contractor_name')} placeholder="Mike Johnson" required />
-              </div>
-              <div className="form-group">
-                <label className="form-label">Company Name</label>
-                <input className="form-input" type="text" value={form.company_name} onChange={set('company_name')} placeholder="Peak Roofing Co." required />
-              </div>
-              <div className="form-group">
-                <label className="form-label">Referral Incentive <span style={{ color: '#555', fontWeight: 400 }}>(optional)</span></label>
-                <input className="form-input" type="text" value={form.referral_incentive} onChange={set('referral_incentive')} placeholder="e.g. $100 gift card — leave blank if none" />
-              </div>
-              <div className="form-group">
-                <label className="form-label">Your Phone</label>
-                <input className="form-input" type="tel" value={form.phone_number} onChange={set('phone_number')} placeholder="(555) 000-0000" required />
-              </div>
-            </div>
-            {error && <div className="modal-error" style={{ marginBottom: '16px' }}>{error}</div>}
-            <button className="btn btn-primary btn-full" type="submit" disabled={loading} style={{ padding: '14px', fontSize: '15px' }}>
-              {loading ? <><Spinner /> Generating Messages...</> : 'Generate Referral Message'}
-            </button>
-          </form>
+              {error && <div className="form-error" style={{ marginBottom: '16px' }}>{error}</div>}
+              <button className="btn btn-primary btn-full" type="submit" disabled={loading}
+                style={{ padding: '15px', fontSize: '16px', fontFamily: 'Oswald, sans-serif', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+                {loading ? <><Spinner /> Generating Messages...</> : 'Generate Referral Message'}
+              </button>
+            </form>
+          </div>
           {result && <ResultCard result={result} />}
         </div>
       );
@@ -1223,10 +1559,10 @@
     // Dashboard Home
     // ---------------------------------------------------------------------------
     const TOOLS = [
-      { key: 'proposal', tab: 'proposal', icon: '📄', name: 'Proposal Generator', desc: 'Full professional proposal letter in under a minute. Fill out the job details, get a client-ready document.' },
-      { key: 'followup', tab: 'followup', icon: '📧', name: 'Follow-Up Email', desc: '3 email variations for prospects who haven\'t responded. Human tone, soft call to action.' },
-      { key: 'review',   tab: 'review',   icon: '⭐', name: 'Review Request', desc: 'Text and email versions of a Google review ask — personal, not scripted.' },
-      { key: 'referral', tab: 'referral', icon: '🤝', name: 'Referral Message', desc: 'Text and email to ask happy customers for referrals without being awkward.' },
+      { key: 'proposal', tab: 'proposal', name: 'Proposal Generator', desc: 'Full professional proposal letter in under a minute. Fill out the job details, get a client-ready document.' },
+      { key: 'followup', tab: 'followup', name: 'Follow-Up Email',    desc: '3 email variations for prospects who haven\'t responded. Human tone, soft call to action.' },
+      { key: 'review',   tab: 'review',   name: 'Review Request',     desc: 'Text and email versions of a Google review ask — personal, not scripted.' },
+      { key: 'referral', tab: 'referral', name: 'Referral Message',   desc: 'Text and email to ask happy customers for referrals without being awkward.' },
     ];
 
     function DashboardHome({ user, onSelectTab }) {
@@ -1239,22 +1575,20 @@
           {allUsed && (
             <div className="upgrade-banner">
               <div className="upgrade-banner-text">
-                <strong>You've used all 5 free generations</strong>
+                <strong>You've used all 5 free generations this month</strong>
                 <span>Upgrade to keep generating professional roofing content.</span>
               </div>
               <div className="upgrade-actions">
-                <a href="mailto:owen.murillo2533@gmail.com?subject=Upgrade Request — Starter Plan" className="btn btn-ghost" style={{ fontSize: '13px', padding: '10px 18px' }}>
-                  Starter $49/mo
-                </a>
-                <a href="mailto:owen.murillo2533@gmail.com?subject=Upgrade Request — Pro Plan" className="btn btn-primary" style={{ fontSize: '13px', padding: '10px 18px' }}>
-                  Pro $79/mo
-                </a>
+                <a href="mailto:owen.murillo2533@gmail.com?subject=Upgrade Request — Starter Plan"
+                  className="btn btn-outline btn-sm">Starter — $49/mo</a>
+                <a href="mailto:owen.murillo2533@gmail.com?subject=Upgrade Request — Pro Plan"
+                  className="btn btn-primary btn-sm">Pro — $79/mo</a>
               </div>
             </div>
           )}
           <div className="welcome-greeting">
             <h2>Welcome back, {user.username}</h2>
-            <p>Choose a tool below to start generating.</p>
+            <p>Choose a tool below to get started.</p>
           </div>
           <div className="section-header"><h3>Your Tools</h3></div>
           <div className="tools-grid">
@@ -1266,13 +1600,13 @@
                   className={`tool-card${!accessible ? ' tool-card-locked' : ''}`}
                   onClick={() => accessible && onSelectTab(tool.tab)}
                 >
-                  <div className="tool-card-icon">{tool.icon}</div>
+                  <div className="tool-card-accent" />
                   <div className="tool-card-name">{tool.name}</div>
                   <div className="tool-card-desc">{tool.desc}</div>
                   {accessible ? (
-                    <button className="btn btn-ghost" style={{ fontSize: '13px', padding: '8px 16px' }}
+                    <button className="btn btn-primary btn-sm"
                       onClick={e => { e.stopPropagation(); onSelectTab(tool.tab); }}>
-                      Open Tool →
+                      Open Tool
                     </button>
                   ) : (
                     <div className="locked-badge">🔒 Pro Plan Required</div>
@@ -1294,11 +1628,11 @@
       const pct = isFree ? Math.min(100, (genCount / FREE_LIMIT) * 100) : 0;
 
       const navItems = [
-        { key: 'home',     label: 'Dashboard',          icon: '⊞' },
-        { key: 'proposal', label: 'Proposal Generator', icon: '📄' },
-        { key: 'followup', label: 'Follow-Up Email',    icon: '📧' },
-        { key: 'review',   label: 'Review Request',     icon: '⭐' },
-        { key: 'referral', label: 'Referral Message',   icon: '🤝' },
+        { key: 'home',     label: 'Dashboard',          icon: '▦' },
+        { key: 'proposal', label: 'Proposal Generator', icon: '◻' },
+        { key: 'followup', label: 'Follow-Up Email',    icon: '✉' },
+        { key: 'review',   label: 'Review Request',     icon: '★' },
+        { key: 'referral', label: 'Referral Message',   icon: '↗' },
       ];
 
       return (
@@ -1318,7 +1652,7 @@
                 >
                   <span className="nav-icon">{item.icon}</span>
                   {item.label}
-                  {!accessible && <span style={{ marginLeft: 'auto', fontSize: '10px' }}>PRO</span>}
+                  {!accessible && <span style={{ marginLeft: 'auto', fontSize: '10px', fontWeight: 700, color: 'var(--slate-light)', letterSpacing: '0.06em' }}>PRO</span>}
                 </button>
               );
             })}
@@ -1332,7 +1666,7 @@
             </div>
             {isFree && (
               <div className="gen-counter">
-                <div className="gen-counter-text">{genCount} of {FREE_LIMIT} free generations used</div>
+                <div className="gen-counter-label">{genCount} of {FREE_LIMIT} free generations used</div>
                 <div className="progress-bar">
                   <div className="progress-fill" style={{ width: `${pct}%` }} />
                 </div>
@@ -1345,16 +1679,13 @@
     }
 
     // ---------------------------------------------------------------------------
-    // Dashboard (logged in)
+    // Dashboard
     // ---------------------------------------------------------------------------
     function Dashboard({ user, token, onLogout, onUserUpdate }) {
       const [activeTab, setActiveTab] = useState('home');
       const [showUpgrade, setShowUpgrade] = useState(false);
 
-      function handleUpgradeNeeded() {
-        setShowUpgrade(true);
-      }
-
+      function handleUpgradeNeeded() { setShowUpgrade(true); }
       const toolProps = { token, onUpgradeNeeded: handleUpgradeNeeded };
 
       return (
@@ -1377,10 +1708,10 @@
     // ---------------------------------------------------------------------------
     function LandingPage({ onShowLogin, onShowRegister }) {
       const tools = [
-        { num: '01', name: 'Proposal Generator', desc: 'Complete, professional proposal letters that win jobs. Fill out the job details and get a client-ready document in under 60 seconds.' },
-        { num: '02', name: 'Follow-Up Email', desc: '3 variations of follow-up emails for prospects who haven\'t responded. Human tone, no pressure, one clear call to action.' },
-        { num: '03', name: 'Review Request', desc: 'A text and email version of a Google review ask — personal and natural, not a corporate template.' },
-        { num: '04', name: 'Referral Message', desc: 'Ask happy customers for referrals without being awkward. Text and email versions, with optional incentive mention.' },
+        { name: 'Proposal Generator', desc: 'Complete, professional proposal letters that win jobs. Fill out the job details and get a client-ready document in under 60 seconds.' },
+        { name: 'Follow-Up Email',    desc: '3 variations of follow-up emails for prospects who haven\'t responded. Human tone, no pressure, one clear call to action.' },
+        { name: 'Review Request',     desc: 'A text and email version of a Google review ask — personal and natural, not a corporate template.' },
+        { name: 'Referral Message',   desc: 'Ask happy customers for referrals without being awkward. Text and email versions, with optional incentive mention.' },
       ];
 
       const plans = [
@@ -1402,9 +1733,18 @@
           name: 'Pro',
           price: '$79',
           period: 'per month',
-          features: ['Unlimited generations', 'All 4 tools', 'Follow-Up Email', 'Review Request', 'Referral Message'],
+          features: ['Unlimited generations', 'All 4 tools included', 'Follow-Up Email', 'Review Request', 'Referral Message'],
           popular: true,
         },
+      ];
+
+      const faqs = [
+        { q: 'What is RoofDraft AI?', a: 'A set of AI-powered tools built specifically for roofing contractors. It generates proposals, follow-up emails, review requests, and referral messages in seconds.' },
+        { q: 'Do I need a credit card to start?', a: 'No. The free plan gives you 5 generations per month with no card required. Upgrade when you\'re ready.' },
+        { q: 'How long does it take to generate a proposal?', a: 'Under 60 seconds. Fill in the form, click generate, and you\'ll have a complete client-ready proposal.' },
+        { q: 'Can I use it on my phone?', a: 'Yes. RoofDraft AI is fully mobile-friendly. Use it from the job site, your truck, or anywhere.' },
+        { q: 'What\'s included in the Pro plan?', a: 'All 4 tools: Proposal Generator, Follow-Up Email, Review Request, and Referral Message. Plus unlimited generations.' },
+        { q: 'Is there a contract or setup fee?', a: 'No contracts, no setup fees, no hidden costs. Cancel any time.' },
       ];
 
       return (
@@ -1415,85 +1755,208 @@
             <ul className="landing-nav-links">
               <li><a href="#tools">Tools</a></li>
               <li><a href="#pricing">Pricing</a></li>
+              <li><a href="#faq">FAQ</a></li>
             </ul>
             <div className="landing-nav-actions">
-              <button className="btn btn-ghost" onClick={onShowLogin} style={{ padding: '9px 20px', fontSize: '14px' }}>Log In</button>
-              <button className="btn btn-primary" onClick={onShowRegister} style={{ padding: '9px 20px', fontSize: '14px' }}>Start Free Trial</button>
+              <button className="btn btn-ghost" onClick={onShowLogin}
+                style={{ padding: '9px 18px', fontSize: '14px' }}>Log In</button>
+              <button className="btn btn-primary" onClick={onShowRegister}
+                style={{ padding: '9px 18px', fontSize: '14px' }}>Start Free Trial</button>
             </div>
           </nav>
 
           {/* Hero */}
           <section className="hero">
-            <div className="hero-eyebrow">AI-Powered Roofing Tools</div>
-            <h1 className="hero-headline">
-              Write Roofing<br />
-              Proposals In<br />
-              <span>60 Seconds.</span>
-            </h1>
-            <p className="hero-sub">
-              Stop losing jobs to competitors with better paperwork. Fill out a form, get a professional proposal instantly.
-            </p>
-            <div className="hero-actions">
-              <button className="btn btn-primary" onClick={onShowRegister} style={{ padding: '14px 28px', fontSize: '15px' }}>
-                Start Free — No Card Needed
-              </button>
-              <a href="#tools" className="btn btn-ghost" style={{ padding: '14px 28px', fontSize: '15px' }}>
-                See The Tools
-              </a>
+            <div className="hero-inner">
+              <h1 className="hero-headline">
+                Win More Roofing Jobs<br />With Better Proposals
+              </h1>
+              <p className="hero-sub">
+                Generate professional proposals, follow-ups, and review requests in under 60 seconds. Built specifically for roofing contractors.
+              </p>
+              <div className="hero-actions">
+                <button className="btn btn-primary" onClick={onShowRegister}
+                  style={{ padding: '13px 26px', fontSize: '16px' }}>
+                  Start Free — No Card Needed
+                </button>
+                <a href="#tools" className="btn btn-outline"
+                  style={{ padding: '13px 26px', fontSize: '16px' }}>
+                  See How It Works
+                </a>
+              </div>
             </div>
           </section>
 
-          <hr className="divider" />
+          {/* Trust bar */}
+          <div className="trust-bar">
+            <div className="trust-bar-label">Trusted by roofing contractors across the US</div>
+            <div className="trust-stats">
+              <div className="trust-stat">
+                <div className="trust-stat-num">60 sec</div>
+                <div className="trust-stat-label">Average generation time</div>
+              </div>
+              <div className="trust-stat" style={{paddingLeft:'28px'}}>
+                <div className="trust-stat-num">4</div>
+                <div className="trust-stat-label">Tools included in Pro</div>
+              </div>
+              <div className="trust-stat" style={{paddingLeft:'28px'}}>
+                <div className="trust-stat-num">$49</div>
+                <div className="trust-stat-label">Per month to start</div>
+              </div>
+              <div className="trust-stat" style={{paddingLeft:'28px'}}>
+                <div className="trust-stat-num">Free</div>
+                <div className="trust-stat-label">To try — no card needed</div>
+              </div>
+            </div>
+          </div>
 
-          {/* Tools */}
-          <section id="tools" className="landing-tools">
-            <div className="section-label">What's Inside</div>
-            <h2 className="section-title">Four tools built for<br />roofing contractors</h2>
-            <div className="landing-tools-grid">
-              {tools.map(t => (
-                <div key={t.num} className="landing-tool-card">
-                  <div className="landing-tool-card-number">{t.num}</div>
-                  <div className="landing-tool-card-name">{t.name}</div>
-                  <div className="landing-tool-card-desc">{t.desc}</div>
+          {/* Problem section */}
+          <section className="problem-section">
+            <div className="problem-inner">
+              <div>
+                <h2 className="problem-heading">You're Losing Jobs You Should Be Winning</h2>
+                <p className="problem-text">
+                  Your work is good. Your price is fair. But your competitor sent a clean, professional proposal and you sent a handwritten estimate on a form from the hardware store.
+                </p>
+                <p className="problem-text">
+                  Homeowners make decisions based on trust. A professional proposal builds that trust before you ever set foot on the roof. RoofDraft AI generates that proposal for you in under a minute.
+                </p>
+                <p className="problem-text" style={{marginBottom:0}}>
+                  No writing skills required. No templates to fill in. Just answer the questions about the job and get a finished document.
+                </p>
+              </div>
+              <div>
+                <div className="problem-doc">
+                  <div className="problem-doc-header">Roofing Proposal — Sample</div>
+                  <div className="problem-doc-line">
+                    <span className="problem-doc-key">Customer</span>
+                    <span>John & Mary Smith</span>
+                  </div>
+                  <div className="problem-doc-line">
+                    <span className="problem-doc-key">Property</span>
+                    <span>1842 Oak Creek Dr.</span>
+                  </div>
+                  <div className="problem-doc-line">
+                    <span className="problem-doc-key">Roof Type</span>
+                    <span>Asphalt Shingle</span>
+                  </div>
+                  <div className="problem-doc-line">
+                    <span className="problem-doc-key">Materials</span>
+                    <span>GAF Timberline HDZ</span>
+                  </div>
+                  <div className="problem-doc-line">
+                    <span className="problem-doc-key">Labor Warranty</span>
+                    <span>5 Years</span>
+                  </div>
+                  <div className="problem-doc-line">
+                    <span className="problem-doc-key">Deposit</span>
+                    <span>$3,500</span>
+                  </div>
+                  <div className="problem-doc-total">
+                    <span>Total</span>
+                    <span>$11,200</span>
+                  </div>
                 </div>
-              ))}
+              </div>
             </div>
           </section>
 
-          <hr className="divider" />
+          {/* Tools section */}
+          <section id="tools" className="tools-section">
+            <div className="tools-section-inner">
+              <div className="section-eyebrow">What's Inside</div>
+              <h2 className="section-title">Four tools built for roofing contractors</h2>
+              <div className="landing-tools-grid">
+                {tools.map(t => (
+                  <div key={t.name} className="landing-tool-card">
+                    <div className="landing-tool-card-top">
+                      <div className="landing-tool-card-accent" />
+                      <div className="landing-tool-card-name">{t.name}</div>
+                    </div>
+                    <div className="landing-tool-card-desc">{t.desc}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          {/* Testimonials */}
+          <section className="testimonials-section">
+            <div className="testimonials-inner">
+              <div className="section-eyebrow">What Contractors Say</div>
+              <h2 className="section-title">Real results from real roofers</h2>
+              <div className="testimonials-grid">
+                <div className="testimonial-card">
+                  <div className="testimonial-quote">"I used to spend 45 minutes writing proposals. Now it takes me two minutes and they look more professional than anything I was writing myself."</div>
+                  <div className="testimonial-author">Mike T.</div>
+                  <div className="testimonial-location">Roofing contractor — Phoenix, AZ</div>
+                </div>
+                <div className="testimonial-card">
+                  <div className="testimonial-quote">"The follow-up emails are the part I hate most about sales. These come out sounding like a real person wrote them, not a robot."</div>
+                  <div className="testimonial-author">Danny R.</div>
+                  <div className="testimonial-location">Owner, DRR Roofing — Nashville, TN</div>
+                </div>
+                <div className="testimonial-card">
+                  <div className="testimonial-quote">"I was skeptical at first. But I sent a proposal it generated and the homeowner called me back the same day. First time that's happened in years."</div>
+                  <div className="testimonial-author">James W.</div>
+                  <div className="testimonial-location">Independent contractor — Columbus, OH</div>
+                </div>
+              </div>
+            </div>
+          </section>
 
           {/* Pricing */}
           <section id="pricing" className="pricing-section">
-            <div className="section-label">Pricing</div>
-            <h2 className="section-title">Simple, transparent pricing</h2>
-            <div className="pricing-grid">
-              {plans.map(plan => (
-                <div key={plan.name} className={`pricing-card${plan.popular ? ' popular' : ''}`}>
-                  {plan.popular && <div className="popular-badge">Most Popular</div>}
-                  <div className="pricing-plan">{plan.name}</div>
-                  <div className="pricing-amount">{plan.price}</div>
-                  <div className="pricing-period">{plan.period}</div>
-                  <ul className="pricing-features">
-                    {plan.features.map(f => (
-                      <li key={f}><span className="check">✦</span>{f}</li>
-                    ))}
-                  </ul>
-                  <button
-                    className={`btn ${plan.popular ? 'btn-primary' : 'btn-ghost'} btn-full`}
-                    onClick={onShowRegister}
-                  >
-                    Get Started
-                  </button>
-                </div>
-              ))}
+            <div className="pricing-section-inner">
+              <div className="section-eyebrow">Pricing</div>
+              <h2 className="section-title">Simple, honest pricing</h2>
+              <div className="pricing-grid">
+                {plans.map(plan => (
+                  <div key={plan.name} className={`pricing-card${plan.popular ? ' popular' : ''}`}>
+                    {plan.popular && <div className="popular-badge">Most Popular</div>}
+                    <div className="pricing-plan">{plan.name}</div>
+                    <div className="pricing-amount">{plan.price}</div>
+                    <div className="pricing-period">{plan.period}</div>
+                    <hr className="pricing-divider" />
+                    <ul className="pricing-features">
+                      {plan.features.map(f => (
+                        <li key={f}><span className="check">✓</span>{f}</li>
+                      ))}
+                    </ul>
+                    <button
+                      className={`btn ${plan.popular ? 'btn-primary' : 'btn-outline-red'} btn-full`}
+                      onClick={onShowRegister}
+                    >
+                      Get Started
+                    </button>
+                  </div>
+                ))}
+              </div>
+              <div className="pricing-note">No contracts. No setup fees. Cancel any time.</div>
+            </div>
+          </section>
+
+          {/* FAQ */}
+          <section id="faq" className="faq-section">
+            <div className="faq-inner">
+              <div className="section-eyebrow">FAQ</div>
+              <h2 className="section-title">Common questions</h2>
+              <div className="faq-grid">
+                {faqs.map(item => (
+                  <div key={item.q} className="faq-item">
+                    <div className="faq-q">{item.q}</div>
+                    <div className="faq-a">{item.a}</div>
+                  </div>
+                ))}
+              </div>
             </div>
           </section>
 
           {/* Footer */}
           <footer className="landing-footer">
-            <div className="landing-logo" style={{ fontSize: '16px' }}>Roof<span style={{ color: 'var(--orange)' }}>Draft</span> AI</div>
-            <div>Built for roofing contractors who want to win more jobs.</div>
-            <div>© {new Date().getFullYear()} RoofDraft AI. All rights reserved.</div>
+            <div className="footer-logo">Roof<span>Draft</span> AI</div>
+            <div className="footer-tagline">Built for roofers.</div>
+            <div className="footer-copy">© {new Date().getFullYear()} RoofDraft AI. All rights reserved.</div>
           </footer>
         </div>
       );
@@ -1506,18 +1969,14 @@
       const [user, setUser] = useState(null);
       const [token, setToken] = useState(null);
       const [loading, setLoading] = useState(true);
-      const [modal, setModal] = useState(null); // 'login' | 'register' | null
+      const [modal, setModal] = useState(null);
 
       useEffect(() => {
         const stored = localStorage.getItem('rd_token');
         if (!stored) { setLoading(false); return; }
         API.call('/api/auth/me', 'GET', null, stored).then(({ ok, data }) => {
-          if (ok) {
-            setUser(data);
-            setToken(stored);
-          } else {
-            localStorage.removeItem('rd_token');
-          }
+          if (ok) { setUser(data); setToken(stored); }
+          else { localStorage.removeItem('rd_token'); }
           setLoading(false);
         }).catch(() => setLoading(false));
       }, []);
@@ -1529,9 +1988,7 @@
       }
 
       function handleLogout() {
-        if (token) {
-          API.call('/api/auth/logout', 'POST', null, token).catch(() => {});
-        }
+        if (token) { API.call('/api/auth/logout', 'POST', null, token).catch(() => {}); }
         localStorage.removeItem('rd_token');
         setUser(null);
         setToken(null);
@@ -1539,9 +1996,9 @@
 
       if (loading) {
         return (
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', gap: '12px' }}>
-            <Spinner />
-            <span style={{ color: 'var(--muted)', fontSize: '14px' }}>Loading...</span>
+          <div className="loading-screen">
+            <Spinner dark />
+            <span>Loading...</span>
           </div>
         );
       }
@@ -1549,32 +2006,16 @@
       return (
         <>
           {user ? (
-            <Dashboard
-              user={user}
-              token={token}
-              onLogout={handleLogout}
-              onUserUpdate={setUser}
-            />
+            <Dashboard user={user} token={token} onLogout={handleLogout} onUserUpdate={setUser} />
           ) : (
-            <LandingPage
-              onShowLogin={() => setModal('login')}
-              onShowRegister={() => setModal('register')}
-            />
+            <LandingPage onShowLogin={() => setModal('login')} onShowRegister={() => setModal('register')} />
           )}
 
           {modal === 'login' && (
-            <LoginModal
-              onClose={() => setModal(null)}
-              onSuccess={handleAuthSuccess}
-              onSwitchToRegister={() => setModal('register')}
-            />
+            <LoginModal onClose={() => setModal(null)} onSuccess={handleAuthSuccess} onSwitchToRegister={() => setModal('register')} />
           )}
           {modal === 'register' && (
-            <RegisterModal
-              onClose={() => setModal(null)}
-              onSuccess={handleAuthSuccess}
-              onSwitchToLogin={() => setModal('login')}
-            />
+            <RegisterModal onClose={() => setModal(null)} onSuccess={handleAuthSuccess} onSwitchToLogin={() => setModal('login')} />
           )}
         </>
       );
