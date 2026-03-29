@@ -964,7 +964,34 @@
   <div id="root"></div>
 
   <script type="text/babel">
+    console.log('RoofDraft script starting');
     const { useState, useEffect, useCallback } = React;
+    console.log('React hooks loaded');
+
+    // ---------------------------------------------------------------------------
+    // Error Boundary
+    // ---------------------------------------------------------------------------
+    class ErrorBoundary extends React.Component {
+      constructor(props) { super(props); this.state = { hasError: false, error: null }; }
+      static getDerivedStateFromError(error) { return { hasError: true, error }; }
+      componentDidCatch(error, info) { console.error('React error boundary caught:', error, info); }
+      render() {
+        if (this.state.hasError) {
+          return (
+            <div style={{ padding: '40px', fontFamily: 'sans-serif', background: '#fff', minHeight: '100vh' }}>
+              <h2 style={{ color: '#c0392b', marginBottom: '12px' }}>Something went wrong</h2>
+              <pre style={{ background: '#f8f8f8', padding: '16px', borderRadius: '4px', overflowX: 'auto', fontSize: '13px', color: '#333' }}>
+                {this.state.error && this.state.error.toString()}
+              </pre>
+              <button onClick={() => window.location.reload()} style={{ marginTop: '16px', padding: '10px 20px', background: '#c0392b', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '14px' }}>
+                Reload Page
+              </button>
+            </div>
+          );
+        }
+        return this.props.children;
+      }
+    }
 
     // ---------------------------------------------------------------------------
     // API helpers
@@ -1146,7 +1173,7 @@
                   <div className="upgrade-option-name">Starter Plan</div>
                   <div className="upgrade-option-desc">Unlimited generations · Proposal tool</div>
                 </div>
-                <div className="upgrade-option-price">$49<span style={{fontSize:'14px',color:'var(--slate)',fontFamily:'Source Sans 3'}}/mo</span></div>
+                <div className="upgrade-option-price">$49<span style={{fontSize:'14px',color:'var(--slate)',fontFamily:'Source Sans 3'}}>/mo</span></div>
               </a>
               <a className="upgrade-option featured"
                 href="mailto:owen.murillo2533@gmail.com?subject=Upgrade Request — Pro Plan">
@@ -1965,11 +1992,14 @@
     // ---------------------------------------------------------------------------
     // App Root
     // ---------------------------------------------------------------------------
+    console.log('Defining App component');
     function App() {
       const [user, setUser] = useState(null);
       const [token, setToken] = useState(null);
       const [loading, setLoading] = useState(true);
       const [modal, setModal] = useState(null);
+
+      console.log('App render — loading:', loading, 'user:', !!user);
 
       useEffect(() => {
         const stored = localStorage.getItem('rd_token');
@@ -2021,7 +2051,14 @@
       );
     }
 
-    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    console.log('All components defined, mounting React app');
+    const rootEl = document.getElementById('root');
+    console.log('Root element:', rootEl);
+    ReactDOM.createRoot(rootEl).render(
+      <ErrorBoundary>
+        <App />
+      </ErrorBoundary>
+    );
   </script>
 </body>
 </html>
