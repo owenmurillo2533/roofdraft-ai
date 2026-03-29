@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 -c \"\nimport ast, sys\nfiles = [\n    '/c/Users/owenm/roofdraft-ai/app.py',\n    '/c/Users/owenm/roofdraft-ai/database/db.py',\n    '/c/Users/owenm/roofdraft-ai/routes/auth.py',\n    '/c/Users/owenm/roofdraft-ai/routes/tools.py',\n]\nfor f in files:\n    try:\n        ast.parse\\(open\\(f\\).read\\(\\)\\)\n        print\\(f'OK: {f.split\\(\\\\\"/\\\\\"\\)[-1]}'\\)\n    except SyntaxError as e:\n        print\\(f'SYNTAX ERROR in {f}: {e}'\\)\n        sys.exit\\(1\\)\nprint\\('All Python files parse clean.'\\)\n\")",
+      "Bash(py -3 -c \"\nimport ast, sys\nfiles = [\n    'C:/Users/owenm/roofdraft-ai/app.py',\n    'C:/Users/owenm/roofdraft-ai/database/db.py',\n    'C:/Users/owenm/roofdraft-ai/routes/auth.py',\n    'C:/Users/owenm/roofdraft-ai/routes/tools.py',\n]\nfor f in files:\n    try:\n        ast.parse\\(open\\(f\\).read\\(\\)\\)\n        print\\(f'OK: {f.split\\(\\\\\"/\\\\\"\\)[-1]}'\\)\n    except SyntaxError as e:\n        print\\(f'SYNTAX ERROR in {f}: {e}'\\)\n        sys.exit\\(1\\)\nprint\\('All Python files parse clean.'\\)\n\")",
+      "Read(//c/Users/owenm/AppData/Local/Programs/**)",
+      "Read(//c//**)",
+      "Bash(/c/Users/owenm/AppData/Local/Programs/Python/Python311/python.exe -c \"\nimport ast, sys\nfiles = [\n    'C:/Users/owenm/roofdraft-ai/app.py',\n    'C:/Users/owenm/roofdraft-ai/database/db.py',\n    'C:/Users/owenm/roofdraft-ai/routes/auth.py',\n    'C:/Users/owenm/roofdraft-ai/routes/tools.py',\n]\nfor f in files:\n    try:\n        ast.parse\\(open\\(f\\).read\\(\\)\\)\n        print\\('OK:', f.split\\('/'\\)[-1]\\)\n    except SyntaxError as e:\n        print\\('SYNTAX ERROR in', f, ':', e\\)\n        sys.exit\\(1\\)\nprint\\('All Python files parse clean.'\\)\n\" 2>/dev/null || echo \"Python path not found, checking storylab venv...\"\nls /c/Users/owenm/storylab-ai/.venv/Scripts/ 2>/dev/null | head -5 || echo \"no venv\")",
+      "Bash(git init:*)",
+      "Bash(git rm:*)",
+      "Bash(git config:*)"
+    ]
+  }
+}

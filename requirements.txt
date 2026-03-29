@@ -1,0 +1,8 @@
+flask
+flask-cors
+anthropic
+psycopg2-binary
+gunicorn
+gevent
+stripe
+werkzeug

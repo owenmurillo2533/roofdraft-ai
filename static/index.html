@@ -1,0 +1,1586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RoofDraft AI — Professional Roofing Proposals in 60 Seconds</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0a0a;
+      --card: #111111;
+      --card2: #161616;
+      --orange: #E8500A;
+      --orange-hover: #d44408;
+      --white: #f5f0eb;
+      --muted: #888888;
+      --border: rgba(255,255,255,0.08);
+      --radius: 8px;
+    }
+
+    html, body, #root { height: 100%; }
+
+    body {
+      background: var(--bg);
+      color: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    h1, h2, h3, h4 { font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.02em; }
+
+    a { color: var(--orange); text-decoration: none; }
+
+    ::selection { background: var(--orange); color: #fff; }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+
+    /* ---- Buttons ---- */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      gap: 8px;
+      padding: 12px 24px;
+      border-radius: var(--radius);
+      border: none;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.18s ease;
+      white-space: nowrap;
+    }
+    .btn-primary {
+      background: var(--orange);
+      color: #fff;
+    }
+    .btn-primary:hover { background: var(--orange-hover); transform: translateY(-1px); }
+    .btn-primary:active { transform: translateY(0); }
+    .btn-ghost {
+      background: transparent;
+      color: var(--white);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover { border-color: rgba(255,255,255,0.2); background: rgba(255,255,255,0.04); }
+    .btn-outline-orange {
+      background: transparent;
+      color: var(--orange);
+      border: 1px solid var(--orange);
+    }
+    .btn-outline-orange:hover { background: rgba(232,80,10,0.08); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+    .btn-full { width: 100%; }
+
+    /* ---- Form elements ---- */
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .form-input, .form-select, .form-textarea {
+      background: var(--card2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      padding: 10px 14px;
+      transition: border-color 0.15s;
+      outline: none;
+      width: 100%;
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      border-color: var(--orange);
+    }
+    .form-input::placeholder, .form-textarea::placeholder { color: #444; }
+    .form-select { appearance: none; cursor: pointer; }
+    .form-select option { background: #1a1a1a; }
+    .form-textarea { resize: vertical; min-height: 80px; }
+
+    /* ---- Modal overlay ---- */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.8);
+      backdrop-filter: blur(4px);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+    .modal-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 40px;
+      width: 100%;
+      max-width: 420px;
+    }
+    .modal-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 28px;
+      letter-spacing: 0.02em;
+      margin-bottom: 8px;
+    }
+    .modal-subtitle { color: var(--muted); font-size: 14px; margin-bottom: 28px; }
+    .modal-form { display: flex; flex-direction: column; gap: 16px; }
+    .modal-error {
+      background: rgba(220,38,38,0.1);
+      border: 1px solid rgba(220,38,38,0.3);
+      border-radius: var(--radius);
+      padding: 10px 14px;
+      font-size: 13px;
+      color: #f87171;
+    }
+    .modal-switch {
+      text-align: center;
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 16px;
+    }
+    .modal-switch button {
+      background: none; border: none; color: var(--orange); cursor: pointer;
+      font-size: 13px; padding: 0; font-family: 'DM Sans', sans-serif;
+    }
+    .modal-switch button:hover { text-decoration: underline; }
+
+    /* ---- Spinner ---- */
+    .spinner {
+      width: 18px; height: 18px;
+      border: 2px solid rgba(255,255,255,0.2);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      flex-shrink: 0;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ---- Dashboard layout ---- */
+    .dashboard {
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ---- Sidebar ---- */
+    .sidebar {
+      width: 240px;
+      flex-shrink: 0;
+      background: var(--card);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow-y: auto;
+    }
+    .sidebar-logo {
+      padding: 24px 20px 20px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .sidebar-logo-text {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px;
+      letter-spacing: 0.04em;
+      color: var(--white);
+    }
+    .sidebar-logo-text span { color: var(--orange); }
+    .sidebar-nav {
+      flex: 1;
+      padding: 16px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 12px;
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--muted);
+      transition: all 0.15s;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+    }
+    .nav-item:hover { background: rgba(255,255,255,0.04); color: var(--white); }
+    .nav-item.active { background: rgba(232,80,10,0.12); color: var(--orange); }
+    .nav-icon { width: 16px; text-align: center; flex-shrink: 0; }
+    .sidebar-bottom {
+      padding: 16px;
+      border-top: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .user-info { margin-bottom: 12px; }
+    .user-name { font-size: 13px; font-weight: 600; color: var(--white); margin-bottom: 4px; }
+    .plan-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .badge-free { background: rgba(136,136,136,0.2); color: var(--muted); }
+    .badge-starter { background: rgba(59,130,246,0.2); color: #60a5fa; }
+    .badge-pro { background: rgba(232,80,10,0.2); color: var(--orange); }
+    .badge-admin { background: rgba(232,80,10,0.3); color: var(--orange); }
+    .gen-counter {
+      margin-top: 10px;
+      margin-bottom: 12px;
+    }
+    .gen-counter-text {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .progress-bar {
+      height: 4px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--orange);
+      border-radius: 2px;
+      transition: width 0.3s ease;
+    }
+    .logout-btn {
+      background: none; border: 1px solid var(--border);
+      color: var(--muted); width: 100%; padding: 8px;
+      border-radius: var(--radius); cursor: pointer;
+      font-family: 'DM Sans', sans-serif; font-size: 13px;
+      transition: all 0.15s;
+    }
+    .logout-btn:hover { border-color: #555; color: var(--white); }
+
+    /* ---- Main content ---- */
+    .main-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 32px 40px;
+    }
+    .page-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 42px;
+      letter-spacing: 0.02em;
+      margin-bottom: 4px;
+    }
+    .page-subtitle {
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 32px;
+    }
+
+    /* ---- Tool cards grid ---- */
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    .tool-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 24px;
+      transition: border-color 0.2s;
+      cursor: pointer;
+    }
+    .tool-card:hover { border-color: rgba(232,80,10,0.3); }
+    .tool-card-icon {
+      font-size: 24px;
+      margin-bottom: 12px;
+    }
+    .tool-card-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 20px;
+      letter-spacing: 0.02em;
+      margin-bottom: 6px;
+    }
+    .tool-card-desc {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+      margin-bottom: 16px;
+    }
+    .tool-card-locked {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .tool-card-locked:hover { border-color: var(--border); }
+    .locked-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 11px; color: var(--muted);
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      padding: 4px 10px; border-radius: 4px;
+    }
+
+    /* ---- Upgrade banner ---- */
+    .upgrade-banner {
+      background: linear-gradient(135deg, rgba(232,80,10,0.12), rgba(232,80,10,0.06));
+      border: 1px solid rgba(232,80,10,0.3);
+      border-radius: 10px;
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+    .upgrade-banner-text strong {
+      display: block;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--white);
+      margin-bottom: 2px;
+    }
+    .upgrade-banner-text span { font-size: 13px; color: var(--muted); }
+    .upgrade-actions { display: flex; gap: 8px; flex-shrink: 0; }
+
+    /* ---- Tool form ---- */
+    .tool-form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .tool-form-grid .span-2 { grid-column: span 2; }
+    .result-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 24px;
+      margin-top: 24px;
+    }
+    .result-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .result-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 18px;
+      letter-spacing: 0.02em;
+    }
+    .result-text {
+      white-space: pre-wrap;
+      font-size: 14px;
+      line-height: 1.7;
+      color: var(--white);
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    /* ---- Landing page ---- */
+    .landing { min-height: 100vh; }
+
+    .landing-nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 60px;
+      border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(10,10,10,0.92);
+      backdrop-filter: blur(12px);
+    }
+    .landing-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 24px;
+      letter-spacing: 0.04em;
+    }
+    .landing-logo span { color: var(--orange); }
+    .landing-nav-links {
+      display: flex; align-items: center; gap: 32px;
+      list-style: none;
+    }
+    .landing-nav-links a {
+      color: var(--muted); font-size: 14px; font-weight: 500;
+      transition: color 0.15s;
+    }
+    .landing-nav-links a:hover { color: var(--white); }
+    .landing-nav-actions { display: flex; gap: 12px; align-items: center; }
+
+    /* Hero */
+    .hero {
+      padding: 100px 60px 80px;
+      max-width: 900px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .hero-eyebrow {
+      display: inline-block;
+      font-size: 12px; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.12em;
+      color: var(--orange);
+      background: rgba(232,80,10,0.1);
+      border: 1px solid rgba(232,80,10,0.2);
+      padding: 4px 14px; border-radius: 20px;
+      margin-bottom: 28px;
+    }
+    .hero-headline {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(52px, 8vw, 96px);
+      letter-spacing: 0.02em;
+      line-height: 0.95;
+      margin-bottom: 24px;
+      color: var(--white);
+    }
+    .hero-headline span { color: var(--orange); }
+    .hero-sub {
+      font-size: 18px;
+      color: var(--muted);
+      max-width: 560px;
+      margin: 0 auto 40px;
+      line-height: 1.65;
+    }
+    .hero-actions { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+
+    /* Tool cards on landing */
+    .landing-tools {
+      padding: 60px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .section-label {
+      font-size: 12px; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.12em;
+      color: var(--orange); margin-bottom: 16px;
+    }
+    .section-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(32px, 4vw, 48px);
+      letter-spacing: 0.02em;
+      margin-bottom: 40px;
+    }
+    .landing-tools-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+    .landing-tool-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 28px;
+    }
+    .landing-tool-card-number {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 48px;
+      color: rgba(232,80,10,0.2);
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+    .landing-tool-card-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px;
+      letter-spacing: 0.02em;
+      margin-bottom: 8px;
+    }
+    .landing-tool-card-desc {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    /* Pricing */
+    .pricing-section {
+      padding: 80px 60px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    .pricing-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 32px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+    .pricing-card.popular {
+      border-color: var(--orange);
+      background: linear-gradient(160deg, #161616, #111111);
+    }
+    .popular-badge {
+      position: absolute;
+      top: -12px; left: 50%; transform: translateX(-50%);
+      background: var(--orange);
+      color: #fff;
+      font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      padding: 4px 14px; border-radius: 20px;
+    }
+    .pricing-plan {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 20px; letter-spacing: 0.04em;
+      margin-bottom: 8px; color: var(--muted);
+    }
+    .pricing-amount {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 52px; letter-spacing: -0.01em;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .pricing-period { font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+    .pricing-features { list-style: none; margin-bottom: 32px; flex: 1; }
+    .pricing-features li {
+      padding: 8px 0;
+      font-size: 14px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .pricing-features li:last-child { border-bottom: none; }
+    .check { color: var(--orange); font-size: 12px; }
+
+    /* Footer */
+    .landing-footer {
+      border-top: 1px solid var(--border);
+      padding: 40px 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    /* Divider */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 0 60px;
+    }
+
+    /* Upgrade modal */
+    .upgrade-modal-box {
+      max-width: 480px;
+    }
+    .upgrade-modal-options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 24px;
+    }
+    .upgrade-option {
+      background: var(--card2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      display: flex; align-items: center; justify-content: space-between;
+      text-decoration: none;
+      transition: border-color 0.15s;
+    }
+    .upgrade-option:hover { border-color: var(--orange); }
+    .upgrade-option-name { font-weight: 600; color: var(--white); font-size: 15px; }
+    .upgrade-option-desc { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .upgrade-option-price {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px;
+      color: var(--orange);
+    }
+
+    /* Welcome section */
+    .welcome-greeting {
+      margin-bottom: 32px;
+    }
+    .welcome-greeting h2 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 36px;
+      margin-bottom: 6px;
+    }
+    .welcome-greeting p { color: var(--muted); font-size: 14px; }
+
+    /* Section header */
+    .section-header { margin-bottom: 20px; }
+    .section-header h3 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px;
+      letter-spacing: 0.02em;
+    }
+
+    @media (max-width: 900px) {
+      .landing-nav { padding: 16px 24px; }
+      .landing-nav-links { display: none; }
+      .hero { padding: 60px 24px; }
+      .landing-tools, .pricing-section { padding: 40px 24px; }
+      .landing-tools-grid, .pricing-grid, .tools-grid { grid-template-columns: 1fr; }
+      .main-content { padding: 20px; }
+      .tool-form-grid { grid-template-columns: 1fr; }
+      .tool-form-grid .span-2 { grid-column: span 1; }
+      .sidebar { display: none; }
+      .landing-footer { flex-direction: column; gap: 12px; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useCallback } = React;
+
+    // ---------------------------------------------------------------------------
+    // API helpers
+    // ---------------------------------------------------------------------------
+    const API = {
+      async call(path, method = 'GET', body = null, token = null) {
+        const headers = { 'Content-Type': 'application/json' };
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+        const opts = { method, headers };
+        if (body) opts.body = JSON.stringify(body);
+        const res = await fetch(path, opts);
+        const data = await res.json();
+        return { ok: res.ok, status: res.status, data };
+      }
+    };
+
+    // ---------------------------------------------------------------------------
+    // Plan helpers
+    // ---------------------------------------------------------------------------
+    const FREE_LIMIT = 5;
+
+    function canUseTool(user, toolKey) {
+      if (!user) return false;
+      if (user.is_admin) return true;
+      const plan = user.plan || 'free';
+      if (plan === 'pro') return true;
+      if (plan === 'free' || plan === 'starter') return toolKey === 'proposal';
+      return false;
+    }
+
+    function getPlanBadgeClass(plan, isAdmin) {
+      if (isAdmin || plan === 'admin') return 'badge-admin';
+      if (plan === 'pro') return 'badge-pro';
+      if (plan === 'starter') return 'badge-starter';
+      return 'badge-free';
+    }
+
+    // ---------------------------------------------------------------------------
+    // Spinner
+    // ---------------------------------------------------------------------------
+    function Spinner() {
+      return <div className="spinner" />;
+    }
+
+    // ---------------------------------------------------------------------------
+    // Login Modal
+    // ---------------------------------------------------------------------------
+    function LoginModal({ onClose, onSuccess, onSwitchToRegister }) {
+      const [email, setEmail] = useState('');
+      const [password, setPassword] = useState('');
+      const [error, setError] = useState('');
+      const [loading, setLoading] = useState(false);
+
+      async function handleSubmit(e) {
+        e.preventDefault();
+        setError('');
+        setLoading(true);
+        try {
+          const { ok, data } = await API.call('/api/auth/login', 'POST', { email, password });
+          if (!ok) { setError(data.error || 'Login failed'); return; }
+          localStorage.setItem('rd_token', data.token);
+          onSuccess(data.user, data.token);
+        } catch (err) {
+          setError('Connection error — please try again');
+        } finally {
+          setLoading(false);
+        }
+      }
+
+      return (
+        <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
+          <div className="modal-box">
+            <div className="modal-title">Welcome Back</div>
+            <div className="modal-subtitle">Sign in to your RoofDraft AI account</div>
+            <form className="modal-form" onSubmit={handleSubmit}>
+              {error && <div className="modal-error">{error}</div>}
+              <div className="form-group">
+                <label className="form-label">Email</label>
+                <input className="form-input" type="email" value={email}
+                  onChange={e => setEmail(e.target.value)} placeholder="you@company.com" required />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Password</label>
+                <input className="form-input" type="password" value={password}
+                  onChange={e => setPassword(e.target.value)} placeholder="••••••••" required />
+              </div>
+              <button className="btn btn-primary btn-full" type="submit" disabled={loading}>
+                {loading ? <><Spinner /> Signing in...</> : 'Sign In'}
+              </button>
+            </form>
+            <div className="modal-switch">
+              Don't have an account?{' '}
+              <button onClick={onSwitchToRegister}>Create one free</button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ---------------------------------------------------------------------------
+    // Register Modal
+    // ---------------------------------------------------------------------------
+    function RegisterModal({ onClose, onSuccess, onSwitchToLogin }) {
+      const [email, setEmail] = useState('');
+      const [username, setUsername] = useState('');
+      const [password, setPassword] = useState('');
+      const [error, setError] = useState('');
+      const [loading, setLoading] = useState(false);
+
+      async function handleSubmit(e) {
+        e.preventDefault();
+        setError('');
+        setLoading(true);
+        try {
+          const { ok, data } = await API.call('/api/auth/register', 'POST', { email, username, password });
+          if (!ok) { setError(data.error || 'Registration failed'); return; }
+          localStorage.setItem('rd_token', data.token);
+          onSuccess(data.user, data.token);
+        } catch (err) {
+          setError('Connection error — please try again');
+        } finally {
+          setLoading(false);
+        }
+      }
+
+      return (
+        <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
+          <div className="modal-box">
+            <div className="modal-title">Start Free Trial</div>
+            <div className="modal-subtitle">Get 5 free generations — no card needed</div>
+            <form className="modal-form" onSubmit={handleSubmit}>
+              {error && <div className="modal-error">{error}</div>}
+              <div className="form-group">
+                <label className="form-label">Email</label>
+                <input className="form-input" type="email" value={email}
+                  onChange={e => setEmail(e.target.value)} placeholder="you@company.com" required />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Username</label>
+                <input className="form-input" type="text" value={username}
+                  onChange={e => setUsername(e.target.value)} placeholder="yourname" required />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Password</label>
+                <input className="form-input" type="password" value={password}
+                  onChange={e => setPassword(e.target.value)} placeholder="Min. 6 characters" required />
+              </div>
+              <button className="btn btn-primary btn-full" type="submit" disabled={loading}>
+                {loading ? <><Spinner /> Creating account...</> : 'Create Free Account'}
+              </button>
+            </form>
+            <div className="modal-switch">
+              Already have an account?{' '}
+              <button onClick={onSwitchToLogin}>Sign in</button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ---------------------------------------------------------------------------
+    // Upgrade Modal (403)
+    // ---------------------------------------------------------------------------
+    function UpgradeModal({ onClose }) {
+      return (
+        <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
+          <div className="modal-box upgrade-modal-box">
+            <div className="modal-title">Upgrade Your Plan</div>
+            <div className="modal-subtitle">
+              You've used all your free generations this month. Choose a plan to keep generating.
+            </div>
+            <div className="upgrade-modal-options">
+              <a
+                className="upgrade-option"
+                href="mailto:owen.murillo2533@gmail.com?subject=Upgrade Request — Starter Plan"
+              >
+                <div>
+                  <div className="upgrade-option-name">Starter Plan</div>
+                  <div className="upgrade-option-desc">Unlimited generations · Proposal tool</div>
+                </div>
+                <div className="upgrade-option-price">$49/mo</div>
+              </a>
+              <a
+                className="upgrade-option"
+                href="mailto:owen.murillo2533@gmail.com?subject=Upgrade Request — Pro Plan"
+                style={{ borderColor: 'var(--orange)' }}
+              >
+                <div>
+                  <div className="upgrade-option-name">Pro Plan</div>
+                  <div className="upgrade-option-desc">Unlimited generations · All 4 tools</div>
+                </div>
+                <div className="upgrade-option-price">$79/mo</div>
+              </a>
+            </div>
+            <button
+              className="btn btn-ghost btn-full"
+              style={{ marginTop: '16px' }}
+              onClick={onClose}
+            >
+              Maybe later
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    // ---------------------------------------------------------------------------
+    // Result Card
+    // ---------------------------------------------------------------------------
+    function ResultCard({ result }) {
+      const [copied, setCopied] = useState(false);
+
+      function handleCopy() {
+        navigator.clipboard.writeText(result).then(() => {
+          setCopied(true);
+          setTimeout(() => setCopied(false), 2000);
+        });
+      }
+
+      return (
+        <div className="result-card">
+          <div className="result-header">
+            <div className="result-title">Generated Result</div>
+            <button className="btn btn-ghost" style={{ padding: '8px 16px', fontSize: '13px' }} onClick={handleCopy}>
+              {copied ? '✓ Copied!' : 'Copy to Clipboard'}
+            </button>
+          </div>
+          <div className="result-text">{result}</div>
+        </div>
+      );
+    }
+
+    // ---------------------------------------------------------------------------
+    // Proposal Tool
+    // ---------------------------------------------------------------------------
+    function ProposalTool({ token, onUpgradeNeeded }) {
+      const [form, setForm] = useState({
+        customer_name: '', customer_address: '', roof_type: 'Asphalt Shingle',
+        square_footage: '', pitch: 'Medium (4–6/12)', materials: '', scope: '',
+        price_total: '', deposit_required: '', payment_terms: '',
+        warranty_labor: '', warranty_materials: '', company_name: '',
+        contractor_name: '', contractor_phone: '', contractor_email: '',
+        license_number: '', start_date: '', completion_days: ''
+      });
+      const [result, setResult] = useState('');
+      const [loading, setLoading] = useState(false);
+      const [error, setError] = useState('');
+
+      function set(field) { return e => setForm(f => ({ ...f, [field]: e.target.value })); }
+
+      async function handleSubmit(e) {
+        e.preventDefault();
+        setError(''); setResult('');
+        setLoading(true);
+        try {
+          const { ok, status, data } = await API.call('/api/tools/proposal', 'POST', form, token);
+          if (status === 403) { onUpgradeNeeded(); return; }
+          if (!ok) { setError(data.error || 'Generation failed'); return; }
+          setResult(data.result);
+        } catch (err) {
+          setError('Connection error — please try again');
+        } finally {
+          setLoading(false);
+        }
+      }
+
+      return (
+        <div>
+          <div className="page-title">Proposal Generator</div>
+          <div className="page-subtitle">Fill out the job details below and get a complete, professional proposal letter.</div>
+          <form onSubmit={handleSubmit}>
+            <div className="tool-form-grid">
+              <div className="form-group">
+                <label className="form-label">Customer Name</label>
+                <input className="form-input" type="text" value={form.customer_name} onChange={set('customer_name')} placeholder="John Smith" required />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Property Address</label>
+                <input className="form-input" type="text" value={form.customer_address} onChange={set('customer_address')} placeholder="123 Main St, City, ST 00000" required />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Roof Type</label>
+                <select className="form-select" value={form.roof_type} onChange={set('roof_type')}>
+                  <option>Asphalt Shingle</option>
+                  <option>Metal Roofing</option>
+                  <option>Flat / TPO</option>
+                  <option>Tile</option>
+                  <option>Cedar Shake</option>
+                </select>
+              </div>
+              <div className="form-group">
+                <label className="form-label">Square Footage</label>
+                <input className="form-input" type="number" value={form.square_footage} onChange={set('square_footage')} placeholder="2400" required />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Roof Pitch</label>
+                <select className="form-select" value={form.pitch} onChange={set('pitch')}>
+                  <option>Low (1–3/12)</option>
+                  <option>Medium (4–6/12)</option>
+                  <option>Steep (7+/12)</option>
+                </select>
+              </div>
+              <div className="form-group">
+                <label className="form-label">Estimated Start Date</label>
+                <input className="form-input" type="date" value={form.start_date} onChange={set('start_date')} />
+              </div>
+              <div className="form-group span-2">
+                <label className="form-label">Materials Used</label>
+                <textarea className="form-textarea" value={form.materials} onChange={set('materials')} placeholder="e.g. GAF Timberline HDZ Charcoal, 30-year architectural shingles, ice & water shield, synthetic underlayment..." required />
+              </div>
+              <div className="form-group span-2">
+                <label className="form-label">Scope of Work</label>
+                <textarea className="form-textarea" style={{ minHeight: '100px' }} value={form.scope} onChange={set('scope')} placeholder="e.g. Full tear-off of existing shingles, inspect and repair decking as needed, install new roofing system..." required />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Total Price ($)</label>
+                <input className="form-input" type="number" value={form.price_total} onChange={set('price_total')} placeholder="12500" required />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Deposit Required ($)</label>
+                <input className="form-input" type="number" value={form.deposit_required} onChange={set('deposit_required')} placeholder="4000" required />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Payment Terms</label>
+                <input className="form-input" type="text" value={form.payment_terms} onChange={set('payment_terms')} placeholder="e.g. 50% deposit, balance upon completion" required />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Estimated Days to Complete</label>
+                <input className="form-input" type="number" value={form.completion_days} onChange={set('completion_days')} placeholder="3" required />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Labor Warranty</label>
+                <input className="form-input" type="text" value={form.warranty_labor} onChange={set('warranty_labor')} placeholder="e.g. 5 years" required />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Materials Warranty</label>
+                <input className="form-input" type="text" value={form.warranty_materials} onChange={set('warranty_materials')} placeholder="e.g. 30-year manufacturer" required />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Company Name</label>
+                <input className="form-input" type="text" value={form.company_name} onChange={set('company_name')} placeholder="Peak Roofing Co." required />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Your Name</label>
+                <input className="form-input" type="text" value={form.contractor_name} onChange={set('contractor_name')} placeholder="Mike Johnson" required />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Your Phone</label>
+                <input className="form-input" type="tel" value={form.contractor_phone} onChange={set('contractor_phone')} placeholder="(555) 000-0000" required />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Your Email</label>
+                <input className="form-input" type="email" value={form.contractor_email} onChange={set('contractor_email')} placeholder="mike@peakroofing.com" required />
+              </div>
+              <div className="form-group span-2">
+                <label className="form-label">License Number <span style={{ color: '#555', fontWeight: 400 }}>(optional)</span></label>
+                <input className="form-input" type="text" value={form.license_number} onChange={set('license_number')} placeholder="ROC-123456" />
+              </div>
+            </div>
+            {error && <div className="modal-error" style={{ marginBottom: '16px' }}>{error}</div>}
+            <button className="btn btn-primary btn-full" type="submit" disabled={loading} style={{ padding: '14px', fontSize: '15px' }}>
+              {loading ? <><Spinner /> Generating Proposal...</> : 'Generate Proposal'}
+            </button>
+          </form>
+          {result && <ResultCard result={result} />}
+        </div>
+      );
+    }
+
+    // ---------------------------------------------------------------------------
+    // Follow-Up Tool
+    // ---------------------------------------------------------------------------
+    function FollowUpTool({ token, onUpgradeNeeded }) {
+      const [form, setForm] = useState({
+        customer_name: '', days_since_proposal: '', proposal_amount: '',
+        job_type: '', contractor_name: '', company_name: '', contractor_phone: ''
+      });
+      const [result, setResult] = useState('');
+      const [loading, setLoading] = useState(false);
+      const [error, setError] = useState('');
+
+      function set(field) { return e => setForm(f => ({ ...f, [field]: e.target.value })); }
+
+      async function handleSubmit(e) {
+        e.preventDefault();
+        setError(''); setResult('');
+        setLoading(true);
+        try {
+          const { ok, status, data } = await API.call('/api/tools/followup', 'POST', form, token);
+          if (status === 403) { onUpgradeNeeded(); return; }
+          if (!ok) { setError(data.error || 'Generation failed'); return; }
+          setResult(data.result);
+        } catch (err) {
+          setError('Connection error — please try again');
+        } finally {
+          setLoading(false);
+        }
+      }
+
+      return (
+        <div>
+          <div className="page-title">Follow-Up Email</div>
+          <div className="page-subtitle">Get 3 ready-to-send follow-up email variations for prospects who haven't responded.</div>
+          <form onSubmit={handleSubmit}>
+            <div className="tool-form-grid">
+              <div className="form-group">
+                <label className="form-label">Customer Name</label>
+                <input className="form-input" type="text" value={form.customer_name} onChange={set('customer_name')} placeholder="Sarah Johnson" required />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Days Since Proposal Sent</label>
+                <input className="form-input" type="number" value={form.days_since_proposal} onChange={set('days_since_proposal')} placeholder="7" required />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Proposal Amount ($)</label>
+                <input className="form-input" type="number" value={form.proposal_amount} onChange={set('proposal_amount')} placeholder="8500" required />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Job Type</label>
+                <input className="form-input" type="text" value={form.job_type} onChange={set('job_type')} placeholder="e.g. Full reroof, asphalt shingle" required />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Your Name</label>
+                <input className="form-input" type="text" value={form.contractor_name} onChange={set('contractor_name')} placeholder="Mike Johnson" required />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Company Name</label>
+                <input className="form-input" type="text" value={form.company_name} onChange={set('company_name')} placeholder="Peak Roofing Co." required />
+              </div>
+              <div className="form-group span-2">
+                <label className="form-label">Your Phone</label>
+                <input className="form-input" type="tel" value={form.contractor_phone} onChange={set('contractor_phone')} placeholder="(555) 000-0000" required />
+              </div>
+            </div>
+            {error && <div className="modal-error" style={{ marginBottom: '16px' }}>{error}</div>}
+            <button className="btn btn-primary btn-full" type="submit" disabled={loading} style={{ padding: '14px', fontSize: '15px' }}>
+              {loading ? <><Spinner /> Generating Emails...</> : 'Generate Follow-Up Emails'}
+            </button>
+          </form>
+          {result && <ResultCard result={result} />}
+        </div>
+      );
+    }
+
+    // ---------------------------------------------------------------------------
+    // Review Request Tool
+    // ---------------------------------------------------------------------------
+    function ReviewTool({ token, onUpgradeNeeded }) {
+      const [form, setForm] = useState({
+        customer_name: '', job_type: '', contractor_name: '', company_name: '', review_link: ''
+      });
+      const [result, setResult] = useState('');
+      const [loading, setLoading] = useState(false);
+      const [error, setError] = useState('');
+
+      function set(field) { return e => setForm(f => ({ ...f, [field]: e.target.value })); }
+
+      async function handleSubmit(e) {
+        e.preventDefault();
+        setError(''); setResult('');
+        setLoading(true);
+        try {
+          const { ok, status, data } = await API.call('/api/tools/review', 'POST', form, token);
+          if (status === 403) { onUpgradeNeeded(); return; }
+          if (!ok) { setError(data.error || 'Generation failed'); return; }
+          setResult(data.result);
+        } catch (err) {
+          setError('Connection error — please try again');
+        } finally {
+          setLoading(false);
+        }
+      }
+
+      return (
+        <div>
+          <div className="page-title">Review Request</div>
+          <div className="page-subtitle">Generate a text and email version of a Google review request — personal, not corporate.</div>
+          <form onSubmit={handleSubmit}>
+            <div className="tool-form-grid">
+              <div className="form-group">
+                <label className="form-label">Customer First Name</label>
+                <input className="form-input" type="text" value={form.customer_name} onChange={set('customer_name')} placeholder="Sarah" required />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Job Type</label>
+                <input className="form-input" type="text" value={form.job_type} onChange={set('job_type')} placeholder="e.g. Full reroof, metal roofing" required />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Your Name</label>
+                <input className="form-input" type="text" value={form.contractor_name} onChange={set('contractor_name')} placeholder="Mike Johnson" required />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Company Name</label>
+                <input className="form-input" type="text" value={form.company_name} onChange={set('company_name')} placeholder="Peak Roofing Co." required />
+              </div>
+              <div className="form-group span-2">
+                <label className="form-label">Google Review Link</label>
+                <input className="form-input" type="url" value={form.review_link} onChange={set('review_link')} placeholder="Paste your Google review URL here" required />
+              </div>
+            </div>
+            {error && <div className="modal-error" style={{ marginBottom: '16px' }}>{error}</div>}
+            <button className="btn btn-primary btn-full" type="submit" disabled={loading} style={{ padding: '14px', fontSize: '15px' }}>
+              {loading ? <><Spinner /> Generating Messages...</> : 'Generate Review Request'}
+            </button>
+          </form>
+          {result && <ResultCard result={result} />}
+        </div>
+      );
+    }
+
+    // ---------------------------------------------------------------------------
+    // Referral Message Tool
+    // ---------------------------------------------------------------------------
+    function ReferralTool({ token, onUpgradeNeeded }) {
+      const [form, setForm] = useState({
+        customer_name: '', job_completed: '', contractor_name: '',
+        company_name: '', referral_incentive: '', phone_number: ''
+      });
+      const [result, setResult] = useState('');
+      const [loading, setLoading] = useState(false);
+      const [error, setError] = useState('');
+
+      function set(field) { return e => setForm(f => ({ ...f, [field]: e.target.value })); }
+
+      async function handleSubmit(e) {
+        e.preventDefault();
+        setError(''); setResult('');
+        setLoading(true);
+        try {
+          const { ok, status, data } = await API.call('/api/tools/referral', 'POST', form, token);
+          if (status === 403) { onUpgradeNeeded(); return; }
+          if (!ok) { setError(data.error || 'Generation failed'); return; }
+          setResult(data.result);
+        } catch (err) {
+          setError('Connection error — please try again');
+        } finally {
+          setLoading(false);
+        }
+      }
+
+      return (
+        <div>
+          <div className="page-title">Referral Message</div>
+          <div className="page-subtitle">Ask happy customers for referrals — naturally, without being awkward.</div>
+          <form onSubmit={handleSubmit}>
+            <div className="tool-form-grid">
+              <div className="form-group">
+                <label className="form-label">Customer First Name</label>
+                <input className="form-input" type="text" value={form.customer_name} onChange={set('customer_name')} placeholder="Sarah" required />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Job Completed</label>
+                <input className="form-input" type="text" value={form.job_completed} onChange={set('job_completed')} placeholder="e.g. Full reroof, asphalt shingle" required />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Your Name</label>
+                <input className="form-input" type="text" value={form.contractor_name} onChange={set('contractor_name')} placeholder="Mike Johnson" required />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Company Name</label>
+                <input className="form-input" type="text" value={form.company_name} onChange={set('company_name')} placeholder="Peak Roofing Co." required />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Referral Incentive <span style={{ color: '#555', fontWeight: 400 }}>(optional)</span></label>
+                <input className="form-input" type="text" value={form.referral_incentive} onChange={set('referral_incentive')} placeholder="e.g. $100 gift card — leave blank if none" />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Your Phone</label>
+                <input className="form-input" type="tel" value={form.phone_number} onChange={set('phone_number')} placeholder="(555) 000-0000" required />
+              </div>
+            </div>
+            {error && <div className="modal-error" style={{ marginBottom: '16px' }}>{error}</div>}
+            <button className="btn btn-primary btn-full" type="submit" disabled={loading} style={{ padding: '14px', fontSize: '15px' }}>
+              {loading ? <><Spinner /> Generating Messages...</> : 'Generate Referral Message'}
+            </button>
+          </form>
+          {result && <ResultCard result={result} />}
+        </div>
+      );
+    }
+
+    // ---------------------------------------------------------------------------
+    // Dashboard Home
+    // ---------------------------------------------------------------------------
+    const TOOLS = [
+      { key: 'proposal', tab: 'proposal', icon: '📄', name: 'Proposal Generator', desc: 'Full professional proposal letter in under a minute. Fill out the job details, get a client-ready document.' },
+      { key: 'followup', tab: 'followup', icon: '📧', name: 'Follow-Up Email', desc: '3 email variations for prospects who haven\'t responded. Human tone, soft call to action.' },
+      { key: 'review',   tab: 'review',   icon: '⭐', name: 'Review Request', desc: 'Text and email versions of a Google review ask — personal, not scripted.' },
+      { key: 'referral', tab: 'referral', icon: '🤝', name: 'Referral Message', desc: 'Text and email to ask happy customers for referrals without being awkward.' },
+    ];
+
+    function DashboardHome({ user, onSelectTab }) {
+      const isFree = user.plan === 'free' && !user.is_admin;
+      const genCount = user.generations_this_month || 0;
+      const allUsed = isFree && genCount >= FREE_LIMIT;
+
+      return (
+        <div>
+          {allUsed && (
+            <div className="upgrade-banner">
+              <div className="upgrade-banner-text">
+                <strong>You've used all 5 free generations</strong>
+                <span>Upgrade to keep generating professional roofing content.</span>
+              </div>
+              <div className="upgrade-actions">
+                <a href="mailto:owen.murillo2533@gmail.com?subject=Upgrade Request — Starter Plan" className="btn btn-ghost" style={{ fontSize: '13px', padding: '10px 18px' }}>
+                  Starter $49/mo
+                </a>
+                <a href="mailto:owen.murillo2533@gmail.com?subject=Upgrade Request — Pro Plan" className="btn btn-primary" style={{ fontSize: '13px', padding: '10px 18px' }}>
+                  Pro $79/mo
+                </a>
+              </div>
+            </div>
+          )}
+          <div className="welcome-greeting">
+            <h2>Welcome back, {user.username}</h2>
+            <p>Choose a tool below to start generating.</p>
+          </div>
+          <div className="section-header"><h3>Your Tools</h3></div>
+          <div className="tools-grid">
+            {TOOLS.map(tool => {
+              const accessible = canUseTool(user, tool.key);
+              return (
+                <div
+                  key={tool.key}
+                  className={`tool-card${!accessible ? ' tool-card-locked' : ''}`}
+                  onClick={() => accessible && onSelectTab(tool.tab)}
+                >
+                  <div className="tool-card-icon">{tool.icon}</div>
+                  <div className="tool-card-name">{tool.name}</div>
+                  <div className="tool-card-desc">{tool.desc}</div>
+                  {accessible ? (
+                    <button className="btn btn-ghost" style={{ fontSize: '13px', padding: '8px 16px' }}
+                      onClick={e => { e.stopPropagation(); onSelectTab(tool.tab); }}>
+                      Open Tool →
+                    </button>
+                  ) : (
+                    <div className="locked-badge">🔒 Pro Plan Required</div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      );
+    }
+
+    // ---------------------------------------------------------------------------
+    // Sidebar
+    // ---------------------------------------------------------------------------
+    function Sidebar({ user, activeTab, onSelectTab, onLogout }) {
+      const isFree = user.plan === 'free' && !user.is_admin;
+      const genCount = user.generations_this_month || 0;
+      const pct = isFree ? Math.min(100, (genCount / FREE_LIMIT) * 100) : 0;
+
+      const navItems = [
+        { key: 'home',     label: 'Dashboard',          icon: '⊞' },
+        { key: 'proposal', label: 'Proposal Generator', icon: '📄' },
+        { key: 'followup', label: 'Follow-Up Email',    icon: '📧' },
+        { key: 'review',   label: 'Review Request',     icon: '⭐' },
+        { key: 'referral', label: 'Referral Message',   icon: '🤝' },
+      ];
+
+      return (
+        <div className="sidebar">
+          <div className="sidebar-logo">
+            <div className="sidebar-logo-text">Roof<span>Draft</span> AI</div>
+          </div>
+          <nav className="sidebar-nav">
+            {navItems.map(item => {
+              const accessible = item.key === 'home' || item.key === 'proposal' || canUseTool(user, item.key);
+              return (
+                <button
+                  key={item.key}
+                  className={`nav-item${activeTab === item.key ? ' active' : ''}`}
+                  onClick={() => accessible && onSelectTab(item.key)}
+                  style={!accessible ? { opacity: 0.4, cursor: 'not-allowed' } : {}}
+                >
+                  <span className="nav-icon">{item.icon}</span>
+                  {item.label}
+                  {!accessible && <span style={{ marginLeft: 'auto', fontSize: '10px' }}>PRO</span>}
+                </button>
+              );
+            })}
+          </nav>
+          <div className="sidebar-bottom">
+            <div className="user-info">
+              <div className="user-name">{user.username}</div>
+              <span className={`plan-badge ${getPlanBadgeClass(user.plan, user.is_admin)}`}>
+                {user.is_admin ? 'Admin' : (user.plan || 'free').charAt(0).toUpperCase() + (user.plan || 'free').slice(1)}
+              </span>
+            </div>
+            {isFree && (
+              <div className="gen-counter">
+                <div className="gen-counter-text">{genCount} of {FREE_LIMIT} free generations used</div>
+                <div className="progress-bar">
+                  <div className="progress-fill" style={{ width: `${pct}%` }} />
+                </div>
+              </div>
+            )}
+            <button className="logout-btn" onClick={onLogout}>Sign Out</button>
+          </div>
+        </div>
+      );
+    }
+
+    // ---------------------------------------------------------------------------
+    // Dashboard (logged in)
+    // ---------------------------------------------------------------------------
+    function Dashboard({ user, token, onLogout, onUserUpdate }) {
+      const [activeTab, setActiveTab] = useState('home');
+      const [showUpgrade, setShowUpgrade] = useState(false);
+
+      function handleUpgradeNeeded() {
+        setShowUpgrade(true);
+      }
+
+      const toolProps = { token, onUpgradeNeeded: handleUpgradeNeeded };
+
+      return (
+        <div className="dashboard">
+          <Sidebar user={user} activeTab={activeTab} onSelectTab={setActiveTab} onLogout={onLogout} />
+          <main className="main-content">
+            {activeTab === 'home'     && <DashboardHome user={user} onSelectTab={setActiveTab} />}
+            {activeTab === 'proposal' && <ProposalTool {...toolProps} />}
+            {activeTab === 'followup' && <FollowUpTool {...toolProps} />}
+            {activeTab === 'review'   && <ReviewTool {...toolProps} />}
+            {activeTab === 'referral' && <ReferralTool {...toolProps} />}
+          </main>
+          {showUpgrade && <UpgradeModal onClose={() => setShowUpgrade(false)} />}
+        </div>
+      );
+    }
+
+    // ---------------------------------------------------------------------------
+    // Landing Page
+    // ---------------------------------------------------------------------------
+    function LandingPage({ onShowLogin, onShowRegister }) {
+      const tools = [
+        { num: '01', name: 'Proposal Generator', desc: 'Complete, professional proposal letters that win jobs. Fill out the job details and get a client-ready document in under 60 seconds.' },
+        { num: '02', name: 'Follow-Up Email', desc: '3 variations of follow-up emails for prospects who haven\'t responded. Human tone, no pressure, one clear call to action.' },
+        { num: '03', name: 'Review Request', desc: 'A text and email version of a Google review ask — personal and natural, not a corporate template.' },
+        { num: '04', name: 'Referral Message', desc: 'Ask happy customers for referrals without being awkward. Text and email versions, with optional incentive mention.' },
+      ];
+
+      const plans = [
+        {
+          name: 'Free',
+          price: '$0',
+          period: 'forever',
+          features: ['5 generations per month', 'Proposal Generator only', 'No credit card required'],
+          popular: false,
+        },
+        {
+          name: 'Starter',
+          price: '$49',
+          period: 'per month',
+          features: ['Unlimited generations', 'Proposal Generator', 'Priority support'],
+          popular: false,
+        },
+        {
+          name: 'Pro',
+          price: '$79',
+          period: 'per month',
+          features: ['Unlimited generations', 'All 4 tools', 'Follow-Up Email', 'Review Request', 'Referral Message'],
+          popular: true,
+        },
+      ];
+
+      return (
+        <div className="landing">
+          {/* Nav */}
+          <nav className="landing-nav">
+            <div className="landing-logo">Roof<span>Draft</span> AI</div>
+            <ul className="landing-nav-links">
+              <li><a href="#tools">Tools</a></li>
+              <li><a href="#pricing">Pricing</a></li>
+            </ul>
+            <div className="landing-nav-actions">
+              <button className="btn btn-ghost" onClick={onShowLogin} style={{ padding: '9px 20px', fontSize: '14px' }}>Log In</button>
+              <button className="btn btn-primary" onClick={onShowRegister} style={{ padding: '9px 20px', fontSize: '14px' }}>Start Free Trial</button>
+            </div>
+          </nav>
+
+          {/* Hero */}
+          <section className="hero">
+            <div className="hero-eyebrow">AI-Powered Roofing Tools</div>
+            <h1 className="hero-headline">
+              Write Roofing<br />
+              Proposals In<br />
+              <span>60 Seconds.</span>
+            </h1>
+            <p className="hero-sub">
+              Stop losing jobs to competitors with better paperwork. Fill out a form, get a professional proposal instantly.
+            </p>
+            <div className="hero-actions">
+              <button className="btn btn-primary" onClick={onShowRegister} style={{ padding: '14px 28px', fontSize: '15px' }}>
+                Start Free — No Card Needed
+              </button>
+              <a href="#tools" className="btn btn-ghost" style={{ padding: '14px 28px', fontSize: '15px' }}>
+                See The Tools
+              </a>
+            </div>
+          </section>
+
+          <hr className="divider" />
+
+          {/* Tools */}
+          <section id="tools" className="landing-tools">
+            <div className="section-label">What's Inside</div>
+            <h2 className="section-title">Four tools built for<br />roofing contractors</h2>
+            <div className="landing-tools-grid">
+              {tools.map(t => (
+                <div key={t.num} className="landing-tool-card">
+                  <div className="landing-tool-card-number">{t.num}</div>
+                  <div className="landing-tool-card-name">{t.name}</div>
+                  <div className="landing-tool-card-desc">{t.desc}</div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <hr className="divider" />
+
+          {/* Pricing */}
+          <section id="pricing" className="pricing-section">
+            <div className="section-label">Pricing</div>
+            <h2 className="section-title">Simple, transparent pricing</h2>
+            <div className="pricing-grid">
+              {plans.map(plan => (
+                <div key={plan.name} className={`pricing-card${plan.popular ? ' popular' : ''}`}>
+                  {plan.popular && <div className="popular-badge">Most Popular</div>}
+                  <div className="pricing-plan">{plan.name}</div>
+                  <div className="pricing-amount">{plan.price}</div>
+                  <div className="pricing-period">{plan.period}</div>
+                  <ul className="pricing-features">
+                    {plan.features.map(f => (
+                      <li key={f}><span className="check">✦</span>{f}</li>
+                    ))}
+                  </ul>
+                  <button
+                    className={`btn ${plan.popular ? 'btn-primary' : 'btn-ghost'} btn-full`}
+                    onClick={onShowRegister}
+                  >
+                    Get Started
+                  </button>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Footer */}
+          <footer className="landing-footer">
+            <div className="landing-logo" style={{ fontSize: '16px' }}>Roof<span style={{ color: 'var(--orange)' }}>Draft</span> AI</div>
+            <div>Built for roofing contractors who want to win more jobs.</div>
+            <div>© {new Date().getFullYear()} RoofDraft AI. All rights reserved.</div>
+          </footer>
+        </div>
+      );
+    }
+
+    // ---------------------------------------------------------------------------
+    // App Root
+    // ---------------------------------------------------------------------------
+    function App() {
+      const [user, setUser] = useState(null);
+      const [token, setToken] = useState(null);
+      const [loading, setLoading] = useState(true);
+      const [modal, setModal] = useState(null); // 'login' | 'register' | null
+
+      useEffect(() => {
+        const stored = localStorage.getItem('rd_token');
+        if (!stored) { setLoading(false); return; }
+        API.call('/api/auth/me', 'GET', null, stored).then(({ ok, data }) => {
+          if (ok) {
+            setUser(data);
+            setToken(stored);
+          } else {
+            localStorage.removeItem('rd_token');
+          }
+          setLoading(false);
+        }).catch(() => setLoading(false));
+      }, []);
+
+      function handleAuthSuccess(userData, newToken) {
+        setUser(userData);
+        setToken(newToken);
+        setModal(null);
+      }
+
+      function handleLogout() {
+        if (token) {
+          API.call('/api/auth/logout', 'POST', null, token).catch(() => {});
+        }
+        localStorage.removeItem('rd_token');
+        setUser(null);
+        setToken(null);
+      }
+
+      if (loading) {
+        return (
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', gap: '12px' }}>
+            <Spinner />
+            <span style={{ color: 'var(--muted)', fontSize: '14px' }}>Loading...</span>
+          </div>
+        );
+      }
+
+      return (
+        <>
+          {user ? (
+            <Dashboard
+              user={user}
+              token={token}
+              onLogout={handleLogout}
+              onUserUpdate={setUser}
+            />
+          ) : (
+            <LandingPage
+              onShowLogin={() => setModal('login')}
+              onShowRegister={() => setModal('register')}
+            />
+          )}
+
+          {modal === 'login' && (
+            <LoginModal
+              onClose={() => setModal(null)}
+              onSuccess={handleAuthSuccess}
+              onSwitchToRegister={() => setModal('register')}
+            />
+          )}
+          {modal === 'register' && (
+            <RegisterModal
+              onClose={() => setModal(null)}
+              onSuccess={handleAuthSuccess}
+              onSwitchToLogin={() => setModal('login')}
+            />
+          )}
+        </>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
