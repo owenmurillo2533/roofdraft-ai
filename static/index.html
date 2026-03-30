@@ -644,17 +644,11 @@
 
     /* Hero */
     .hero {
-      padding: 88px 60px 76px;
-      background: var(--near-black);
+      padding: 96px 60px 86px;
+      background: linear-gradient(rgba(0,0,0,0.56), rgba(0,0,0,0.60)),
+                  url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1600&q=80') center/cover no-repeat;
       border-bottom: none;
       position: relative;
-    }
-    .hero::after {
-      content: '';
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
-      height: 1px;
-      background: rgba(255,255,255,0.08);
     }
     .hero-inner {
       max-width: 720px;
@@ -857,54 +851,35 @@
 
     /* Testimonials */
     .testimonials-section {
-      background: var(--off-white);
-      padding: 80px 60px;
+      background: var(--white);
+      padding: 72px 60px;
       border-bottom: 1px solid var(--border);
     }
     .testimonials-inner { max-width: 1100px; margin: 0 auto; }
-    .testimonials-carousel-inner {
-      position: relative;
-      min-height: 220px;
-      margin-top: 40px;
-    }
-    .testimonials-slide {
+    .testimonials-grid-static {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 24px;
-      opacity: 0;
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      transition: opacity 0.65s ease;
-      pointer-events: none;
-    }
-    .testimonials-slide.active {
-      opacity: 1;
-      position: relative;
-      pointer-events: auto;
+      gap: 22px;
+      margin-top: 36px;
     }
     .testimonial-card {
-      background: var(--white);
+      background: #FAF8F5;
       border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 26px 26px 22px;
-      box-shadow: 0 2px 8px rgba(26,23,21,0.07);
-      transition: box-shadow 0.15s, transform 0.15s;
-    }
-    .testimonial-card:hover {
-      box-shadow: 0 4px 16px rgba(26,23,21,0.11);
-      transform: translateY(-2px);
+      border-left: 4px solid var(--roof-red);
+      border-radius: 6px;
+      padding: 24px 22px 22px;
     }
     .testimonial-stars {
       color: #F59E0B;
-      font-size: 15px;
+      font-size: 14px;
       letter-spacing: 2px;
-      margin-bottom: 12px;
+      margin-bottom: 11px;
     }
     .testimonial-quote {
       font-size: 15px;
-      line-height: 1.72;
+      line-height: 1.68;
       color: var(--charcoal);
-      margin-bottom: 18px;
+      margin-bottom: 16px;
       font-style: italic;
     }
     .testimonial-author {
@@ -917,24 +892,379 @@
       color: var(--slate-light);
       margin-top: 2px;
     }
-    .testimonials-dots {
-      display: flex;
-      justify-content: center;
-      gap: 8px;
-      margin-top: 30px;
+
+    /* Pricing v2 */
+    .pricing-section {
+      background: var(--off-white);
+      background-image: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 40px,
+        rgba(0,0,0,0.012) 40px,
+        rgba(0,0,0,0.012) 41px
+      );
+      padding: 80px 60px;
+      border-bottom: 1px solid var(--border);
     }
-    .testimonials-dot {
-      width: 9px; height: 9px;
-      border-radius: 50%;
-      background: var(--mid-gray);
+    .pricing-grid-v2 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      align-items: start;
+      margin-top: 0;
+    }
+    .pricing-card-v2 {
+      background: var(--white);
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 1px 4px rgba(26,23,21,0.05);
+    }
+    .pricing-card-pro {
+      border-top: 4px solid var(--roof-red);
+      border-color: var(--roof-red);
+      box-shadow: 0 6px 28px rgba(192,57,43,0.14);
+    }
+    .pricing-badge-all {
+      display: inline-block;
+      background: var(--near-black);
+      color: var(--white);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      padding: 3px 10px;
+      border-radius: 3px;
+      margin-bottom: 14px;
+    }
+    .pricing-features-v2 {
+      list-style: none;
+      margin-bottom: 24px;
+      flex: 1;
+    }
+    .pricing-features-v2 li {
+      padding: 7px 0;
+      font-size: 14px;
+      color: var(--charcoal);
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      border-bottom: 1px solid var(--light-gray);
+    }
+    .pricing-features-v2 li:last-child { border-bottom: none; }
+    .pf-check { color: var(--success); font-weight: 700; flex-shrink: 0; font-size: 13px; margin-top: 1px; line-height: 1.5; }
+    .pf-x { color: var(--mid-gray); font-weight: 700; flex-shrink: 0; font-size: 13px; margin-top: 1px; line-height: 1.5; }
+    .pf-x-text { color: var(--slate-light); }
+    .pricing-pro-note {
+      font-size: 12px;
+      color: var(--slate);
+      text-align: center;
+      margin-top: 10px;
+      font-style: italic;
+    }
+
+    /* Plan comparison table */
+    .compare-section { margin-top: 52px; }
+    .compare-section-title {
+      font-family: 'Oswald', sans-serif;
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--near-black);
+      margin-bottom: 18px;
+      text-align: center;
+    }
+    .compare-table-wrap {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(26,23,21,0.06);
+    }
+    .compare-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    .compare-table th {
+      padding: 13px 16px;
+      text-align: center;
+      background: var(--near-black);
+      color: var(--white);
+      font-family: 'Oswald', sans-serif;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    .compare-table th:first-child { text-align: left; background: var(--charcoal); }
+    .compare-table td {
+      padding: 11px 16px;
+      border-bottom: 1px solid var(--light-gray);
+      text-align: center;
+      color: var(--charcoal);
+    }
+    .compare-table td:first-child { text-align: left; font-weight: 600; }
+    .compare-table tr:last-child td { border-bottom: none; }
+    .compare-table tr:hover td { background: #fafaf9; }
+    .compare-check { color: var(--success); font-weight: 700; font-size: 15px; }
+    .compare-x { color: var(--mid-gray); font-weight: 700; font-size: 15px; }
+
+    /* Folders layout */
+    .folders-layout {
+      display: grid;
+      grid-template-columns: 264px 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+    .folders-left {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: 0 1px 4px rgba(26,23,21,0.05);
+    }
+    .folders-left-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .folders-left-title {
+      font-family: 'Oswald', sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--near-black);
+    }
+    .folder-all-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 16px;
       cursor: pointer;
+      border-bottom: 1px solid var(--light-gray);
+      background: none;
+      border-left: 3px solid transparent;
+      border-right: none;
+      border-top: none;
+      transition: background 0.12s;
+      width: 100%;
+      text-align: left;
+      font-family: 'Source Sans 3', sans-serif;
+    }
+    .folder-all-btn:hover { background: var(--light-gray); }
+    .folder-all-btn.active { background: #fdf0ee; border-left-color: var(--roof-red); }
+    .folder-row {
+      border-bottom: 1px solid var(--light-gray);
+      border-left: 3px solid transparent;
+      transition: background 0.12s;
+    }
+    .folder-row:hover { background: var(--light-gray); }
+    .folder-row.active { background: #fdf0ee; border-left-color: var(--roof-red); }
+    .folder-row-inner {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 11px 16px 11px 13px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      width: 100%;
+      font-family: 'Source Sans 3', sans-serif;
+      text-align: left;
+    }
+    .folder-color-bar {
+      width: 4px;
+      height: 20px;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+    .folder-row-name {
+      flex: 1;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--charcoal);
+      min-width: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .folder-row-count {
+      font-size: 12px;
+      color: var(--slate-light);
+      background: var(--light-gray);
+      border-radius: 10px;
+      padding: 2px 7px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+    .folder-row-actions {
+      display: flex;
+      gap: 3px;
+      flex-shrink: 0;
+      margin-left: 4px;
+    }
+    .folder-action-btn {
+      background: none;
+      border: 1px solid transparent;
+      border-radius: 3px;
+      padding: 3px 6px;
+      cursor: pointer;
+      font-size: 11px;
+      color: var(--slate-light);
+      line-height: 1;
+      transition: all 0.1s;
+    }
+    .folder-action-btn:hover { border-color: var(--charcoal); color: var(--charcoal); background: var(--white); }
+    .folder-action-btn.danger:hover { border-color: var(--roof-red); color: var(--roof-red); }
+    .new-folder-form {
+      padding: 12px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      border-bottom: 1px solid var(--border);
+      background: var(--off-white);
+    }
+    .folder-color-row { display: flex; gap: 8px; align-items: center; }
+    .folder-color-dot {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      cursor: pointer;
+      flex-shrink: 0;
+      padding: 0;
+      transition: transform 0.1s;
+    }
+    .folder-color-dot.selected { border-color: var(--near-black); transform: scale(1.15); }
+    .folder-rename-inline {
+      padding: 8px 12px;
+      display: flex;
+      gap: 6px;
+    }
+    .folders-right {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+      min-height: 400px;
+      box-shadow: 0 1px 4px rgba(26,23,21,0.05);
+    }
+    .folders-right-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    .folders-right-title {
+      font-family: 'Oswald', sans-serif;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--near-black);
+    }
+    .folders-right-count { font-size: 13px; color: var(--slate); font-weight: 600; }
+    .folders-drafts-list { padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+    .folder-draft-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 13px 16px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      transition: border-color 0.12s;
+    }
+    .folder-draft-card:hover { border-color: var(--roof-red); }
+    .folder-draft-main {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+      cursor: pointer;
+      min-width: 0;
+    }
+    .folder-draft-info { flex: 1; min-width: 0; }
+    .folder-draft-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--near-black);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .folder-draft-actions { display: flex; gap: 6px; flex-shrink: 0; align-items: center; }
+    .move-folder-inline { display: flex; gap: 6px; align-items: center; }
+
+    /* Pro upsell under result */
+    .pro-upsell-line {
+      margin-top: 14px;
+      padding: 10px 14px;
+      background: var(--light-gray);
+      border-radius: var(--radius);
+      font-size: 13px;
+      color: var(--slate);
+      border-left: 3px solid var(--mid-gray);
+    }
+
+    /* What's included link in sidebar */
+    .features-link {
+      display: block;
+      font-size: 12px;
+      color: var(--roof-red);
+      text-decoration: underline;
+      cursor: pointer;
+      background: none;
       border: none;
       padding: 0;
-      transition: background 0.25s, transform 0.2s;
+      margin-top: 8px;
+      font-family: 'Source Sans 3', sans-serif;
+      font-weight: 600;
+      text-align: left;
     }
-    .testimonials-dot.active {
-      background: var(--roof-red);
-      transform: scale(1.25);
+    .features-link:hover { color: var(--roof-red-dark); }
+
+    /* UpgradeModal v2 */
+    .upgrade-plans-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      margin-top: 18px;
+    }
+    .upgrade-plan-card {
+      border: 1.5px solid var(--border);
+      border-radius: 6px;
+      padding: 16px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .upgrade-plan-card.featured { border-color: var(--roof-red); }
+    .upgrade-plan-name {
+      font-family: 'Oswald', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--near-black);
+    }
+    .upgrade-plan-price {
+      font-family: 'Oswald', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--roof-red);
+      line-height: 1;
+    }
+    .upgrade-plan-price span { font-size: 12px; color: var(--slate); font-family: 'Source Sans 3', sans-serif; font-weight: 400; }
+    .upgrade-plan-features {
+      list-style: none;
+      font-size: 12px;
+      color: var(--slate);
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      flex: 1;
+    }
+    .upgrade-plan-features li { display: flex; gap: 5px; align-items: flex-start; }
+
+    @media (max-width: 960px) {
+      .testimonials-grid-static { grid-template-columns: 1fr; }
+      .pricing-grid-v2 { grid-template-columns: 1fr; }
+      .pricing-card-pro { transform: none; }
+      .folders-layout { grid-template-columns: 1fr; }
+      .upgrade-plans-grid { grid-template-columns: 1fr; }
     }
 
     /* Pricing */
@@ -1495,7 +1825,7 @@
     @media (max-width: 960px) {
       .landing-nav { padding: 0 24px; }
       .landing-nav-links { display: none; }
-      .hero { padding: 56px 24px 56px; }
+      .hero { padding: 60px 24px 60px; }
       .trust-bar { padding: 24px; }
       .trust-stats { grid-template-columns: repeat(2, 1fr); gap: 18px; }
       .trust-stat { border-right: none; padding: 0; }
@@ -1503,8 +1833,7 @@
       .pricing-section, .faq-section { padding: 56px 24px; }
       .problem-inner { grid-template-columns: 1fr; gap: 32px; }
       .landing-tools-grid, .pricing-grid, .tools-grid { grid-template-columns: 1fr; }
-      .testimonials-slide { grid-template-columns: 1fr; }
-      .testimonials-carousel-inner { min-height: 580px; }
+      .testimonials-grid-static { grid-template-columns: 1fr; }
       .faq-grid { grid-template-columns: 1fr; }
       .faq-item { border-right: none !important; }
       .faq-item:nth-last-child(1) { border-bottom: none; }
@@ -1732,33 +2061,69 @@
     // Upgrade Modal
     // ---------------------------------------------------------------------------
     function UpgradeModal({ onClose }) {
+      const PLANS = [
+        {
+          name: 'Free',
+          price: '$0',
+          period: '/mo',
+          href: null,
+          features: ['5 proposals/month', 'Proposal Generator', '— Follow-Up Email', '— Review Request', '— Job Folders'],
+        },
+        {
+          name: 'Starter',
+          price: '$49',
+          period: '/mo',
+          href: 'mailto:owen.murillo2533@gmail.com?subject=Upgrade Request — Starter Plan',
+          features: ['Unlimited proposals', 'Proposal Generator', 'Saved defaults', '— Follow-Up Email', '— Job Folders'],
+          highlight: false,
+        },
+        {
+          name: 'Pro',
+          price: '$79',
+          period: '/mo',
+          href: 'mailto:owen.murillo2533@gmail.com?subject=Upgrade Request — Pro Plan',
+          features: ['Unlimited proposals', 'All 4 tools', 'Saved defaults', 'Job Folders', 'Priority support'],
+          highlight: true,
+        },
+      ];
       return (
         <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
-          <div className="modal-box upgrade-modal-box">
+          <div className="modal-box" style={{ maxWidth:'560px' }}>
             <button className="modal-close" onClick={onClose}>✕</button>
             <div className="modal-title">Upgrade Your Plan</div>
-            <div className="modal-subtitle">
-              You've used your free generations this month. Choose a plan to keep generating.
-            </div>
-            <div className="upgrade-modal-options">
-              <a className="upgrade-option"
-                href="mailto:owen.murillo2533@gmail.com?subject=Upgrade Request — Starter Plan">
-                <div>
-                  <div className="upgrade-option-name">Starter Plan</div>
-                  <div className="upgrade-option-desc">Unlimited generations · Proposal tool</div>
+            <div className="modal-subtitle">You've hit your free limit. Choose a plan to keep generating.</div>
+            <div className="upgrade-plans-grid">
+              {PLANS.map(p => (
+                <div key={p.name} className={`upgrade-plan-card${p.highlight ? ' featured' : ''}`}>
+                  <div className="upgrade-plan-name">{p.name}</div>
+                  <div className="upgrade-plan-price">{p.price}<span>{p.period}</span></div>
+                  <ul className="upgrade-plan-features">
+                    {p.features.map(f => (
+                      <li key={f}>
+                        <span style={{ color: f.startsWith('—') ? 'var(--mid-gray)' : 'var(--success)', fontWeight:700, flexShrink:0 }}>
+                          {f.startsWith('—') ? '✗' : '✓'}
+                        </span>
+                        <span style={{ color: f.startsWith('—') ? 'var(--slate-light)' : 'var(--charcoal)' }}>
+                          {f.startsWith('—') ? f.slice(2) : f}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                  {p.href ? (
+                    <a href={p.href}
+                      className={`btn btn-sm btn-full${p.highlight ? ' btn-primary' : ' btn-outline-red'}`}
+                      style={p.highlight ? { fontFamily:'Oswald, sans-serif', letterSpacing:'0.03em', textTransform:'uppercase', marginTop:'auto' } : { marginTop:'auto' }}>
+                      Get {p.name}
+                    </a>
+                  ) : (
+                    <button className="btn btn-sm btn-ghost btn-full" style={{ marginTop:'auto' }} onClick={onClose}>
+                      Current Plan
+                    </button>
+                  )}
                 </div>
-                <div className="upgrade-option-price">$49<span style={{fontSize:'14px',color:'var(--slate)',fontFamily:'Source Sans 3'}}>/mo</span></div>
-              </a>
-              <a className="upgrade-option featured"
-                href="mailto:owen.murillo2533@gmail.com?subject=Upgrade Request — Pro Plan">
-                <div>
-                  <div className="upgrade-option-name">Pro Plan</div>
-                  <div className="upgrade-option-desc">Unlimited generations · All 4 tools included</div>
-                </div>
-                <div className="upgrade-option-price">$79<span style={{fontSize:'14px',color:'var(--slate)',fontFamily:'Source Sans 3'}}>/mo</span></div>
-              </a>
+              ))}
             </div>
-            <button className="btn btn-ghost btn-full" style={{ marginTop: '14px' }} onClick={onClose}>
+            <button className="btn btn-ghost btn-full" style={{ marginTop:'14px' }} onClick={onClose}>
               Not right now
             </button>
           </div>
@@ -1767,10 +2132,86 @@
     }
 
     // ---------------------------------------------------------------------------
+    // Save Draft Modal (Pro only)
+    // ---------------------------------------------------------------------------
+    function SaveDraftModal({ result, toolName, token, onClose, onSaved }) {
+      const today = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      const [title, setTitle] = useState(`${TOOL_LABELS[toolName] || toolName} — ${today}`);
+      const [folderId, setFolderId] = useState('');
+      const [folders, setFolders] = useState([]);
+      const [saving, setSaving] = useState(false);
+      const [error, setError] = useState('');
+
+      useEffect(() => {
+        API.call('/api/folders', 'GET', null, token).then(({ ok, data }) => {
+          if (ok) setFolders(data.folders || []);
+        }).catch(() => {});
+      }, []);
+
+      async function handleSave() {
+        if (!title.trim()) return;
+        setSaving(true);
+        setError('');
+        try {
+          const { ok, data } = await API.call('/api/drafts', 'POST', {
+            tool_name: toolName,
+            title: title.trim(),
+            content: result,
+            folder_id: folderId ? parseInt(folderId) : null,
+          }, token);
+          if (ok) {
+            const folderName = folderId
+              ? (folders.find(f => f.id === parseInt(folderId))?.name || 'folder')
+              : 'Saved Drafts';
+            onSaved(folderName);
+          } else {
+            setError(data.error || 'Save failed');
+          }
+        } catch (e) {
+          setError('Connection error');
+        } finally {
+          setSaving(false);
+        }
+      }
+
+      return (
+        <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
+          <div className="modal-box">
+            <button className="modal-close" onClick={onClose}>✕</button>
+            <div className="modal-title">Save to Folder</div>
+            <div className="modal-subtitle">Name this draft and choose where to save it.</div>
+            <div className="modal-form">
+              {error && <div className="modal-error">{error}</div>}
+              <div className="form-group">
+                <label className="form-label">Draft Title</label>
+                <input className="form-input" type="text" value={title} onChange={e => setTitle(e.target.value)} />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Folder</label>
+                <select className="form-select" value={folderId} onChange={e => setFolderId(e.target.value)}>
+                  <option value="">No folder (unfiled)</option>
+                  {folders.map(f => <option key={f.id} value={f.id}>{f.name}</option>)}
+                </select>
+              </div>
+              <button className="btn btn-primary btn-full" onClick={handleSave} disabled={saving}
+                style={{ padding:'13px', fontFamily:'Oswald, sans-serif', letterSpacing:'0.03em', textTransform:'uppercase' }}>
+                {saving ? <><Spinner /> Saving...</> : 'Save Draft'}
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ---------------------------------------------------------------------------
     // Result Card
     // ---------------------------------------------------------------------------
-    function ResultCard({ result, draftSaved }) {
+    function ResultCard({ result, draftSaved, token, user, toolName, onUpgradeNeeded }) {
+      const isPro = user && (user.is_admin || user.plan === 'pro');
+      const isPaying = user && (user.is_admin || user.plan === 'starter' || user.plan === 'pro');
       const [copied, setCopied] = useState(false);
+      const [showSaveModal, setShowSaveModal] = useState(false);
+      const [savedToFolder, setSavedToFolder] = useState('');
 
       function handleCopy() {
         navigator.clipboard.writeText(result).then(() => {
@@ -1784,18 +2225,42 @@
           <div className="result-header">
             <div>
               <div className="result-title">Your Result</div>
-              {draftSaved && (
-                <div className="draft-saved-indicator">✓ Saved to Drafts</div>
-              )}
+              {draftSaved && <div className="draft-saved-indicator">✓ Auto-saved to Drafts</div>}
+              {savedToFolder && <div className="draft-saved-indicator">✓ Saved to {savedToFolder}</div>}
             </div>
-            <button
-              className={`btn btn-sm btn-outline-red${copied ? ' copy-btn-success' : ''}`}
-              onClick={handleCopy}
-            >
-              {copied ? '✓ Copied!' : 'Copy to Clipboard'}
-            </button>
+            <div style={{ display:'flex', gap:8, flexWrap:'wrap', justifyContent:'flex-end' }}>
+              {isPro && !savedToFolder && (
+                <button className="btn btn-sm btn-ghost" onClick={() => setShowSaveModal(true)}>
+                  Save to Folder
+                </button>
+              )}
+              <button
+                className={`btn btn-sm btn-outline-red${copied ? ' copy-btn-success' : ''}`}
+                onClick={handleCopy}
+              >
+                {copied ? '✓ Copied!' : 'Copy to Clipboard'}
+              </button>
+            </div>
           </div>
           <div className="result-text">{result}</div>
+          {user && !isPro && (
+            <div className="pro-upsell-line">
+              Pro users can save and organize drafts into job folders.{' '}
+              <button onClick={onUpgradeNeeded}
+                style={{ background:'none', border:'none', color:'var(--roof-red)', cursor:'pointer', textDecoration:'underline', fontSize:'13px', fontFamily:'Source Sans 3, sans-serif', padding:0, fontWeight:600 }}>
+                Upgrade to Pro →
+              </button>
+            </div>
+          )}
+          {showSaveModal && (
+            <SaveDraftModal
+              result={result}
+              toolName={toolName}
+              token={token}
+              onClose={() => setShowSaveModal(false)}
+              onSaved={name => { setSavedToFolder(name); setShowSaveModal(false); }}
+            />
+          )}
         </div>
       );
     }
@@ -1988,7 +2453,7 @@
               </button>
             </form>
           </div>
-          {result && <ResultCard result={result} draftSaved={draftSaved} />}
+          {result && <ResultCard result={result} draftSaved={draftSaved} token={token} user={user} toolName="proposal" onUpgradeNeeded={onUpgradeNeeded} />}
         </div>
       );
     }
@@ -2068,7 +2533,7 @@
               </button>
             </form>
           </div>
-          {result && <ResultCard result={result} draftSaved={draftSaved} />}
+          {result && <ResultCard result={result} draftSaved={draftSaved} token={token} user={user} toolName="followup" onUpgradeNeeded={onUpgradeNeeded} />}
         </div>
       );
     }
@@ -2139,7 +2604,7 @@
               </button>
             </form>
           </div>
-          {result && <ResultCard result={result} draftSaved={draftSaved} />}
+          {result && <ResultCard result={result} draftSaved={draftSaved} token={token} user={user} toolName="review" onUpgradeNeeded={onUpgradeNeeded} />}
         </div>
       );
     }
@@ -2215,7 +2680,7 @@
               </button>
             </form>
           </div>
-          {result && <ResultCard result={result} draftSaved={draftSaved} />}
+          {result && <ResultCard result={result} draftSaved={draftSaved} token={token} user={user} toolName="referral" onUpgradeNeeded={onUpgradeNeeded} />}
         </div>
       );
     }
@@ -2801,23 +3266,361 @@
     }
 
     // ---------------------------------------------------------------------------
+    // Job Folders Page (Pro only)
+    // ---------------------------------------------------------------------------
+    function FoldersPage({ token, user, onUpgradeNeeded }) {
+      const isPro = user.is_admin || user.plan === 'pro';
+
+      // Upgrade wall for non-pro
+      if (!isPro) {
+        return (
+          <div>
+            <div className="page-title">Job Folders</div>
+            <div className="page-subtitle">Organize your proposals and generated content by client or job.</div>
+            <div className="defaults-upgrade-card">
+              <div className="defaults-upgrade-icon" style={{ fontSize:32 }}>◻</div>
+              <div className="defaults-upgrade-title">Available on Pro Plan</div>
+              <div className="defaults-upgrade-desc">
+                Job Folders let you save, name, and organize every proposal, email, and message you generate — sorted by client or job site. Access everything in one place.
+              </div>
+              <div className="defaults-upgrade-actions">
+                <a href="mailto:owen.murillo2533@gmail.com?subject=Upgrade Request — Pro Plan"
+                  className="btn btn-primary btn-sm"
+                  style={{ fontFamily:'Oswald, sans-serif', letterSpacing:'0.03em', textTransform:'uppercase' }}>
+                  Upgrade to Pro — $79/mo
+                </a>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      const FOLDER_COLORS = ['#C0392B','#4A5568','#D4A853','#27AE60','#2C2825','#718096'];
+
+      const [folders, setFolders] = useState([]);
+      const [selectedFolder, setSelectedFolder] = useState('all');
+      const [drafts, setDrafts] = useState([]);
+      const [loadingDrafts, setLoadingDrafts] = useState(true);
+      const [showNewFolder, setShowNewFolder] = useState(false);
+      const [newFolderName, setNewFolderName] = useState('');
+      const [newFolderColor, setNewFolderColor] = useState('#C0392B');
+      const [creatingFolder, setCreatingFolder] = useState(false);
+      const [renamingId, setRenamingId] = useState(null);
+      const [renameVal, setRenameVal] = useState('');
+      const [viewingDraft, setViewingDraft] = useState(null);
+      const [movingDraftId, setMovingDraftId] = useState(null);
+      const [moveFolderVal, setMoveFolderVal] = useState('');
+      const [copied, setCopied] = useState(false);
+
+      useEffect(() => {
+        loadFolders();
+        loadDrafts('all');
+      }, []);
+
+      async function loadFolders() {
+        const { ok, data } = await API.call('/api/folders', 'GET', null, token);
+        if (ok) setFolders(data.folders || []);
+      }
+
+      async function loadDrafts(fId) {
+        setLoadingDrafts(true);
+        const url = fId === 'all' ? '/api/drafts' : `/api/drafts?folder_id=${fId}`;
+        const { ok, data } = await API.call(url, 'GET', null, token);
+        if (ok) setDrafts(data.drafts || []);
+        setLoadingDrafts(false);
+      }
+
+      async function handleSelectFolder(fId) {
+        setSelectedFolder(fId);
+        await loadDrafts(fId);
+      }
+
+      async function handleCreateFolder(e) {
+        e.preventDefault();
+        if (!newFolderName.trim()) return;
+        setCreatingFolder(true);
+        const { ok, data } = await API.call('/api/folders', 'POST', { name: newFolderName.trim(), color: newFolderColor }, token);
+        setCreatingFolder(false);
+        if (ok) {
+          setFolders(f => [...f, { ...data.folder, draft_count: 0 }]);
+          setNewFolderName('');
+          setShowNewFolder(false);
+        }
+      }
+
+      async function handleDeleteFolder(fId) {
+        if (!window.confirm('Delete this folder? Drafts inside will become unfiled.')) return;
+        await API.call(`/api/folders/${fId}`, 'DELETE', null, token);
+        setFolders(f => f.filter(x => x.id !== fId));
+        if (selectedFolder === fId) { setSelectedFolder('all'); loadDrafts('all'); }
+      }
+
+      async function handleRenameFolder(fId) {
+        if (!renameVal.trim()) { setRenamingId(null); return; }
+        await API.call(`/api/folders/${fId}`, 'PATCH', { name: renameVal.trim() }, token);
+        setFolders(f => f.map(x => x.id === fId ? { ...x, name: renameVal.trim() } : x));
+        setRenamingId(null);
+      }
+
+      async function handleOpenDraft(draft) {
+        const { ok, data } = await API.call(`/api/drafts/${draft.id}`, 'GET', null, token);
+        if (ok) setViewingDraft(data.draft);
+      }
+
+      async function handleDeleteDraft(e, dId) {
+        e.stopPropagation();
+        if (!window.confirm('Delete this draft?')) return;
+        await API.call(`/api/drafts/${dId}`, 'DELETE', null, token);
+        setDrafts(d => d.filter(x => x.id !== dId));
+      }
+
+      async function handleMoveDraft(dId) {
+        const fId = moveFolderVal === '' ? null : parseInt(moveFolderVal);
+        await API.call(`/api/drafts/${dId}`, 'PATCH', { folder_id: fId }, token);
+        setMovingDraftId(null);
+        loadDrafts(selectedFolder);
+      }
+
+      const selectedFolderName = selectedFolder === 'all' ? 'All Drafts' : (folders.find(f => f.id === selectedFolder)?.name || 'Drafts');
+
+      return (
+        <div>
+          <div className="page-title">Job Folders</div>
+          <div className="page-subtitle">Organize your saved content by client or job site.</div>
+          <div className="folders-layout">
+
+            {/* Left panel */}
+            <div className="folders-left">
+              <div className="folders-left-header">
+                <div className="folders-left-title">My Folders</div>
+                <button className="btn btn-primary btn-sm" style={{ padding:'7px 12px', fontSize:'13px' }}
+                  onClick={() => setShowNewFolder(s => !s)}>+ New</button>
+              </div>
+
+              {showNewFolder && (
+                <form className="new-folder-form" onSubmit={handleCreateFolder}>
+                  <input className="form-input" type="text" placeholder="Folder name"
+                    value={newFolderName} onChange={e => setNewFolderName(e.target.value)} required autoFocus
+                    style={{ fontSize:'14px', padding:'8px 10px' }} />
+                  <div className="folder-color-row">
+                    <span style={{ fontSize:'12px', color:'var(--slate)', fontWeight:600, marginRight:2 }}>Color:</span>
+                    {FOLDER_COLORS.map(c => (
+                      <button key={c} type="button"
+                        className={`folder-color-dot${newFolderColor === c ? ' selected' : ''}`}
+                        style={{ background: c }}
+                        onClick={() => setNewFolderColor(c)} />
+                    ))}
+                  </div>
+                  <button className="btn btn-primary btn-sm btn-full" type="submit" disabled={creatingFolder}>
+                    {creatingFolder ? 'Creating...' : 'Create Folder'}
+                  </button>
+                </form>
+              )}
+
+              <button
+                className={`folder-all-btn${selectedFolder === 'all' ? ' active' : ''}`}
+                onClick={() => handleSelectFolder('all')}
+              >
+                <span style={{ fontSize:'15px' }}>◻</span>
+                <span className="folder-row-name">All Drafts</span>
+              </button>
+
+              {folders.map(f => (
+                <div key={f.id} className={`folder-row${selectedFolder === f.id ? ' active' : ''}`}>
+                  {renamingId === f.id ? (
+                    <div className="folder-rename-inline">
+                      <input className="form-input" style={{ padding:'6px 8px', fontSize:'13px', flex:1 }}
+                        value={renameVal} onChange={e => setRenameVal(e.target.value)} autoFocus
+                        onKeyDown={e => { if (e.key === 'Enter') handleRenameFolder(f.id); if (e.key === 'Escape') setRenamingId(null); }} />
+                      <button className="btn btn-sm btn-primary" style={{ padding:'6px 10px', fontSize:'12px', flexShrink:0 }}
+                        onClick={() => handleRenameFolder(f.id)}>✓</button>
+                    </div>
+                  ) : (
+                    <button className="folder-row-inner" onClick={() => handleSelectFolder(f.id)}>
+                      <span className="folder-color-bar" style={{ background: f.color }} />
+                      <span className="folder-row-name">{f.name}</span>
+                      <span className="folder-row-count">{f.draft_count}</span>
+                      <div className="folder-row-actions">
+                        <button className="folder-action-btn" title="Rename"
+                          onClick={e => { e.stopPropagation(); setRenamingId(f.id); setRenameVal(f.name); }}>✎</button>
+                        <button className="folder-action-btn danger" title="Delete"
+                          onClick={e => { e.stopPropagation(); handleDeleteFolder(f.id); }}>✕</button>
+                      </div>
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {/* Right panel */}
+            <div className="folders-right">
+              <div className="folders-right-header">
+                <div className="folders-right-title">{selectedFolderName}</div>
+                <div className="folders-right-count">{drafts.length} draft{drafts.length !== 1 ? 's' : ''}</div>
+              </div>
+              {loadingDrafts ? (
+                <div style={{ display:'flex', alignItems:'center', gap:12, padding:'40px 20px', color:'var(--slate)' }}>
+                  <Spinner dark /><span>Loading...</span>
+                </div>
+              ) : drafts.length === 0 ? (
+                <div className="drafts-empty" style={{ paddingTop:40 }}>
+                  <div className="drafts-empty-icon">◻</div>
+                  <h3>No drafts here yet</h3>
+                  <p>Generate content from any tool, then use "Save to Folder" to store it here.</p>
+                </div>
+              ) : (
+                <div className="folders-drafts-list">
+                  {drafts.map(d => (
+                    <div key={d.id} className="folder-draft-card">
+                      <div className="folder-draft-main" onClick={() => handleOpenDraft(d)}>
+                        <span className="draft-tool-badge">{TOOL_LABELS[d.tool_name] || d.tool_name}</span>
+                        <div className="folder-draft-info">
+                          <div className="folder-draft-title">{d.title}</div>
+                          <div className="draft-date">{formatDate(d.created_at)}</div>
+                        </div>
+                      </div>
+                      <div className="folder-draft-actions">
+                        {movingDraftId === d.id ? (
+                          <div className="move-folder-inline">
+                            <select className="form-select" style={{ padding:'5px 28px 5px 8px', fontSize:'13px' }}
+                              value={moveFolderVal} onChange={e => setMoveFolderVal(e.target.value)}>
+                              <option value="">Unfiled</option>
+                              {folders.map(f => <option key={f.id} value={f.id}>{f.name}</option>)}
+                            </select>
+                            <button className="btn btn-sm btn-primary" style={{ padding:'5px 10px', fontSize:'12px' }}
+                              onClick={() => handleMoveDraft(d.id)}>Move</button>
+                            <button className="btn btn-sm btn-ghost" style={{ padding:'5px 8px', fontSize:'12px' }}
+                              onClick={() => setMovingDraftId(null)}>✕</button>
+                          </div>
+                        ) : (
+                          <>
+                            <button className="draft-delete-btn"
+                              onClick={() => { setMovingDraftId(d.id); setMoveFolderVal(d.folder_id ? String(d.folder_id) : ''); }}>
+                              Move
+                            </button>
+                            <button className="draft-delete-btn" onClick={e => handleDeleteDraft(e, d.id)}>Delete</button>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Draft viewer modal */}
+          {viewingDraft && (
+            <div className="modal-overlay" onClick={e => e.target === e.currentTarget && setViewingDraft(null)}>
+              <div className="modal-box" style={{ maxWidth:'680px', maxHeight:'85vh', display:'flex', flexDirection:'column' }}>
+                <button className="modal-close" onClick={() => setViewingDraft(null)}>✕</button>
+                <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:12 }}>
+                  <span className="draft-tool-badge">{TOOL_LABELS[viewingDraft.tool_name] || viewingDraft.tool_name}</span>
+                  <span className="draft-date">{formatDate(viewingDraft.created_at)}</span>
+                </div>
+                <div className="modal-title" style={{ fontSize:'20px', marginBottom:14 }}>{viewingDraft.title}</div>
+                <div style={{ flex:1, overflowY:'auto', borderTop:'1px solid var(--border)', paddingTop:16 }}>
+                  <div className="result-text">{viewingDraft.result}</div>
+                </div>
+                <div style={{ paddingTop:14, borderTop:'1px solid var(--border)', marginTop:14 }}>
+                  <button
+                    className={`btn btn-sm btn-outline-red${copied ? ' copy-btn-success' : ''} btn-full`}
+                    onClick={() => {
+                      navigator.clipboard.writeText(viewingDraft.result).then(() => {
+                        setCopied(true); setTimeout(() => setCopied(false), 2000);
+                      });
+                    }}>
+                    {copied ? '✓ Copied!' : 'Copy to Clipboard'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // ---------------------------------------------------------------------------
+    // Feature Comparison Modal
+    // ---------------------------------------------------------------------------
+    function FeatureComparisonModal({ user, onClose }) {
+      const plan = user.is_admin ? 'pro' : (user.plan || 'free');
+      const FEATURES = [
+        ['Monthly proposals', '5/mo', 'Unlimited', 'Unlimited'],
+        ['Proposal Generator', true, true, true],
+        ['Follow-Up Email', false, false, true],
+        ['Review Request', false, false, true],
+        ['Referral Message', false, false, true],
+        ['Saved company defaults', false, true, true],
+        ['Job Folders', false, false, true],
+        ['Support', 'Community', 'Email', 'Priority'],
+      ];
+      function cell(v) {
+        if (v === true)  return <span className="compare-check">✓</span>;
+        if (v === false) return <span className="compare-x">✗</span>;
+        return <span style={{ fontSize:'13px', color:'var(--charcoal)' }}>{v}</span>;
+      }
+      const planLabel = user.is_admin ? 'Admin (Pro)' : plan.charAt(0).toUpperCase() + plan.slice(1);
+      return (
+        <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
+          <div className="modal-box" style={{ maxWidth:'560px', maxHeight:'85vh', overflowY:'auto' }}>
+            <button className="modal-close" onClick={onClose}>✕</button>
+            <div className="modal-title">Plan Features</div>
+            <div className="modal-subtitle">You're on the <strong>{planLabel}</strong> plan</div>
+            <table style={{ width:'100%', borderCollapse:'collapse', marginTop:16, fontSize:14 }}>
+              <thead>
+                <tr>
+                  <th style={{ textAlign:'left', padding:'9px 0', borderBottom:'2px solid var(--border)', color:'var(--slate)', fontSize:'12px', textTransform:'uppercase', letterSpacing:'0.06em' }}>Feature</th>
+                  {['Free','Starter','Pro'].map(p => (
+                    <th key={p} style={{ textAlign:'center', padding:'9px 8px', borderBottom:'2px solid var(--border)', fontSize:'12px', textTransform:'uppercase', letterSpacing:'0.06em', color: p.toLowerCase() === plan || (user.is_admin && p === 'Pro') ? 'var(--roof-red)' : 'var(--slate)' }}>{p}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {FEATURES.map(([label, free, starter, pro]) => (
+                  <tr key={label}>
+                    <td style={{ padding:'9px 0', borderBottom:'1px solid var(--light-gray)', color:'var(--charcoal)' }}>{label}</td>
+                    <td style={{ textAlign:'center', padding:'9px 8px', borderBottom:'1px solid var(--light-gray)' }}>{cell(free)}</td>
+                    <td style={{ textAlign:'center', padding:'9px 8px', borderBottom:'1px solid var(--light-gray)' }}>{cell(starter)}</td>
+                    <td style={{ textAlign:'center', padding:'9px 8px', borderBottom:'1px solid var(--light-gray)' }}>{cell(pro)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {plan !== 'pro' && !user.is_admin && (
+              <div style={{ marginTop:20 }}>
+                <a href="mailto:owen.murillo2533@gmail.com?subject=Upgrade Request — Pro Plan"
+                  className="btn btn-primary btn-full"
+                  style={{ fontFamily:'Oswald, sans-serif', letterSpacing:'0.03em', textTransform:'uppercase' }}>
+                  Upgrade to Pro — $79/mo
+                </a>
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    // ---------------------------------------------------------------------------
     // Sidebar
     // ---------------------------------------------------------------------------
-    function Sidebar({ user, activeTab, onSelectTab, onLogout, mobileOpen, onMobileClose }) {
+    function Sidebar({ user, activeTab, onSelectTab, onLogout, onShowFeatures, mobileOpen, onMobileClose }) {
       const isFree = user.plan === 'free' && !user.is_admin;
       const genCount = user.generations_this_month || 0;
       const pct = isFree ? Math.min(100, (genCount / FREE_LIMIT) * 100) : 0;
 
       const isPaying = user.is_admin || user.plan === 'starter' || user.plan === 'pro';
+      const isPro = user.is_admin || user.plan === 'pro';
       const navItems = [
         { key: 'home',     label: 'Dashboard',          icon: '▦', always: true },
         { key: 'proposal', label: 'Proposal Generator', icon: '◻', always: true },
         { key: 'followup', label: 'Follow-Up Email',    icon: '✉', always: false },
         { key: 'review',   label: 'Review Request',     icon: '★', always: false },
         { key: 'referral', label: 'Referral Message',   icon: '↗', always: false },
-        ...(isPaying ? [{ key: 'drafts',    label: 'Saved Drafts', icon: '⊟', always: true }] : []),
-        { key: 'defaults', label: 'My Defaults', icon: '⚙', always: true },
-        ...(user.is_admin ? [{ key: 'admin', label: 'Admin', icon: '◈', always: true }] : []),
+        ...(isPaying ? [{ key: 'drafts', label: 'Saved Drafts', icon: '⊟', always: true }] : []),
+        { key: 'folders',  label: 'Job Folders',        icon: '◈', always: isPro, proOnly: !isPro },
+        { key: 'defaults', label: 'My Defaults',        icon: '⚙', always: true },
+        ...(user.is_admin ? [{ key: 'admin', label: 'Admin', icon: '▤', always: true }] : []),
       ];
 
       return (
@@ -2836,11 +3639,11 @@
                   key={item.key}
                   className={`nav-item${activeTab === item.key ? ' active' : ''}`}
                   onClick={() => accessible && onSelectTab(item.key)}
-                  style={!accessible ? { opacity: 0.4, cursor: 'not-allowed' } : {}}
+                  style={!accessible ? { opacity: 0.45, cursor: 'default' } : {}}
                 >
                   <span className="nav-icon">{item.icon}</span>
                   {item.label}
-                  {!accessible && <span style={{ marginLeft: 'auto', fontSize: '10px', fontWeight: 700, color: 'var(--slate-light)', letterSpacing: '0.06em' }}>PRO</span>}
+                  {(!accessible || item.proOnly) && <span style={{ marginLeft: 'auto', fontSize: '10px', fontWeight: 700, color: 'var(--slate-light)', letterSpacing: '0.06em' }}>PRO</span>}
                 </button>
               );
             })}
@@ -2851,6 +3654,11 @@
               <span className={`plan-badge ${getPlanBadgeClass(user.plan, user.is_admin)}`}>
                 {user.is_admin ? 'Admin' : (user.plan || 'free').charAt(0).toUpperCase() + (user.plan || 'free').slice(1)}
               </span>
+              {onShowFeatures && (
+                <button className="features-link" onClick={onShowFeatures}>
+                  What's included on my plan?
+                </button>
+              )}
             </div>
             {isFree && (
               <div className="gen-counter">
@@ -2872,6 +3680,7 @@
     function Dashboard({ user, token, onLogout, onUserUpdate }) {
       const [activeTab, setActiveTab] = useState('home');
       const [showUpgrade, setShowUpgrade] = useState(false);
+      const [showFeatures, setShowFeatures] = useState(false);
       const [sidebarOpen, setSidebarOpen] = useState(false);
 
       function handleUpgradeNeeded() { setShowUpgrade(true); }
@@ -2898,6 +3707,7 @@
             activeTab={activeTab}
             onSelectTab={handleSelectTab}
             onLogout={onLogout}
+            onShowFeatures={() => setShowFeatures(true)}
             mobileOpen={sidebarOpen}
             onMobileClose={() => setSidebarOpen(false)}
           />
@@ -2913,10 +3723,12 @@
             {activeTab === 'review'   && <ReviewTool {...toolProps} />}
             {activeTab === 'referral' && <ReferralTool {...toolProps} />}
             {activeTab === 'drafts'   && <DraftsPage token={token} />}
+            {activeTab === 'folders'  && <FoldersPage token={token} user={user} onUpgradeNeeded={handleUpgradeNeeded} />}
             {activeTab === 'defaults' && <DefaultsPage token={token} user={user} onNavigate={setActiveTab} />}
             {activeTab === 'admin'    && user.is_admin && <AdminPage token={token} />}
           </main>
           {showUpgrade && <UpgradeModal onClose={() => setShowUpgrade(false)} />}
+          {showFeatures && <FeatureComparisonModal user={user} onClose={() => setShowFeatures(false)} />}
         </div>
       );
     }
@@ -2976,85 +3788,20 @@
     }
 
     // ---------------------------------------------------------------------------
-    // Testimonials Carousel
-    // ---------------------------------------------------------------------------
-    const ALL_TESTIMONIALS = [
-      { quote: "I used to spend 45 minutes writing proposals. Now it takes me two minutes and they look more professional than anything I was writing myself.", name: "Mike T.", location: "Roofing contractor — Phoenix, AZ" },
-      { quote: "The follow-up emails are the part I hate most about sales. These come out sounding like a real person wrote them, not a robot.", name: "Danny R.", location: "Owner, DRR Roofing — Nashville, TN" },
-      { quote: "I was skeptical at first. But I sent a proposal it generated and the homeowner called me back the same day. First time that's happened in years.", name: "James W.", location: "Independent contractor — Columbus, OH" },
-      { quote: "Closed a $14,000 job using the first proposal it generated. Customer said it was the most professional quote they'd seen. Worth every penny.", name: "Carlos M.", location: "Roofing contractor — Houston, TX" },
-      { quote: "We do 15–20 estimates a week. Before this we were doing them on paper. Now every proposal looks like it came from a big company. Huge difference.", name: "Tyler B.", location: "Owner, Statewide Roofing — Denver, CO" },
-      { quote: "The review request message is so good. Got 6 new Google reviews last month just from the text I copy-paste from this.", name: "Jason H.", location: "Independent contractor — San Antonio, TX" },
-      { quote: "I'm not a writer. Never have been. This makes me look like I am. My close rate has gone up since I started using RoofDraft.", name: "Aaron P.", location: "Roofing contractor — Memphis, TN" },
-      { quote: "My competitors are still sending Word documents. I'm sending polished proposals with my company name, warranties, everything. Night and day.", name: "Steve L.", location: "Owner, Vertex Roofing — Charlotte, NC" },
-      { quote: "I tell every contractor I know to try this. The free trial sold me. I signed up for Pro the same day.", name: "Marcus D.", location: "Roofing contractor — Tampa, FL" },
-      { quote: "Had a customer tell me my proposal was the most thorough they'd seen out of 5 quotes. I didn't even spend 5 minutes filling out the form.", name: "Brandon K.", location: "Independent contractor — Indianapolis, IN" },
-      { quote: "The follow-up emails actually got me a response from a lead I'd written off. She signed the contract two days later.", name: "Craig V.", location: "Owner, Integrity Roofing — Sacramento, CA" },
-      { quote: "Best $79 I spend every month. It's the first thing I recommend to any roofer trying to grow their business.", name: "Derek S.", location: "Roofing contractor — Baton Rouge, LA" },
-    ];
-
-    // Build slides of 3
-    const TESTIMONIAL_SLIDES = [];
-    for (let i = 0; i < ALL_TESTIMONIALS.length; i += 3) {
-      TESTIMONIAL_SLIDES.push(ALL_TESTIMONIALS.slice(i, i + 3));
-    }
-
-    function TestimonialsCarousel() {
-      const [active, setActive] = useState(0);
-      const timerRef = useRef(null);
-
-      function resetTimer() {
-        if (timerRef.current) clearInterval(timerRef.current);
-        timerRef.current = setInterval(() => {
-          setActive(a => (a + 1) % TESTIMONIAL_SLIDES.length);
-        }, 5000);
-      }
-
-      useEffect(() => {
-        resetTimer();
-        return () => clearInterval(timerRef.current);
-      }, []);
-
-      function goTo(idx) {
-        setActive(idx);
-        resetTimer();
-      }
-
-      return (
-        <div>
-          <div className="testimonials-carousel-inner">
-            {TESTIMONIAL_SLIDES.map((slide, si) => (
-              <div key={si} className={`testimonials-slide${si === active ? ' active' : ''}`}>
-                {slide.map((t, ti) => (
-                  <div key={ti} className="testimonial-card">
-                    <div className="testimonial-stars">★★★★★</div>
-                    <div className="testimonial-quote">"{t.quote}"</div>
-                    <div className="testimonial-author">{t.name}</div>
-                    <div className="testimonial-location">{t.location}</div>
-                  </div>
-                ))}
-              </div>
-            ))}
-          </div>
-          <div className="testimonials-dots">
-            {TESTIMONIAL_SLIDES.map((_, idx) => (
-              <button
-                key={idx}
-                className={`testimonials-dot${idx === active ? ' active' : ''}`}
-                onClick={() => goTo(idx)}
-                aria-label={`Slide ${idx + 1}`}
-              />
-            ))}
-          </div>
-        </div>
-      );
-    }
-
-    // ---------------------------------------------------------------------------
     // Landing Page
     // ---------------------------------------------------------------------------
+    const LANDING_TESTIMONIALS = [
+      { quote: "I used to spend 45 minutes writing proposals. Now it takes me two minutes and they look more professional than anything I was writing myself.", name: "Mike T.", location: "Roofing Contractor — Phoenix, AZ" },
+      { quote: "The follow-up emails are the part I hate most about sales. These come out sounding like a real person wrote them, not a robot.", name: "Danny R.", location: "Owner, DRR Roofing — Nashville, TN" },
+      { quote: "I was skeptical at first. But I sent a proposal it generated and the homeowner called me back the same day. First time that's happened in years.", name: "James W.", location: "Independent Contractor — Columbus, OH" },
+      { quote: "I sent a proposal from my truck before I even left the driveway. Customer signed the same day.", name: "Chris B.", location: "Roofing Contractor — Denver, CO" },
+      { quote: "Went from losing bids to winning them. My proposals used to look like I typed them on my phone. Now they look like I have a real office.", name: "Marcus W.", location: "Roofing Contractor — Tampa, FL" },
+      { quote: "The follow up email tool alone is worth it. I closed a $22,000 job from a lead I thought ghosted me.", name: "Tony R.", location: "Roofing Contractor — Indianapolis, IN" },
+    ];
+
     function LandingPage({ onShowLogin, onShowRegister }) {
       const [legalModal, setLegalModal] = useState(null);
+
       const tools = [
         { name: 'Proposal Generator', desc: 'Complete, professional proposal letters that win jobs. Fill out the job details and get a client-ready document in under 60 seconds.' },
         { name: 'Follow-Up Email',    desc: '3 variations of follow-up emails for prospects who haven\'t responded. Human tone, no pressure, one clear call to action.' },
@@ -3062,38 +3809,30 @@
         { name: 'Referral Message',   desc: 'Ask happy customers for referrals without being awkward. Text and email versions, with optional incentive mention.' },
       ];
 
-      const plans = [
-        {
-          name: 'Free',
-          price: '$0',
-          period: 'forever',
-          features: ['5 generations per month', 'Proposal Generator only', 'No credit card required'],
-          popular: false,
-        },
-        {
-          name: 'Starter',
-          price: '$49',
-          period: 'per month',
-          features: ['Unlimited generations', 'Proposal Generator', 'Priority support'],
-          popular: false,
-        },
-        {
-          name: 'Pro',
-          price: '$79',
-          period: 'per month',
-          features: ['Unlimited generations', 'All 4 tools included', 'Follow-Up Email', 'Review Request', 'Referral Message'],
-          popular: true,
-        },
-      ];
-
       const faqs = [
         { q: 'What is RoofDraft AI?', a: 'A set of AI-powered tools built specifically for roofing contractors. It generates proposals, follow-up emails, review requests, and referral messages in seconds.' },
         { q: 'Do I need a credit card to start?', a: 'No. The free plan gives you 5 generations per month with no card required. Upgrade when you\'re ready.' },
         { q: 'How long does it take to generate a proposal?', a: 'Under 60 seconds. Fill in the form, click generate, and you\'ll have a complete client-ready proposal.' },
         { q: 'Can I use it on my phone?', a: 'Yes. RoofDraft AI is fully mobile-friendly. Use it from the job site, your truck, or anywhere.' },
-        { q: 'What\'s included in the Pro plan?', a: 'All 4 tools: Proposal Generator, Follow-Up Email, Review Request, and Referral Message. Plus unlimited generations.' },
+        { q: 'What\'s included in the Pro plan?', a: 'All 4 tools: Proposal Generator, Follow-Up Email, Review Request, and Referral Message. Plus unlimited generations and Job Folders.' },
         { q: 'Is there a contract or setup fee?', a: 'No contracts, no setup fees, no hidden costs. Cancel any time.' },
       ];
+
+      const COMPARE_ROWS = [
+        ['Monthly proposals', '5/mo', 'Unlimited', 'Unlimited'],
+        ['Proposal Generator', true, true, true],
+        ['Follow-Up Email', false, false, true],
+        ['Review Request', false, false, true],
+        ['Referral Message', false, false, true],
+        ['Saved company defaults', false, true, true],
+        ['Job folders & organization', false, false, true],
+        ['Support', 'Community', 'Email', 'Priority'],
+      ];
+      function cmpCell(v) {
+        if (v === true)  return <span className="compare-check">✓</span>;
+        if (v === false) return <span className="compare-x">✗</span>;
+        return <span style={{ fontSize:'13px' }}>{v}</span>;
+      }
 
       return (
         <div className="landing">
@@ -3139,6 +3878,24 @@
             </div>
           </section>
 
+          {/* Testimonials — second section for immediate social proof */}
+          <section className="testimonials-section">
+            <div className="testimonials-inner">
+              <div className="section-eyebrow">What Contractors Are Saying</div>
+              <h2 className="section-title">Real results from real roofers</h2>
+              <div className="testimonials-grid-static">
+                {LANDING_TESTIMONIALS.map((t, i) => (
+                  <div key={i} className="testimonial-card">
+                    <div className="testimonial-stars">★★★★★</div>
+                    <div className="testimonial-quote">"{t.quote}"</div>
+                    <div className="testimonial-author">{t.name}</div>
+                    <div className="testimonial-location">{t.location}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+
           {/* Trust bar */}
           <div className="trust-bar">
             <div className="trust-bar-label">Trusted by roofing contractors across the US</div>
@@ -3162,7 +3919,7 @@
             </div>
           </div>
 
-          {/* Problem section */}
+          {/* Problem section with roofer photo */}
           <section className="problem-section">
             <div className="problem-inner">
               <div>
@@ -3178,43 +3935,19 @@
                 </p>
               </div>
               <div>
-                <div className="problem-doc">
-                  <div className="problem-doc-header">Roofing Proposal — Sample</div>
-                  <div className="problem-doc-line">
-                    <span className="problem-doc-key">Customer</span>
-                    <span>John & Mary Smith</span>
-                  </div>
-                  <div className="problem-doc-line">
-                    <span className="problem-doc-key">Property</span>
-                    <span>1842 Oak Creek Dr.</span>
-                  </div>
-                  <div className="problem-doc-line">
-                    <span className="problem-doc-key">Roof Type</span>
-                    <span>Asphalt Shingle</span>
-                  </div>
-                  <div className="problem-doc-line">
-                    <span className="problem-doc-key">Materials</span>
-                    <span>GAF Timberline HDZ</span>
-                  </div>
-                  <div className="problem-doc-line">
-                    <span className="problem-doc-key">Labor Warranty</span>
-                    <span>5 Years</span>
-                  </div>
-                  <div className="problem-doc-line">
-                    <span className="problem-doc-key">Deposit</span>
-                    <span>$3,500</span>
-                  </div>
-                  <div className="problem-doc-total">
-                    <span>Total</span>
-                    <span>$11,200</span>
-                  </div>
+                <div style={{ borderRadius:8, overflow:'hidden', boxShadow:'0 6px 28px rgba(26,23,21,0.16)' }}>
+                  <img
+                    src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&q=80"
+                    alt="Roofer working on a residential roof"
+                    style={{ width:'100%', height:'360px', objectFit:'cover', display:'block' }}
+                  />
                 </div>
               </div>
             </div>
           </section>
 
           {/* Tools section */}
-          <section id="tools" className="tools-section">
+          <section id="tools" className="tools-section" style={{ background:'var(--light-gray)' }}>
             <div className="tools-section-inner">
               <div className="section-eyebrow">What's Inside</div>
               <h2 className="section-title">Four tools built for roofing contractors</h2>
@@ -3232,44 +3965,112 @@
             </div>
           </section>
 
-          {/* Testimonials */}
-          <section className="testimonials-section">
-            <div className="testimonials-inner">
-              <div className="section-eyebrow">What Contractors Say</div>
-              <h2 className="section-title">Real results from real roofers</h2>
-              <TestimonialsCarousel />
-            </div>
-          </section>
-
-          {/* Pricing */}
+          {/* Pricing — redesigned with full feature lists */}
           <section id="pricing" className="pricing-section">
             <div className="pricing-section-inner">
               <div className="section-eyebrow">Pricing</div>
               <h2 className="section-title">Simple, honest pricing</h2>
-              <div className="pricing-grid">
-                {plans.map(plan => (
-                  <div key={plan.name} className={`pricing-card${plan.popular ? ' popular' : ''}`}>
-                    {plan.popular && <div className="popular-badge">Most Popular</div>}
-                    <div className="pricing-plan">{plan.name}</div>
-                    <div className="pricing-amount">{plan.price}</div>
-                    <div className="pricing-period">{plan.period}</div>
-                    <hr className="pricing-divider" />
-                    <ul className="pricing-features">
-                      {plan.features.map(f => (
-                        <li key={f}><span className="check">✓</span>{f}</li>
-                      ))}
-                    </ul>
-                    <button
-                      className={`btn ${plan.popular ? 'btn-primary' : 'btn-outline-red'} btn-full`}
-                      onClick={onShowRegister}
-                      style={plan.popular ? { fontFamily:'Oswald, sans-serif', letterSpacing:'0.03em', textTransform:'uppercase', padding:'13px' } : {}}
-                    >
-                      {plan.name === 'Free' ? 'Start Free Trial' : `Get ${plan.name}`}
-                    </button>
-                  </div>
-                ))}
+              <div className="pricing-grid-v2">
+
+                {/* Free */}
+                <div className="pricing-card-v2">
+                  <div className="pricing-plan">Free</div>
+                  <div className="pricing-amount">$0</div>
+                  <div className="pricing-period">forever</div>
+                  <hr className="pricing-divider" />
+                  <ul className="pricing-features-v2">
+                    <li><span className="pf-check">✓</span><span>5 proposals per month</span></li>
+                    <li><span className="pf-check">✓</span><span>Proposal Generator tool</span></li>
+                    <li><span className="pf-x">✗</span><span className="pf-x-text">Follow-Up Email tool</span></li>
+                    <li><span className="pf-x">✗</span><span className="pf-x-text">Review Request tool</span></li>
+                    <li><span className="pf-x">✗</span><span className="pf-x-text">Referral Message tool</span></li>
+                    <li><span className="pf-x">✗</span><span className="pf-x-text">Saved company defaults</span></li>
+                    <li><span className="pf-x">✗</span><span className="pf-x-text">Job folders & organization</span></li>
+                    <li><span className="pf-x">✗</span><span className="pf-x-text">Priority support</span></li>
+                  </ul>
+                  <button className="btn btn-outline-red btn-full" onClick={onShowRegister}>Start Free</button>
+                </div>
+
+                {/* Starter */}
+                <div className="pricing-card-v2">
+                  <div className="popular-badge">Most Popular</div>
+                  <div className="pricing-plan">Starter</div>
+                  <div className="pricing-amount">$49</div>
+                  <div className="pricing-period">per month</div>
+                  <hr className="pricing-divider" />
+                  <ul className="pricing-features-v2">
+                    <li><span className="pf-check">✓</span><span>Unlimited proposals</span></li>
+                    <li><span className="pf-check">✓</span><span>Proposal Generator tool</span></li>
+                    <li><span className="pf-x">✗</span><span className="pf-x-text">Follow-Up Email tool</span></li>
+                    <li><span className="pf-x">✗</span><span className="pf-x-text">Review Request tool</span></li>
+                    <li><span className="pf-x">✗</span><span className="pf-x-text">Referral Message tool</span></li>
+                    <li><span className="pf-check">✓</span><span>Saved company defaults</span></li>
+                    <li><span className="pf-x">✗</span><span className="pf-x-text">Job folders & organization</span></li>
+                    <li><span className="pf-check">✓</span><span>Email support</span></li>
+                  </ul>
+                  <a href="mailto:owen.murillo2533@gmail.com?subject=Upgrade Request — Starter Plan"
+                    className="btn btn-primary btn-full"
+                    style={{ fontFamily:'Oswald, sans-serif', letterSpacing:'0.03em', textTransform:'uppercase' }}>
+                    Get Starter
+                  </a>
+                </div>
+
+                {/* Pro */}
+                <div className="pricing-card-v2 pricing-card-pro">
+                  <div className="pricing-badge-all">Everything Included</div>
+                  <div className="pricing-plan">Pro</div>
+                  <div className="pricing-amount">$79</div>
+                  <div className="pricing-period">per month</div>
+                  <hr className="pricing-divider" />
+                  <ul className="pricing-features-v2">
+                    <li><span className="pf-check">✓</span><span>Unlimited proposals</span></li>
+                    <li><span className="pf-check">✓</span><span>Proposal Generator tool</span></li>
+                    <li><span className="pf-check">✓</span><span>Follow-Up Email tool</span></li>
+                    <li><span className="pf-check">✓</span><span>Review Request tool</span></li>
+                    <li><span className="pf-check">✓</span><span>Referral Message tool</span></li>
+                    <li><span className="pf-check">✓</span><span>Saved company defaults</span></li>
+                    <li><span className="pf-check">✓</span><span>Job folders & organization</span></li>
+                    <li><span className="pf-check">✓</span><span>Priority support</span></li>
+                  </ul>
+                  <a href="mailto:owen.murillo2533@gmail.com?subject=Upgrade Request — Pro Plan"
+                    className="btn btn-primary btn-full"
+                    style={{ fontFamily:'Oswald, sans-serif', letterSpacing:'0.03em', textTransform:'uppercase' }}>
+                    Get Pro
+                  </a>
+                  <div className="pricing-pro-note">Best for contractors running 10+ estimates per week</div>
+                </div>
               </div>
-              <div className="pricing-note">No contracts. No setup fees. Cancel any time.</div>
+
+              <div className="pricing-note" style={{ marginTop:28 }}>
+                All plans include a 7-day free trial. No contracts. Cancel any time.
+              </div>
+
+              {/* Comparison table */}
+              <div className="compare-section">
+                <div className="compare-section-title">Full Plan Comparison</div>
+                <div className="compare-table-wrap">
+                  <table className="compare-table">
+                    <thead>
+                      <tr>
+                        <th>Feature</th>
+                        <th>Free</th>
+                        <th>Starter</th>
+                        <th>Pro</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {COMPARE_ROWS.map(([label, free, starter, pro]) => (
+                        <tr key={label}>
+                          <td>{label}</td>
+                          <td>{cmpCell(free)}</td>
+                          <td>{cmpCell(starter)}</td>
+                          <td>{cmpCell(pro)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             </div>
           </section>
 

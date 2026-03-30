@@ -137,17 +137,32 @@ def init_db():
                 tool_name VARCHAR(100) NOT NULL,
                 title VARCHAR(255) NOT NULL,
                 result TEXT NOT NULL,
+                folder_id INTEGER,
                 created_at TIMESTAMP DEFAULT NOW()
             )""")
             pg_run("CREATE INDEX IF NOT EXISTS idx_drafts_user ON drafts(user_id)")
         except Exception as e:
             print(f"[DB] Drafts table note: {e}")
 
+        # job_folders table
+        try:
+            pg_run("""CREATE TABLE IF NOT EXISTS job_folders (
+                id SERIAL PRIMARY KEY,
+                user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+                name VARCHAR(255) NOT NULL,
+                color VARCHAR(7) DEFAULT '#C0392B',
+                created_at TIMESTAMP DEFAULT NOW()
+            )""")
+            pg_run("CREATE INDEX IF NOT EXISTS idx_folders_user ON job_folders(user_id)")
+        except Exception as e:
+            print(f"[DB] job_folders table note: {e}")
+
         migrations = [
             "ALTER TABLE users ADD COLUMN IF NOT EXISTS generations_this_month INTEGER DEFAULT 0",
             "ALTER TABLE users ADD COLUMN IF NOT EXISTS last_reset_month VARCHAR(7) DEFAULT ''",
             "ALTER TABLE users ADD COLUMN IF NOT EXISTS is_admin BOOLEAN DEFAULT FALSE",
             "ALTER TABLE users ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT TRUE",
+            "ALTER TABLE drafts ADD COLUMN IF NOT EXISTS folder_id INTEGER REFERENCES job_folders(id) ON DELETE SET NULL",
         ]
         for sql in migrations:
             try:
@@ -203,20 +218,37 @@ def init_db():
             updated_at TEXT DEFAULT (datetime('now')),
             FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
         );
+        CREATE TABLE IF NOT EXISTS job_folders (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            name TEXT NOT NULL,
+            color TEXT DEFAULT '#C0392B',
+            created_at TEXT DEFAULT (datetime('now')),
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+        );
         CREATE TABLE IF NOT EXISTS drafts (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id INTEGER NOT NULL,
             tool_name TEXT NOT NULL,
             title TEXT NOT NULL,
             result TEXT NOT NULL,
+            folder_id INTEGER,
             created_at TEXT DEFAULT (datetime('now')),
-            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+            FOREIGN KEY (folder_id) REFERENCES job_folders(id) ON DELETE SET NULL
         );
         CREATE INDEX IF NOT EXISTS idx_sessions_token ON sessions(token);
         CREATE INDEX IF NOT EXISTS idx_logs_user ON generation_logs(user_id);
         CREATE INDEX IF NOT EXISTS idx_drafts_user ON drafts(user_id);
+        CREATE INDEX IF NOT EXISTS idx_folders_user ON job_folders(user_id);
         """)
         conn.commit()
+        # SQLite migration: add folder_id to existing drafts tables
+        try:
+            conn.execute("ALTER TABLE drafts ADD COLUMN folder_id INTEGER")
+            conn.commit()
+        except Exception:
+            pass  # Column already exists
         conn.close()
         print("[DB] Initialized using SQLite (local)")
 
@@ -481,19 +513,19 @@ def save_defaults(user_id: int, new_data: dict) -> dict:
 # Drafts
 # ---------------------------------------------------------------------------
 
-def save_draft(user_id: int, tool_name: str, title: str, result: str) -> int:
+def save_draft(user_id: int, tool_name: str, title: str, result: str, folder_id=None) -> int:
     if USE_POSTGRES:
         rows = pg_run(
-            "INSERT INTO drafts (user_id, tool_name, title, result) VALUES ($1, $2, $3, $4) RETURNING id",
-            [user_id, tool_name, title, result]
+            "INSERT INTO drafts (user_id, tool_name, title, result, folder_id) VALUES ($1, $2, $3, $4, $5) RETURNING id",
+            [user_id, tool_name, title, result, folder_id]
         )
         return rows[0]['id'] if rows else None
     else:
         conn = get_db()
         cur = conn.cursor()
         cur.execute(
-            "INSERT INTO drafts (user_id, tool_name, title, result) VALUES (?, ?, ?, ?)",
-            (user_id, tool_name, title, result)
+            "INSERT INTO drafts (user_id, tool_name, title, result, folder_id) VALUES (?, ?, ?, ?, ?)",
+            (user_id, tool_name, title, result, folder_id)
         )
         conn.commit()
         draft_id = cur.lastrowid
@@ -501,18 +533,29 @@ def save_draft(user_id: int, tool_name: str, title: str, result: str) -> int:
         return draft_id
 
 
-def get_drafts(user_id: int):
+def get_drafts(user_id: int, folder_id=None):
     if USE_POSTGRES:
+        if folder_id is not None:
+            return pg_run(
+                "SELECT id, tool_name, title, folder_id, created_at FROM drafts WHERE user_id = $1 AND folder_id = $2 ORDER BY created_at DESC",
+                [user_id, folder_id]
+            )
         return pg_run(
-            "SELECT id, tool_name, title, created_at FROM drafts WHERE user_id = $1 ORDER BY created_at DESC",
+            "SELECT id, tool_name, title, folder_id, created_at FROM drafts WHERE user_id = $1 ORDER BY created_at DESC",
             [user_id]
         )
     else:
         conn = get_db()
-        rows = conn.execute(
-            "SELECT id, tool_name, title, created_at FROM drafts WHERE user_id = ? ORDER BY created_at DESC",
-            (user_id,)
-        ).fetchall()
+        if folder_id is not None:
+            rows = conn.execute(
+                "SELECT id, tool_name, title, folder_id, created_at FROM drafts WHERE user_id = ? AND folder_id = ? ORDER BY created_at DESC",
+                (user_id, folder_id)
+            ).fetchall()
+        else:
+            rows = conn.execute(
+                "SELECT id, tool_name, title, folder_id, created_at FROM drafts WHERE user_id = ? ORDER BY created_at DESC",
+                (user_id,)
+            ).fetchall()
         conn.close()
         return [row_to_dict(r) for r in rows]
 
@@ -546,6 +589,138 @@ def delete_draft(user_id: int, draft_id: int) -> bool:
             "DELETE FROM drafts WHERE id = ? AND user_id = ?",
             (draft_id, user_id)
         )
+        conn.commit()
+        conn.close()
+    return True
+
+
+# ---------------------------------------------------------------------------
+# Job Folders
+# ---------------------------------------------------------------------------
+
+def get_folders(user_id: int) -> list:
+    if USE_POSTGRES:
+        rows = pg_run(
+            """SELECT f.id, f.name, f.color, f.created_at,
+                      COUNT(d.id) AS draft_count
+               FROM job_folders f
+               LEFT JOIN drafts d ON d.folder_id = f.id
+               WHERE f.user_id = $1
+               GROUP BY f.id
+               ORDER BY f.created_at ASC""",
+            [user_id]
+        )
+        result = []
+        for r in rows:
+            r = dict(r)
+            if r.get('created_at') and not isinstance(r['created_at'], str):
+                r['created_at'] = r['created_at'].isoformat()
+            result.append(r)
+        return result
+    else:
+        conn = get_db()
+        rows = conn.execute(
+            """SELECT f.id, f.name, f.color, f.created_at,
+                      COUNT(d.id) AS draft_count
+               FROM job_folders f
+               LEFT JOIN drafts d ON d.folder_id = f.id
+               WHERE f.user_id = ?
+               GROUP BY f.id
+               ORDER BY f.created_at ASC""",
+            (user_id,)
+        ).fetchall()
+        conn.close()
+        return [row_to_dict(r) for r in rows]
+
+
+def create_folder(user_id: int, name: str, color: str) -> int:
+    if USE_POSTGRES:
+        rows = pg_run(
+            "INSERT INTO job_folders (user_id, name, color) VALUES ($1, $2, $3) RETURNING id",
+            [user_id, name, color]
+        )
+        return rows[0]['id'] if rows else None
+    else:
+        conn = get_db()
+        cur = conn.cursor()
+        cur.execute(
+            "INSERT INTO job_folders (user_id, name, color) VALUES (?, ?, ?)",
+            (user_id, name, color)
+        )
+        conn.commit()
+        folder_id = cur.lastrowid
+        conn.close()
+        return folder_id
+
+
+def update_folder(user_id: int, folder_id: int, name: str) -> bool:
+    if USE_POSTGRES:
+        pg_run(
+            "UPDATE job_folders SET name = $1 WHERE id = $2 AND user_id = $3",
+            [name, folder_id, user_id]
+        )
+    else:
+        conn = get_db()
+        conn.execute(
+            "UPDATE job_folders SET name = ? WHERE id = ? AND user_id = ?",
+            (name, folder_id, user_id)
+        )
+        conn.commit()
+        conn.close()
+    return True
+
+
+def delete_folder(user_id: int, folder_id: int) -> bool:
+    if USE_POSTGRES:
+        pg_run(
+            "DELETE FROM job_folders WHERE id = $1 AND user_id = $2",
+            [folder_id, user_id]
+        )
+    else:
+        conn = get_db()
+        conn.execute(
+            "DELETE FROM job_folders WHERE id = ? AND user_id = ?",
+            (folder_id, user_id)
+        )
+        conn.commit()
+        conn.close()
+    return True
+
+
+def move_draft(user_id: int, draft_id: int, folder_id='__unset__', title=None) -> bool:
+    if USE_POSTGRES:
+        if title is not None and folder_id != '__unset__':
+            pg_run(
+                "UPDATE drafts SET folder_id = $1, title = $2 WHERE id = $3 AND user_id = $4",
+                [folder_id, title, draft_id, user_id]
+            )
+        elif title is not None:
+            pg_run(
+                "UPDATE drafts SET title = $1 WHERE id = $2 AND user_id = $3",
+                [title, draft_id, user_id]
+            )
+        elif folder_id != '__unset__':
+            pg_run(
+                "UPDATE drafts SET folder_id = $1 WHERE id = $2 AND user_id = $3",
+                [folder_id, draft_id, user_id]
+            )
+    else:
+        conn = get_db()
+        if title is not None and folder_id != '__unset__':
+            conn.execute(
+                "UPDATE drafts SET folder_id = ?, title = ? WHERE id = ? AND user_id = ?",
+                (folder_id, title, draft_id, user_id)
+            )
+        elif title is not None:
+            conn.execute(
+                "UPDATE drafts SET title = ? WHERE id = ? AND user_id = ?",
+                (title, draft_id, user_id)
+            )
+        elif folder_id != '__unset__':
+            conn.execute(
+                "UPDATE drafts SET folder_id = ? WHERE id = ? AND user_id = ?",
+                (folder_id, draft_id, user_id)
+            )
         conn.commit()
         conn.close()
     return True
