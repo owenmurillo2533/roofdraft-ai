@@ -644,29 +644,49 @@
 
     /* Hero */
     .hero {
-      padding: 80px 60px 70px;
-      background: var(--off-white);
-      border-bottom: 1px solid var(--border);
+      padding: 88px 60px 76px;
+      background: var(--near-black);
+      border-bottom: none;
+      position: relative;
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 1px;
+      background: rgba(255,255,255,0.08);
     }
     .hero-inner {
-      max-width: 700px;
+      max-width: 720px;
     }
     .hero-headline {
       font-family: 'Oswald', sans-serif;
-      font-size: clamp(40px, 5vw, 60px);
+      font-size: clamp(42px, 5.5vw, 64px);
       font-weight: 700;
-      line-height: 1.1;
-      margin-bottom: 20px;
-      color: var(--near-black);
+      line-height: 1.08;
+      margin-bottom: 22px;
+      color: #FFFFFF;
+      letter-spacing: -0.01em;
     }
+    .hero-headline span { color: var(--roof-red); }
     .hero-sub {
       font-size: 18px;
-      color: var(--slate);
-      max-width: 540px;
-      margin-bottom: 36px;
-      line-height: 1.65;
+      color: rgba(255,255,255,0.68);
+      max-width: 560px;
+      margin-bottom: 38px;
+      line-height: 1.68;
     }
     .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; }
+    .btn-outline-white {
+      background: transparent;
+      color: rgba(255,255,255,0.85);
+      border: 2px solid rgba(255,255,255,0.28);
+    }
+    .btn-outline-white:hover {
+      border-color: rgba(255,255,255,0.65);
+      color: #fff;
+      text-decoration: none;
+    }
 
     /* Trust bar */
     .trust-bar {
@@ -837,30 +857,54 @@
 
     /* Testimonials */
     .testimonials-section {
-      background: var(--white);
+      background: var(--off-white);
       padding: 80px 60px;
       border-bottom: 1px solid var(--border);
     }
     .testimonials-inner { max-width: 1100px; margin: 0 auto; }
-    .testimonials-grid {
+    .testimonials-carousel-inner {
+      position: relative;
+      min-height: 220px;
+      margin-top: 40px;
+    }
+    .testimonials-slide {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 24px;
-      margin-top: 40px;
+      opacity: 0;
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      transition: opacity 0.65s ease;
+      pointer-events: none;
+    }
+    .testimonials-slide.active {
+      opacity: 1;
+      position: relative;
+      pointer-events: auto;
     }
     .testimonial-card {
       background: var(--white);
       border: 1px solid var(--border);
-      border-left: 4px solid var(--roof-red);
-      border-radius: 6px;
-      padding: 24px 24px 24px 22px;
-      box-shadow: 0 1px 4px rgba(26,23,21,0.05);
+      border-radius: 8px;
+      padding: 26px 26px 22px;
+      box-shadow: 0 2px 8px rgba(26,23,21,0.07);
+      transition: box-shadow 0.15s, transform 0.15s;
+    }
+    .testimonial-card:hover {
+      box-shadow: 0 4px 16px rgba(26,23,21,0.11);
+      transform: translateY(-2px);
+    }
+    .testimonial-stars {
+      color: #F59E0B;
+      font-size: 15px;
+      letter-spacing: 2px;
+      margin-bottom: 12px;
     }
     .testimonial-quote {
       font-size: 15px;
-      line-height: 1.7;
+      line-height: 1.72;
       color: var(--charcoal);
-      margin-bottom: 16px;
+      margin-bottom: 18px;
       font-style: italic;
     }
     .testimonial-author {
@@ -872,6 +916,25 @@
       font-size: 13px;
       color: var(--slate-light);
       margin-top: 2px;
+    }
+    .testimonials-dots {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 30px;
+    }
+    .testimonials-dot {
+      width: 9px; height: 9px;
+      border-radius: 50%;
+      background: var(--mid-gray);
+      cursor: pointer;
+      border: none;
+      padding: 0;
+      transition: background 0.25s, transform 0.2s;
+    }
+    .testimonials-dot.active {
+      background: var(--roof-red);
+      transform: scale(1.25);
     }
 
     /* Pricing */
@@ -897,11 +960,13 @@
       box-shadow: 0 1px 4px rgba(26,23,21,0.05);
     }
     .pricing-card.popular {
+      border-color: var(--roof-red);
       border-top: 3px solid var(--roof-red);
-      box-shadow: 0 4px 16px rgba(192,57,43,0.1);
+      box-shadow: 0 6px 24px rgba(192,57,43,0.15);
       position: relative;
-      margin-top: -6px;
+      margin-top: -8px;
       padding-top: 34px;
+      background: #fffcfb;
     }
     .popular-badge {
       display: inline-block;
@@ -1036,6 +1101,36 @@
       font-size: 24px;
       font-weight: 700;
       color: var(--roof-red);
+    }
+
+    /* ---- Back to Dashboard button ---- */
+    .back-to-dash {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 9px 18px;
+      background: var(--white);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--charcoal);
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-bottom: 24px;
+      transition: border-color 0.15s, color 0.15s, box-shadow 0.15s;
+      text-decoration: none;
+      box-shadow: 0 1px 3px rgba(26,23,21,0.06);
+    }
+    .back-to-dash:hover {
+      border-color: var(--charcoal);
+      color: var(--near-black);
+      box-shadow: 0 2px 6px rgba(26,23,21,0.1);
+      text-decoration: none;
+    }
+    .back-to-dash-arrow {
+      font-size: 13px;
+      line-height: 1;
     }
 
     /* ---- Loading screen ---- */
@@ -1400,7 +1495,7 @@
     @media (max-width: 960px) {
       .landing-nav { padding: 0 24px; }
       .landing-nav-links { display: none; }
-      .hero { padding: 50px 24px 50px; }
+      .hero { padding: 56px 24px 56px; }
       .trust-bar { padding: 24px; }
       .trust-stats { grid-template-columns: repeat(2, 1fr); gap: 18px; }
       .trust-stat { border-right: none; padding: 0; }
@@ -1408,7 +1503,8 @@
       .pricing-section, .faq-section { padding: 56px 24px; }
       .problem-inner { grid-template-columns: 1fr; gap: 32px; }
       .landing-tools-grid, .pricing-grid, .tools-grid { grid-template-columns: 1fr; }
-      .testimonials-grid { grid-template-columns: 1fr; }
+      .testimonials-slide { grid-template-columns: 1fr; }
+      .testimonials-carousel-inner { min-height: 580px; }
       .faq-grid { grid-template-columns: 1fr; }
       .faq-item { border-right: none !important; }
       .faq-item:nth-last-child(1) { border-bottom: none; }
@@ -1438,7 +1534,7 @@
 
   <script type="text/babel">
     console.log('RoofDraft script starting');
-    const { useState, useEffect, useCallback } = React;
+    const { useState, useEffect, useCallback, useRef } = React;
     console.log('React hooks loaded');
 
     // ---------------------------------------------------------------------------
@@ -2806,6 +2902,11 @@
             onMobileClose={() => setSidebarOpen(false)}
           />
           <main className="main-content">
+            {activeTab !== 'home' && (
+              <button className="back-to-dash" onClick={() => handleSelectTab('home')}>
+                <span className="back-to-dash-arrow">←</span> Back to Dashboard
+              </button>
+            )}
             {activeTab === 'home'     && <DashboardHome user={user} onSelectTab={setActiveTab} />}
             {activeTab === 'proposal' && <ProposalTool {...toolProps} />}
             {activeTab === 'followup' && <FollowUpTool {...toolProps} />}
@@ -2869,6 +2970,81 @@
               <p style={{ marginBottom: 8 }}><strong style={{ color: 'var(--near-black)' }}>Contact</strong></p>
               <p>Email owen.murillo2533@gmail.com to request data deletion or with any privacy questions.</p>
             </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ---------------------------------------------------------------------------
+    // Testimonials Carousel
+    // ---------------------------------------------------------------------------
+    const ALL_TESTIMONIALS = [
+      { quote: "I used to spend 45 minutes writing proposals. Now it takes me two minutes and they look more professional than anything I was writing myself.", name: "Mike T.", location: "Roofing contractor — Phoenix, AZ" },
+      { quote: "The follow-up emails are the part I hate most about sales. These come out sounding like a real person wrote them, not a robot.", name: "Danny R.", location: "Owner, DRR Roofing — Nashville, TN" },
+      { quote: "I was skeptical at first. But I sent a proposal it generated and the homeowner called me back the same day. First time that's happened in years.", name: "James W.", location: "Independent contractor — Columbus, OH" },
+      { quote: "Closed a $14,000 job using the first proposal it generated. Customer said it was the most professional quote they'd seen. Worth every penny.", name: "Carlos M.", location: "Roofing contractor — Houston, TX" },
+      { quote: "We do 15–20 estimates a week. Before this we were doing them on paper. Now every proposal looks like it came from a big company. Huge difference.", name: "Tyler B.", location: "Owner, Statewide Roofing — Denver, CO" },
+      { quote: "The review request message is so good. Got 6 new Google reviews last month just from the text I copy-paste from this.", name: "Jason H.", location: "Independent contractor — San Antonio, TX" },
+      { quote: "I'm not a writer. Never have been. This makes me look like I am. My close rate has gone up since I started using RoofDraft.", name: "Aaron P.", location: "Roofing contractor — Memphis, TN" },
+      { quote: "My competitors are still sending Word documents. I'm sending polished proposals with my company name, warranties, everything. Night and day.", name: "Steve L.", location: "Owner, Vertex Roofing — Charlotte, NC" },
+      { quote: "I tell every contractor I know to try this. The free trial sold me. I signed up for Pro the same day.", name: "Marcus D.", location: "Roofing contractor — Tampa, FL" },
+      { quote: "Had a customer tell me my proposal was the most thorough they'd seen out of 5 quotes. I didn't even spend 5 minutes filling out the form.", name: "Brandon K.", location: "Independent contractor — Indianapolis, IN" },
+      { quote: "The follow-up emails actually got me a response from a lead I'd written off. She signed the contract two days later.", name: "Craig V.", location: "Owner, Integrity Roofing — Sacramento, CA" },
+      { quote: "Best $79 I spend every month. It's the first thing I recommend to any roofer trying to grow their business.", name: "Derek S.", location: "Roofing contractor — Baton Rouge, LA" },
+    ];
+
+    // Build slides of 3
+    const TESTIMONIAL_SLIDES = [];
+    for (let i = 0; i < ALL_TESTIMONIALS.length; i += 3) {
+      TESTIMONIAL_SLIDES.push(ALL_TESTIMONIALS.slice(i, i + 3));
+    }
+
+    function TestimonialsCarousel() {
+      const [active, setActive] = useState(0);
+      const timerRef = useRef(null);
+
+      function resetTimer() {
+        if (timerRef.current) clearInterval(timerRef.current);
+        timerRef.current = setInterval(() => {
+          setActive(a => (a + 1) % TESTIMONIAL_SLIDES.length);
+        }, 5000);
+      }
+
+      useEffect(() => {
+        resetTimer();
+        return () => clearInterval(timerRef.current);
+      }, []);
+
+      function goTo(idx) {
+        setActive(idx);
+        resetTimer();
+      }
+
+      return (
+        <div>
+          <div className="testimonials-carousel-inner">
+            {TESTIMONIAL_SLIDES.map((slide, si) => (
+              <div key={si} className={`testimonials-slide${si === active ? ' active' : ''}`}>
+                {slide.map((t, ti) => (
+                  <div key={ti} className="testimonial-card">
+                    <div className="testimonial-stars">★★★★★</div>
+                    <div className="testimonial-quote">"{t.quote}"</div>
+                    <div className="testimonial-author">{t.name}</div>
+                    <div className="testimonial-location">{t.location}</div>
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+          <div className="testimonials-dots">
+            {TESTIMONIAL_SLIDES.map((_, idx) => (
+              <button
+                key={idx}
+                className={`testimonials-dot${idx === active ? ' active' : ''}`}
+                onClick={() => goTo(idx)}
+                aria-label={`Slide ${idx + 1}`}
+              />
+            ))}
           </div>
         </div>
       );
@@ -2942,22 +3118,22 @@
           <section className="hero">
             <div className="hero-inner">
               <h1 className="hero-headline">
-                Stop Losing Jobs to<br />Better-Looking Proposals
+                Stop Losing Jobs to<br /><span>Better-Looking Proposals</span>
               </h1>
               <p className="hero-sub">
                 RoofDraft AI generates professional proposals, follow-ups, and review requests in under 60 seconds — so you spend less time writing and more time on roofs.
               </p>
               <div className="hero-actions">
                 <button className="btn btn-primary" onClick={onShowRegister}
-                  style={{ padding: '14px 30px', fontSize: '17px', fontFamily: 'Oswald, sans-serif', letterSpacing: '0.03em', textTransform: 'uppercase' }}>
+                  style={{ padding: '14px 32px', fontSize: '17px', fontFamily: 'Oswald, sans-serif', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
                   Try Free — No Card Needed
                 </button>
-                <a href="#tools" className="btn btn-outline"
+                <a href="#tools" className="btn btn-outline-white"
                   style={{ padding: '14px 26px', fontSize: '16px' }}>
                   See the Tools
                 </a>
               </div>
-              <p style={{ marginTop: '16px', fontSize: '13px', color: 'var(--slate-light)' }}>
+              <p style={{ marginTop: '18px', fontSize: '13px', color: 'rgba(255,255,255,0.42)' }}>
                 5 free generations. No credit card. Cancel any time.
               </p>
             </div>
@@ -3061,23 +3237,7 @@
             <div className="testimonials-inner">
               <div className="section-eyebrow">What Contractors Say</div>
               <h2 className="section-title">Real results from real roofers</h2>
-              <div className="testimonials-grid">
-                <div className="testimonial-card">
-                  <div className="testimonial-quote">"I used to spend 45 minutes writing proposals. Now it takes me two minutes and they look more professional than anything I was writing myself."</div>
-                  <div className="testimonial-author">Mike T.</div>
-                  <div className="testimonial-location">Roofing contractor — Phoenix, AZ</div>
-                </div>
-                <div className="testimonial-card">
-                  <div className="testimonial-quote">"The follow-up emails are the part I hate most about sales. These come out sounding like a real person wrote them, not a robot."</div>
-                  <div className="testimonial-author">Danny R.</div>
-                  <div className="testimonial-location">Owner, DRR Roofing — Nashville, TN</div>
-                </div>
-                <div className="testimonial-card">
-                  <div className="testimonial-quote">"I was skeptical at first. But I sent a proposal it generated and the homeowner called me back the same day. First time that's happened in years."</div>
-                  <div className="testimonial-author">James W.</div>
-                  <div className="testimonial-location">Independent contractor — Columbus, OH</div>
-                </div>
-              </div>
+              <TestimonialsCarousel />
             </div>
           </section>
 
