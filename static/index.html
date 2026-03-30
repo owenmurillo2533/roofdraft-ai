@@ -1185,6 +1185,174 @@
       .defaults-upgrade-card { max-width: 100%; padding: 28px 20px; }
     }
 
+    /* ---- Admin Dashboard ---- */
+    .admin-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    .admin-stat-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 22px 24px;
+      box-shadow: 0 1px 4px rgba(26,23,21,0.05);
+    }
+    .admin-stat-label {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--slate);
+      margin-bottom: 8px;
+    }
+    .admin-stat-value {
+      font-family: 'Oswald', sans-serif;
+      font-size: 34px;
+      font-weight: 700;
+      color: var(--near-black);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .admin-stat-value.green { color: var(--success); }
+    .admin-stat-sub {
+      font-size: 12px;
+      color: var(--slate-light);
+    }
+    .admin-section-title {
+      font-family: 'Oswald', sans-serif;
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--near-black);
+      margin-bottom: 14px;
+    }
+    .admin-plans-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 32px;
+      flex-wrap: wrap;
+    }
+    .admin-plan-pill {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 14px 20px;
+      flex: 1;
+      min-width: 120px;
+      text-align: center;
+    }
+    .admin-plan-pill-name {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--slate);
+      margin-bottom: 6px;
+    }
+    .admin-plan-pill-count {
+      font-family: 'Oswald', sans-serif;
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--near-black);
+      margin-bottom: 2px;
+    }
+    .admin-plan-pill-rev {
+      font-size: 12px;
+      color: var(--success);
+      font-weight: 600;
+    }
+    .admin-table-wrap {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: 0 1px 4px rgba(26,23,21,0.05);
+    }
+    .admin-table-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .admin-table-title {
+      font-family: 'Oswald', sans-serif;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--near-black);
+    }
+    .admin-user-count {
+      font-size: 13px;
+      color: var(--slate);
+      font-weight: 600;
+    }
+    .admin-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    .admin-table th {
+      text-align: left;
+      padding: 11px 16px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--slate);
+      background: var(--light-gray);
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    .admin-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--light-gray);
+      color: var(--charcoal);
+      vertical-align: middle;
+    }
+    .admin-table tr:last-child td { border-bottom: none; }
+    .admin-table tr:hover td { background: #fafaf9; }
+    .admin-email { font-weight: 600; color: var(--near-black); }
+    .admin-username { color: var(--slate); font-size: 13px; }
+    .admin-gens { font-family: 'Oswald', sans-serif; font-weight: 600; }
+    .admin-date { color: var(--slate); font-size: 13px; white-space: nowrap; }
+    .admin-tools-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 32px;
+      flex-wrap: wrap;
+    }
+    .admin-tool-stat {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 14px 18px;
+      flex: 1;
+      min-width: 130px;
+      border-left: 3px solid var(--roof-red);
+    }
+    .admin-tool-name {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--slate);
+      margin-bottom: 5px;
+    }
+    .admin-tool-count {
+      font-family: 'Oswald', sans-serif;
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--near-black);
+    }
+    @media (max-width: 960px) {
+      .admin-stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .admin-table-wrap { overflow-x: auto; }
+    }
+    @media (max-width: 480px) {
+      .admin-stats-grid { grid-template-columns: 1fr 1fr; }
+    }
+
     /* ---- Mobile Nav Toggle ---- */
     .mobile-nav-bar {
       display: none;
@@ -2021,6 +2189,162 @@
     }
 
     // ---------------------------------------------------------------------------
+    // AdminPage
+    // ---------------------------------------------------------------------------
+    const TOOL_DISPLAY = { proposal:'Proposal', followup:'Follow-Up', review:'Review Request', referral:'Referral' };
+
+    function AdminPage({ token }) {
+      const [stats, setStats] = useState(null);
+      const [users, setUsers] = useState(null);
+      const [loading, setLoading] = useState(true);
+      const [error, setError] = useState('');
+
+      useEffect(() => {
+        Promise.all([
+          API.call('/api/admin/stats', 'GET', null, token),
+          API.call('/api/admin/users', 'GET', null, token),
+        ]).then(([statsRes, usersRes]) => {
+          if (!statsRes.ok || !usersRes.ok) {
+            setError('Failed to load admin data.');
+          } else {
+            setStats(statsRes.data);
+            setUsers(usersRes.data.users || []);
+          }
+          setLoading(false);
+        }).catch(() => { setError('Connection error.'); setLoading(false); });
+      }, [token]);
+
+      if (loading) return (
+        <div style={{ display:'flex', alignItems:'center', gap:12, padding:'40px 0', color:'var(--slate)' }}>
+          <Spinner dark /><span>Loading admin data...</span>
+        </div>
+      );
+
+      if (error) return (
+        <div style={{ padding:'40px 0', color:'var(--roof-red)', fontWeight:600 }}>{error}</div>
+      );
+
+      const planOrder = ['free','starter','pro'];
+      const planPrices = { free:0, starter:49, pro:79 };
+
+      function fmtDate(str) {
+        if (!str) return '—';
+        try { return new Date(str).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
+        catch { return str; }
+      }
+
+      return (
+        <div>
+          <div className="page-title">Admin Dashboard</div>
+          <div className="page-subtitle">All users, usage, and estimated revenue — visible to admins only.</div>
+
+          {/* Top stats */}
+          <div className="admin-stats-grid">
+            <div className="admin-stat-card">
+              <div className="admin-stat-label">Total Users</div>
+              <div className="admin-stat-value">{stats.total_users}</div>
+              <div className="admin-stat-sub">+{stats.new_this_month} this month</div>
+            </div>
+            <div className="admin-stat-card">
+              <div className="admin-stat-label">Paying Users</div>
+              <div className="admin-stat-value">
+                {(stats.plan_counts['starter'] || 0) + (stats.plan_counts['pro'] || 0)}
+              </div>
+              <div className="admin-stat-sub">starter + pro</div>
+            </div>
+            <div className="admin-stat-card">
+              <div className="admin-stat-label">Est. MRR</div>
+              <div className="admin-stat-value green">${stats.estimated_mrr}</div>
+              <div className="admin-stat-sub">based on current plans</div>
+            </div>
+            <div className="admin-stat-card">
+              <div className="admin-stat-label">Generations</div>
+              <div className="admin-stat-value">{stats.total_generations}</div>
+              <div className="admin-stat-sub">{stats.generations_this_month} this month</div>
+            </div>
+          </div>
+
+          {/* Plan breakdown */}
+          <div className="admin-section-title">Users by Plan</div>
+          <div className="admin-plans-row">
+            {planOrder.map(plan => {
+              const count = stats.plan_counts[plan] || 0;
+              const rev = count * planPrices[plan];
+              return (
+                <div key={plan} className="admin-plan-pill">
+                  <div className="admin-plan-pill-name">{plan.charAt(0).toUpperCase()+plan.slice(1)}</div>
+                  <div className="admin-plan-pill-count">{count}</div>
+                  {rev > 0 && <div className="admin-plan-pill-rev">${rev}/mo</div>}
+                  {rev === 0 && <div className="admin-plan-pill-rev" style={{color:'var(--slate-light)'}}>Free</div>}
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Tool usage */}
+          {Object.keys(stats.generations_by_tool).length > 0 && (
+            <>
+              <div className="admin-section-title">Generations by Tool (All Time)</div>
+              <div className="admin-tools-row" style={{marginBottom:32}}>
+                {Object.entries(stats.generations_by_tool).map(([tool, count]) => (
+                  <div key={tool} className="admin-tool-stat">
+                    <div className="admin-tool-name">{TOOL_DISPLAY[tool] || tool}</div>
+                    <div className="admin-tool-count">{count}</div>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+
+          {/* Users table */}
+          <div className="admin-table-wrap">
+            <div className="admin-table-header">
+              <div className="admin-table-title">All Users</div>
+              <div className="admin-user-count">{users.length} total</div>
+            </div>
+            <table className="admin-table">
+              <thead>
+                <tr>
+                  <th>Email</th>
+                  <th>Username</th>
+                  <th>Plan</th>
+                  <th>Total Gens</th>
+                  <th>This Month</th>
+                  <th>Joined</th>
+                  <th>Active</th>
+                </tr>
+              </thead>
+              <tbody>
+                {users.map(u => (
+                  <tr key={u.id}>
+                    <td>
+                      <div className="admin-email">{u.email}</div>
+                      {u.is_admin && <div style={{fontSize:'11px',color:'var(--roof-red)',fontWeight:700,textTransform:'uppercase',letterSpacing:'0.05em'}}>Admin</div>}
+                    </td>
+                    <td><span className="admin-username">{u.username}</span></td>
+                    <td>
+                      <span className={`plan-badge ${getPlanBadgeClass(u.plan, u.is_admin)}`}>
+                        {u.is_admin ? 'Admin' : (u.plan || 'free').charAt(0).toUpperCase() + (u.plan || 'free').slice(1)}
+                      </span>
+                    </td>
+                    <td><span className="admin-gens">{u.total_generations || 0}</span></td>
+                    <td><span className="admin-gens">{u.generations_this_month || 0}</span></td>
+                    <td><span className="admin-date">{fmtDate(u.created_at)}</span></td>
+                    <td>
+                      <span style={{fontSize:'12px',fontWeight:700,color: u.is_active ? 'var(--success)' : 'var(--slate-light)'}}>
+                        {u.is_active ? '● Active' : '○ Inactive'}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      );
+    }
+
+    // ---------------------------------------------------------------------------
     // DefaultsPage
     // ---------------------------------------------------------------------------
     function DefaultsPage({ token, user, onNavigate }) {
@@ -2396,7 +2720,8 @@
         { key: 'review',   label: 'Review Request',     icon: '★', always: false },
         { key: 'referral', label: 'Referral Message',   icon: '↗', always: false },
         ...(isPaying ? [{ key: 'drafts',    label: 'Saved Drafts', icon: '⊟', always: true }] : []),
-        { key: 'defaults', label: 'My Defaults',        icon: '⚙', always: true },
+        { key: 'defaults', label: 'My Defaults', icon: '⚙', always: true },
+        ...(user.is_admin ? [{ key: 'admin', label: 'Admin', icon: '◈', always: true }] : []),
       ];
 
       return (
@@ -2488,6 +2813,7 @@
             {activeTab === 'referral' && <ReferralTool {...toolProps} />}
             {activeTab === 'drafts'   && <DraftsPage token={token} />}
             {activeTab === 'defaults' && <DefaultsPage token={token} user={user} onNavigate={setActiveTab} />}
+            {activeTab === 'admin'    && user.is_admin && <AdminPage token={token} />}
           </main>
           {showUpgrade && <UpgradeModal onClose={() => setShowUpgrade(false)} />}
         </div>
