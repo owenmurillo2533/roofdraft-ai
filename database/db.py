@@ -117,6 +117,18 @@ def init_db():
             except Exception:
                 pass
 
+        # user_defaults table
+        try:
+            pg_run("""CREATE TABLE IF NOT EXISTS user_defaults (
+                id SERIAL PRIMARY KEY,
+                user_id INTEGER REFERENCES users(id) ON DELETE CASCADE UNIQUE,
+                defaults_data JSONB DEFAULT '{}',
+                updated_at TIMESTAMP DEFAULT NOW()
+            )""")
+            pg_run("CREATE INDEX IF NOT EXISTS idx_defaults_user ON user_defaults(user_id)")
+        except Exception as e:
+            print(f"[DB] user_defaults table note: {e}")
+
         # drafts table
         try:
             pg_run("""CREATE TABLE IF NOT EXISTS drafts (
@@ -182,6 +194,13 @@ def init_db():
             user_id INTEGER,
             tool_name TEXT,
             created_at TEXT DEFAULT (datetime('now')),
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+        );
+        CREATE TABLE IF NOT EXISTS user_defaults (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER UNIQUE NOT NULL,
+            defaults_data TEXT DEFAULT '{}',
+            updated_at TEXT DEFAULT (datetime('now')),
             FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
         );
         CREATE TABLE IF NOT EXISTS drafts (
@@ -392,6 +411,70 @@ def require_auth():
         print(f"[Auth] require_auth error: {e}")
         _tb.print_exc()
         return None
+
+
+# ---------------------------------------------------------------------------
+# User Defaults
+# ---------------------------------------------------------------------------
+
+def get_defaults(user_id: int) -> dict:
+    if USE_POSTGRES:
+        import json as _json
+        rows = pg_run(
+            "SELECT defaults_data FROM user_defaults WHERE user_id = $1",
+            [user_id]
+        )
+        if not rows:
+            return {}
+        raw = rows[0]['defaults_data']
+        if isinstance(raw, dict):
+            return raw
+        try:
+            return _json.loads(raw)
+        except Exception:
+            return {}
+    else:
+        import json as _json
+        conn = get_db()
+        row = conn.execute(
+            "SELECT defaults_data FROM user_defaults WHERE user_id = ?",
+            (user_id,)
+        ).fetchone()
+        conn.close()
+        if not row:
+            return {}
+        d = row_to_dict(row)
+        raw = d.get('defaults_data', '{}')
+        try:
+            return _json.loads(raw) if isinstance(raw, str) else (raw or {})
+        except Exception:
+            return {}
+
+
+def save_defaults(user_id: int, new_data: dict) -> dict:
+    import json as _json
+    # Merge new data into existing
+    existing = get_defaults(user_id)
+    merged = {**existing, **new_data}
+
+    if USE_POSTGRES:
+        pg_run(
+            """INSERT INTO user_defaults (user_id, defaults_data, updated_at)
+               VALUES ($1, $2::jsonb, NOW())
+               ON CONFLICT (user_id) DO UPDATE
+               SET defaults_data = $2::jsonb, updated_at = NOW()""",
+            [user_id, _json.dumps(merged)]
+        )
+    else:
+        conn = get_db()
+        conn.execute(
+            """INSERT OR REPLACE INTO user_defaults (user_id, defaults_data, updated_at)
+               VALUES (?, ?, datetime('now'))""",
+            (user_id, _json.dumps(merged))
+        )
+        conn.commit()
+        conn.close()
+    return merged
 
 
 # ---------------------------------------------------------------------------

@@ -30,10 +30,12 @@ if USE_POSTGRES:
 from routes.auth import auth_bp
 from routes.tools import tools_bp
 from routes.drafts import drafts_bp
+from routes.defaults import defaults_bp
 
 app.register_blueprint(auth_bp)
 app.register_blueprint(tools_bp)
 app.register_blueprint(drafts_bp)
+app.register_blueprint(defaults_bp)
 
 
 # ---------------------------------------------------------------------------

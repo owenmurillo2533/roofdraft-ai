@@ -1059,6 +1059,132 @@
       margin-bottom: 4px;
     }
 
+    /* ---- Defaults page ---- */
+    .defaults-section { margin-bottom: 32px; }
+    .defaults-section-title {
+      font-family: 'Oswald', sans-serif;
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--near-black);
+      margin-bottom: 4px;
+    }
+    .defaults-section-subtitle {
+      font-size: 14px;
+      color: var(--slate);
+      margin-bottom: 20px;
+    }
+    .defaults-form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .defaults-save-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-top: 20px;
+    }
+    .defaults-saved-msg {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--success);
+    }
+    .material-input-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .material-remove-btn {
+      flex-shrink: 0;
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--slate-light);
+      cursor: pointer;
+      padding: 8px 10px;
+      font-size: 13px;
+      line-height: 1;
+      transition: all 0.12s;
+    }
+    .material-remove-btn:hover { border-color: var(--roof-red); color: var(--roof-red); background: #fdf0ee; }
+    .add-material-btn {
+      background: none;
+      border: 1.5px dashed var(--mid-gray);
+      border-radius: var(--radius);
+      color: var(--slate);
+      cursor: pointer;
+      padding: 9px 16px;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: 'Source Sans 3', sans-serif;
+      transition: all 0.12s;
+      width: 100%;
+      text-align: left;
+      margin-top: 4px;
+    }
+    .add-material-btn:hover { border-color: var(--roof-red); color: var(--roof-red); }
+    .defaults-upgrade-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 40px;
+      text-align: center;
+      max-width: 520px;
+    }
+    .defaults-upgrade-icon {
+      font-size: 36px;
+      margin-bottom: 16px;
+    }
+    .defaults-upgrade-title {
+      font-family: 'Oswald', sans-serif;
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--near-black);
+      margin-bottom: 10px;
+    }
+    .defaults-upgrade-desc {
+      font-size: 15px;
+      color: var(--slate);
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+    .defaults-upgrade-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    /* defaults indicator on proposal form */
+    .defaults-indicator {
+      font-size: 13px;
+      color: var(--slate-light);
+      font-family: 'Source Sans 3', sans-serif;
+      margin-bottom: 20px;
+      padding: 10px 14px;
+      background: var(--light-gray);
+      border-radius: var(--radius);
+      border-left: 3px solid var(--mid-gray);
+    }
+    .defaults-indicator.applied { border-left-color: var(--success); background: #f0faf4; color: #2d8653; }
+    .defaults-indicator a, .defaults-indicator button {
+      color: var(--roof-red);
+      text-decoration: underline;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0;
+      font-size: 13px;
+      font-family: 'Source Sans 3', sans-serif;
+    }
+    .material-insert-row {
+      margin-bottom: 6px;
+    }
+    @media (max-width: 960px) {
+      .defaults-form-grid { grid-template-columns: 1fr; }
+      .defaults-upgrade-card { max-width: 100%; padding: 28px 20px; }
+    }
+
     /* ---- Mobile Nav Toggle ---- */
     .mobile-nav-bar {
       display: none;
@@ -1413,7 +1539,9 @@
     // ---------------------------------------------------------------------------
     // Proposal Tool
     // ---------------------------------------------------------------------------
-    function ProposalTool({ token, onUpgradeNeeded }) {
+    function ProposalTool({ token, user, onUpgradeNeeded, onNavigate }) {
+      const isPaying = user && (user.is_admin || user.plan === 'starter' || user.plan === 'pro');
+
       const [form, setForm] = useState({
         customer_name: '', customer_address: '', roof_type: 'Asphalt Shingle',
         square_footage: '', pitch: 'Medium (4–6/12)', materials: '', scope: '',
@@ -1422,10 +1550,31 @@
         contractor_name: '', contractor_phone: '', contractor_email: '',
         license_number: '', start_date: '', completion_days: ''
       });
+      const [defaults, setDefaults] = useState(null);
+      const [defaultsApplied, setDefaultsApplied] = useState(false);
       const [result, setResult] = useState('');
       const [draftSaved, setDraftSaved] = useState(false);
       const [loading, setLoading] = useState(false);
       const [error, setError] = useState('');
+
+      useEffect(() => {
+        API.call('/api/defaults', 'GET', null, token).then(({ ok, data }) => {
+          if (!ok) return;
+          const d = data.defaults || {};
+          setDefaults(d);
+          const fill = {};
+          const map = {
+            company_name: d.company_name, contractor_name: d.contractor_name,
+            contractor_phone: d.contractor_phone, contractor_email: d.contractor_email,
+            license_number: d.license_number, payment_terms: d.payment_terms,
+            warranty_labor: d.warranty_labor, warranty_materials: d.warranty_materials,
+            completion_days: d.completion_days,
+          };
+          let applied = false;
+          Object.entries(map).forEach(([k, v]) => { if (v) { fill[k] = v; applied = true; } });
+          if (applied) { setForm(f => ({ ...f, ...fill })); setDefaultsApplied(true); }
+        }).catch(() => {});
+      }, []);
 
       function set(field) { return e => setForm(f => ({ ...f, [field]: e.target.value })); }
 
@@ -1451,6 +1600,17 @@
           <div className="page-title">Proposal Generator</div>
           <div className="page-subtitle">Fill in the job details and get a complete, client-ready proposal letter.</div>
           <div className="content-card">
+            {defaultsApplied ? (
+              <div className="defaults-indicator applied">
+                ✓ Your saved defaults have been applied. Edit any field as needed.
+              </div>
+            ) : isPaying ? (
+              <div className="defaults-indicator">
+                Save your company info in{' '}
+                <button onClick={() => onNavigate && onNavigate('defaults')}>My Defaults</button>
+                {' '}to pre-fill this form automatically.
+              </div>
+            ) : null}
             <form onSubmit={handleSubmit}>
               <div className="tool-form-grid">
                 <div className="form-group">
@@ -1489,6 +1649,23 @@
                 </div>
                 <div className="form-group span-2">
                   <label className="form-label">Materials Used</label>
+                  {defaults && defaults.common_materials && defaults.common_materials.length > 0 && (
+                    <div className="material-insert-row">
+                      <select className="form-select" style={{ fontSize:'13px' }}
+                        onChange={e => {
+                          if (!e.target.value) return;
+                          const val = e.target.value;
+                          setForm(f => ({ ...f, materials: f.materials ? f.materials + '\n' + val : val }));
+                          e.target.value = '';
+                        }}
+                        defaultValue="">
+                        <option value="" disabled>Insert saved material preset...</option>
+                        {defaults.common_materials.map((m, i) => (
+                          <option key={i} value={m}>{m.length > 70 ? m.slice(0, 70) + '…' : m}</option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
                   <textarea className="form-textarea" value={form.materials} onChange={set('materials')} placeholder="e.g. GAF Timberline HDZ Charcoal, 30-year architectural shingles, ice & water shield, synthetic underlayment..." required />
                 </div>
                 <div className="form-group span-2">
@@ -1844,6 +2021,243 @@
     }
 
     // ---------------------------------------------------------------------------
+    // DefaultsPage
+    // ---------------------------------------------------------------------------
+    function DefaultsPage({ token, user, onNavigate }) {
+      const isPaying = user.is_admin || user.plan === 'starter' || user.plan === 'pro';
+
+      const [loading, setLoading] = useState(true);
+
+      const [companyForm, setCompanyForm] = useState({
+        company_name: '', contractor_name: '', contractor_phone: '',
+        contractor_email: '', license_number: '',
+      });
+      const [savingCompany, setSavingCompany] = useState(false);
+      const [savedCompany, setSavedCompany] = useState(false);
+
+      const [proposalForm, setProposalForm] = useState({
+        warranty_labor: '', warranty_materials: '',
+        payment_terms: '', completion_days: '',
+        common_materials: [''],
+      });
+      const [savingProposal, setSavingProposal] = useState(false);
+      const [savedProposal, setSavedProposal] = useState(false);
+
+      useEffect(() => {
+        API.call('/api/defaults', 'GET', null, token).then(({ ok, data }) => {
+          if (ok) {
+            const d = data.defaults || {};
+            setCompanyForm({
+              company_name:    d.company_name    || '',
+              contractor_name: d.contractor_name || '',
+              contractor_phone: d.contractor_phone || '',
+              contractor_email: d.contractor_email || '',
+              license_number:  d.license_number  || '',
+            });
+            setProposalForm({
+              warranty_labor:    d.warranty_labor    || '',
+              warranty_materials: d.warranty_materials || '',
+              payment_terms:     d.payment_terms     || '',
+              completion_days:   d.completion_days   || '',
+              common_materials:  (d.common_materials && d.common_materials.length > 0)
+                                   ? d.common_materials
+                                   : [''],
+            });
+          }
+          setLoading(false);
+        }).catch(() => setLoading(false));
+      }, [token]);
+
+      function setCompany(field) { return e => setCompanyForm(f => ({ ...f, [field]: e.target.value })); }
+      function setProposal(field) { return e => setProposalForm(f => ({ ...f, [field]: e.target.value })); }
+
+      async function handleSaveCompany(e) {
+        e.preventDefault();
+        setSavingCompany(true);
+        const { ok } = await API.call('/api/defaults', 'POST', companyForm, token);
+        setSavingCompany(false);
+        if (ok) { setSavedCompany(true); setTimeout(() => setSavedCompany(false), 2500); }
+      }
+
+      async function handleSaveProposal(e) {
+        e.preventDefault();
+        setSavingProposal(true);
+        const cleanMats = proposalForm.common_materials.filter(m => m.trim());
+        const { ok } = await API.call('/api/defaults', 'POST', {
+          ...proposalForm,
+          common_materials: cleanMats,
+        }, token);
+        setSavingProposal(false);
+        if (ok) { setSavedProposal(true); setTimeout(() => setSavedProposal(false), 2500); }
+      }
+
+      function addMaterial() {
+        if (proposalForm.common_materials.length >= 5) return;
+        setProposalForm(f => ({ ...f, common_materials: [...f.common_materials, ''] }));
+      }
+
+      function removeMaterial(i) {
+        setProposalForm(f => ({
+          ...f,
+          common_materials: f.common_materials.filter((_, idx) => idx !== i),
+        }));
+      }
+
+      function setMaterial(i, val) {
+        setProposalForm(f => {
+          const mats = [...f.common_materials];
+          mats[i] = val;
+          return { ...f, common_materials: mats };
+        });
+      }
+
+      if (!isPaying) {
+        return (
+          <div>
+            <div className="page-title">My Defaults</div>
+            <div className="page-subtitle">Save your recurring info so every form pre-fills automatically.</div>
+            <div className="defaults-upgrade-card">
+              <div className="defaults-upgrade-icon">◻</div>
+              <div className="defaults-upgrade-title">Available on Paid Plans</div>
+              <div className="defaults-upgrade-desc">
+                Saved defaults let you store your company name, contact info, warranty terms, and common materials so you never have to type them again. Available on Starter and Pro plans.
+              </div>
+              <div className="defaults-upgrade-actions">
+                <a href="mailto:owen.murillo2533@gmail.com?subject=Upgrade Request — Starter Plan"
+                  className="btn btn-outline-red btn-sm">Starter — $49/mo</a>
+                <a href="mailto:owen.murillo2533@gmail.com?subject=Upgrade Request — Pro Plan"
+                  className="btn btn-primary btn-sm">Pro — $79/mo</a>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      if (loading) {
+        return (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '40px 0', color: 'var(--slate)' }}>
+            <Spinner dark /><span>Loading your defaults...</span>
+          </div>
+        );
+      }
+
+      return (
+        <div>
+          <div className="page-title">My Defaults</div>
+          <div className="page-subtitle">Save your recurring info once. Every tool form pre-fills automatically.</div>
+
+          {/* Section 1 — Company Profile */}
+          <div className="defaults-section">
+            <div className="content-card">
+              <div className="defaults-section-title">Company Profile</div>
+              <div className="defaults-section-subtitle">Your name, company, and contact details — pre-filled on every form.</div>
+              <form onSubmit={handleSaveCompany}>
+                <div className="defaults-form-grid">
+                  <div className="form-group">
+                    <label className="form-label">Company Name</label>
+                    <input className="form-input" type="text" value={companyForm.company_name}
+                      onChange={setCompany('company_name')} placeholder="Peak Roofing Co." />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Your Name</label>
+                    <input className="form-input" type="text" value={companyForm.contractor_name}
+                      onChange={setCompany('contractor_name')} placeholder="Mike Johnson" />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Your Phone</label>
+                    <input className="form-input" type="tel" value={companyForm.contractor_phone}
+                      onChange={setCompany('contractor_phone')} placeholder="(555) 000-0000" />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Your Email</label>
+                    <input className="form-input" type="email" value={companyForm.contractor_email}
+                      onChange={setCompany('contractor_email')} placeholder="mike@peakroofing.com" />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">License Number <span style={{ color:'var(--slate-light)', fontWeight:400 }}>(optional)</span></label>
+                    <input className="form-input" type="text" value={companyForm.license_number}
+                      onChange={setCompany('license_number')} placeholder="ROC-123456" />
+                  </div>
+                </div>
+                <div className="defaults-save-row">
+                  <button className="btn btn-primary" type="submit" disabled={savingCompany}
+                    style={{ padding:'11px 24px', fontFamily:'Oswald, sans-serif', letterSpacing:'0.03em', textTransform:'uppercase' }}>
+                    {savingCompany ? <><Spinner /> Saving...</> : 'Save Profile'}
+                  </button>
+                  {savedCompany && <span className="defaults-saved-msg">✓ Saved</span>}
+                </div>
+              </form>
+            </div>
+          </div>
+
+          {/* Section 2 — Proposal Defaults */}
+          <div className="defaults-section">
+            <div className="content-card">
+              <div className="defaults-section-title">Proposal Defaults</div>
+              <div className="defaults-section-subtitle">Warranty terms, payment terms, and saved material presets for the Proposal Generator.</div>
+              <form onSubmit={handleSaveProposal}>
+                <div className="defaults-form-grid">
+                  <div className="form-group">
+                    <label className="form-label">Labor Warranty</label>
+                    <input className="form-input" type="text" value={proposalForm.warranty_labor}
+                      onChange={setProposal('warranty_labor')} placeholder="e.g. 5 years" />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Materials Warranty</label>
+                    <input className="form-input" type="text" value={proposalForm.warranty_materials}
+                      onChange={setProposal('warranty_materials')} placeholder="e.g. 30-year manufacturer" />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Payment Terms</label>
+                    <input className="form-input" type="text" value={proposalForm.payment_terms}
+                      onChange={setProposal('payment_terms')} placeholder="e.g. 50% deposit, balance upon completion" />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Typical Days to Complete</label>
+                    <input className="form-input" type="number" value={proposalForm.completion_days}
+                      onChange={setProposal('completion_days')} placeholder="e.g. 2" />
+                  </div>
+                </div>
+
+                <div className="form-group" style={{ marginTop: 16 }}>
+                  <label className="form-label" style={{ marginBottom: 8 }}>
+                    Saved Materials <span style={{ color:'var(--slate-light)', fontWeight:400 }}>(up to 5 presets)</span>
+                  </label>
+                  {proposalForm.common_materials.map((mat, i) => (
+                    <div key={i} className="material-input-row">
+                      <input
+                        className="form-input"
+                        type="text"
+                        value={mat}
+                        onChange={e => setMaterial(i, e.target.value)}
+                        placeholder={`Preset ${i + 1} — e.g. GAF Timberline HDZ, 30yr architectural shingles`}
+                      />
+                      <button type="button" className="material-remove-btn" onClick={() => removeMaterial(i)}
+                        title="Remove">✕</button>
+                    </div>
+                  ))}
+                  {proposalForm.common_materials.length < 5 && (
+                    <button type="button" className="add-material-btn" onClick={addMaterial}>
+                      + Add Material Preset
+                    </button>
+                  )}
+                </div>
+
+                <div className="defaults-save-row">
+                  <button className="btn btn-primary" type="submit" disabled={savingProposal}
+                    style={{ padding:'11px 24px', fontFamily:'Oswald, sans-serif', letterSpacing:'0.03em', textTransform:'uppercase' }}>
+                    {savingProposal ? <><Spinner /> Saving...</> : 'Save Proposal Defaults'}
+                  </button>
+                  {savedProposal && <span className="defaults-saved-msg">✓ Saved</span>}
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ---------------------------------------------------------------------------
     // DraftsPage
     // ---------------------------------------------------------------------------
     const TOOL_LABELS = {
@@ -1981,7 +2395,8 @@
         { key: 'followup', label: 'Follow-Up Email',    icon: '✉', always: false },
         { key: 'review',   label: 'Review Request',     icon: '★', always: false },
         { key: 'referral', label: 'Referral Message',   icon: '↗', always: false },
-        ...(isPaying ? [{ key: 'drafts', label: 'Saved Drafts', icon: '⊟', always: true }] : []),
+        ...(isPaying ? [{ key: 'drafts',    label: 'Saved Drafts', icon: '⊟', always: true }] : []),
+        { key: 'defaults', label: 'My Defaults',        icon: '⚙', always: true },
       ];
 
       return (
@@ -2039,7 +2454,7 @@
       const [sidebarOpen, setSidebarOpen] = useState(false);
 
       function handleUpgradeNeeded() { setShowUpgrade(true); }
-      const toolProps = { token, onUpgradeNeeded: handleUpgradeNeeded };
+      const toolProps = { token, user, onUpgradeNeeded: handleUpgradeNeeded, onNavigate: setActiveTab };
 
       function handleSelectTab(tab) {
         setActiveTab(tab);
@@ -2072,6 +2487,7 @@
             {activeTab === 'review'   && <ReviewTool {...toolProps} />}
             {activeTab === 'referral' && <ReferralTool {...toolProps} />}
             {activeTab === 'drafts'   && <DraftsPage token={token} />}
+            {activeTab === 'defaults' && <DefaultsPage token={token} user={user} onNavigate={setActiveTab} />}
           </main>
           {showUpgrade && <UpgradeModal onClose={() => setShowUpgrade(false)} />}
         </div>
