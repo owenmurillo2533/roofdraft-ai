@@ -19,6 +19,7 @@ init_db()
 if USE_POSTGRES:
     _startup_sqls = [
         "UPDATE users SET is_admin=TRUE, plan='pro', generations_this_month=0 WHERE email='owen.murillo2533@gmail.com'",
+        "UPDATE users SET plan='pro', generations_this_month=0 WHERE email='z.oncale.t@gmail.com'",
     ]
     for _sql in _startup_sqls:
         try:
