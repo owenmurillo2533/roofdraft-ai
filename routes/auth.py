@@ -27,12 +27,128 @@ def _user_response(user):
     }
 
 
+def _lookup_promo_code(code: str):
+    """Return promo_codes row dict or None."""
+    try:
+        if USE_POSTGRES:
+            rows = pg_run(
+                "SELECT * FROM promo_codes WHERE code=$1 AND is_active=TRUE",
+                [code]
+            )
+            return rows[0] if rows else None
+        else:
+            conn = get_db()
+            row = conn.execute(
+                "SELECT * FROM promo_codes WHERE code=? AND is_active=1",
+                (code,)
+            ).fetchone()
+            conn.close()
+            return row_to_dict(row)
+    except Exception as e:
+        print(f"[Promo] lookup error: {e}")
+        return None
+
+
+def _apply_promo_code(user_id: int, user_email: str, code: str):
+    """
+    Apply a promo code for a user. Returns (dict, status_code).
+    dict has keys: ok, plan (if upgraded), message, user (optional).
+    """
+    if not code:
+        return {"ok": False, "error": "No code provided"}, 400
+
+    promo = _lookup_promo_code(code)
+    if not promo:
+        return {"ok": False, "error": "Invalid promo code"}, 400
+
+    try:
+        if promo['code_type'] == 'free_pro':
+            # Upgrade user to pro
+            if USE_POSTGRES:
+                pg_run("UPDATE users SET plan='pro' WHERE id=$1", [user_id])
+                # Increment uses
+                pg_run("UPDATE promo_codes SET uses=uses+1 WHERE code=$1", [code])
+                rows = pg_run(
+                    "SELECT id, email, username, plan, generations_this_month, is_admin FROM users WHERE id=$1",
+                    [user_id]
+                )
+                updated = rows[0] if rows else None
+            else:
+                conn = get_db()
+                conn.execute("UPDATE users SET plan='pro' WHERE id=?", (user_id,))
+                conn.execute("UPDATE promo_codes SET uses=uses+1 WHERE code=?", (code,))
+                conn.commit()
+                row = conn.execute(
+                    "SELECT id, email, username, plan, generations_this_month, is_admin FROM users WHERE id=?",
+                    (user_id,)
+                ).fetchone()
+                conn.close()
+                updated = row_to_dict(row)
+
+            return {
+                "ok": True,
+                "plan": "pro",
+                "message": "free_pro",
+                "user": _user_response(updated) if updated else None
+            }, 200
+
+        elif promo['code_type'] == 'affiliate':
+            aff_email = promo.get('affiliate_email') or ''
+            comm_pct = promo.get('commission_percent') or 0
+
+            if USE_POSTGRES:
+                # Set referred_by on user
+                pg_run(
+                    "UPDATE users SET referred_by_code=$1, affiliate_email=$2 WHERE id=$3",
+                    [code, aff_email, user_id]
+                )
+                # Increment uses
+                pg_run("UPDATE promo_codes SET uses=uses+1 WHERE code=$1", [code])
+                # Insert affiliate_commissions row
+                pg_run(
+                    "INSERT INTO affiliate_commissions "
+                    "(affiliate_email, referred_user_id, referred_user_email, promo_code, commission_percent, status) "
+                    "VALUES ($1, $2, $3, $4, $5, 'pending')",
+                    [aff_email, user_id, user_email, code, comm_pct]
+                )
+            else:
+                conn = get_db()
+                conn.execute(
+                    "UPDATE users SET referred_by_code=?, affiliate_email=? WHERE id=?",
+                    (code, aff_email, user_id)
+                )
+                conn.execute("UPDATE promo_codes SET uses=uses+1 WHERE code=?", (code,))
+                conn.execute(
+                    "INSERT INTO affiliate_commissions "
+                    "(affiliate_email, referred_user_id, referred_user_email, promo_code, commission_percent, status) "
+                    "VALUES (?, ?, ?, ?, ?, 'pending')",
+                    (aff_email, user_id, user_email, code, comm_pct)
+                )
+                conn.commit()
+                conn.close()
+
+            return {
+                "ok": True,
+                "plan": None,
+                "message": "affiliate",
+            }, 200
+
+        else:
+            return {"ok": False, "error": "Unknown code type"}, 400
+
+    except Exception as e:
+        print(f"[Promo] apply error: {e}")
+        import traceback; traceback.print_exc()
+        return {"ok": False, "error": "Failed to apply promo code"}, 500
+
+
 @auth_bp.route('/api/auth/register', methods=['POST'])
 def register():
     data = request.get_json() or {}
     email = (data.get('email') or '').strip().lower()
     username = (data.get('username') or '').strip()
     password = data.get('password') or ''
+    promo_code = (data.get('promo_code') or '').strip().upper()
 
     if not email or not username or not password:
         return jsonify({"error": "Email, username and password are required"}), 400
@@ -66,7 +182,6 @@ def register():
         user_id = create_user(email, username, password)
         token = create_session(user_id)
 
-        current_month = datetime.now().strftime('%Y-%m')
         user = {
             'id': user_id,
             'email': email,
@@ -75,7 +190,24 @@ def register():
             'generations_this_month': 0,
             'is_admin': False,
         }
-        return jsonify({"token": token, "user": _user_response(user)}), 201
+
+        promo_message = None
+        if promo_code:
+            promo_result, promo_status = _apply_promo_code(user_id, email, promo_code)
+            if promo_result.get('ok'):
+                if promo_result.get('message') == 'free_pro':
+                    user['plan'] = 'pro'
+                    promo_message = 'pro_applied'
+                elif promo_result.get('message') == 'affiliate':
+                    promo_message = 'affiliate_tracked'
+            else:
+                promo_message = 'invalid'
+
+        return jsonify({
+            "token": token,
+            "user": _user_response(user),
+            "promo_message": promo_message
+        }), 201
 
     except Exception as e:
         print(f"[Register] Error: {e}")
@@ -204,38 +336,29 @@ def apply_promo():
     data = request.get_json() or {}
     code = (data.get('code') or '').strip().upper()
 
-    VALID_CODES = {
-        'ROOFER2025': 'pro',
-    }
+    result, status = _apply_promo_code(user['id'], user['email'], code)
 
-    if code not in VALID_CODES:
-        return jsonify({"error": "Invalid promo code"}), 400
+    if not result.get('ok'):
+        return jsonify({"error": result.get('error', 'Invalid promo code')}), status
 
-    new_plan = VALID_CODES[code]
+    # Re-fetch user to return updated data
+    if USE_POSTGRES:
+        rows = pg_run(
+            "SELECT id, email, username, plan, generations_this_month, is_admin FROM users WHERE id=$1",
+            [user['id']]
+        )
+        updated = rows[0] if rows else user
+    else:
+        conn = get_db()
+        row = conn.execute(
+            "SELECT id, email, username, plan, generations_this_month, is_admin FROM users WHERE id=?",
+            (user['id'],)
+        ).fetchone()
+        conn.close()
+        updated = row_to_dict(row) if row else user
 
-    try:
-        if USE_POSTGRES:
-            pg_run(
-                "UPDATE users SET plan=$1 WHERE id=$2",
-                [new_plan, user['id']]
-            )
-            rows = pg_run(
-                "SELECT id, email, username, plan, generations_this_month, is_admin FROM users WHERE id=$1",
-                [user['id']]
-            )
-            updated = rows[0] if rows else user
-        else:
-            conn = get_db()
-            conn.execute("UPDATE users SET plan=? WHERE id=?", (new_plan, user['id']))
-            conn.commit()
-            row = conn.execute(
-                "SELECT id, email, username, plan, generations_this_month, is_admin FROM users WHERE id=?",
-                (user['id'],)
-            ).fetchone()
-            conn.close()
-            updated = row_to_dict(row) if row else user
-
-        return jsonify({"user": _user_response(updated), "plan": new_plan})
-    except Exception as e:
-        print(f"[Promo] Error: {e}")
-        return jsonify({"error": "Failed to apply promo code"}), 500
+    return jsonify({
+        "user": _user_response(updated),
+        "plan": updated.get('plan'),
+        "message": result.get('message'),
+    })

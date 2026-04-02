@@ -2078,18 +2078,35 @@
       const [email, setEmail] = useState('');
       const [username, setUsername] = useState('');
       const [password, setPassword] = useState('');
+      const [promoCode, setPromoCode] = useState('');
       const [error, setError] = useState('');
+      const [promoNotice, setPromoNotice] = useState(null); // {type:'success'|'warning', msg}
       const [loading, setLoading] = useState(false);
 
       async function handleSubmit(e) {
         e.preventDefault();
         setError('');
+        setPromoNotice(null);
         setLoading(true);
         try {
-          const { ok, data } = await API.call('/api/auth/register', 'POST', { email, username, password });
+          const body = { email, username, password };
+          if (promoCode.trim()) body.promo_code = promoCode.trim().toUpperCase();
+          const { ok, data } = await API.call('/api/auth/register', 'POST', body);
           if (!ok) { setError(data.error || 'Registration failed'); return; }
           localStorage.setItem('rd_token', data.token);
-          onSuccess(data.user, data.token);
+          // Handle promo message
+          if (data.promo_message === 'pro_applied') {
+            // Show success briefly then log in
+            setPromoNotice({ type: 'success', msg: 'Code applied. Welcome to RoofDraft Pro.' });
+            setTimeout(() => onSuccess(data.user, data.token), 1200);
+          } else if (data.promo_message === 'affiliate_tracked') {
+            onSuccess(data.user, data.token);
+          } else if (data.promo_message === 'invalid' && promoCode.trim()) {
+            setPromoNotice({ type: 'warning', msg: 'Promo code not recognized. Your account has been created on the free plan.' });
+            setTimeout(() => onSuccess(data.user, data.token), 2000);
+          } else {
+            onSuccess(data.user, data.token);
+          }
         } catch (err) {
           setError('Connection error — please try again');
         } finally {
@@ -2105,6 +2122,16 @@
             <div className="modal-subtitle">5 free generations — no credit card required</div>
             <form className="modal-form" onSubmit={handleSubmit}>
               {error && <div className="modal-error">{error}</div>}
+              {promoNotice && (
+                <div style={{
+                  padding:'10px 14px', borderRadius:'4px', fontSize:'14px', marginBottom:'12px',
+                  background: promoNotice.type === 'success' ? '#d4edda' : '#fff3cd',
+                  color: promoNotice.type === 'success' ? '#155724' : '#856404',
+                  border: `1px solid ${promoNotice.type === 'success' ? '#c3e6cb' : '#ffeeba'}`,
+                }}>
+                  {promoNotice.msg}
+                </div>
+              )}
               <div className="form-group">
                 <label className="form-label">Email Address</label>
                 <input className="form-input" type="email" value={email}
@@ -2119,6 +2146,12 @@
                 <label className="form-label">Password</label>
                 <input className="form-input" type="password" value={password}
                   onChange={e => setPassword(e.target.value)} placeholder="Minimum 6 characters" required />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Promo Code (optional)</label>
+                <input className="form-input" type="text" value={promoCode}
+                  onChange={e => setPromoCode(e.target.value.toUpperCase())}
+                  placeholder="Enter code if you have one" />
               </div>
               <button className="btn btn-primary btn-full" style={{ padding: '13px', fontSize: '16px' }} type="submit" disabled={loading}>
                 {loading ? <><Spinner /> Creating Account...</> : 'Create Free Account'}
@@ -2149,9 +2182,13 @@
         try {
           const { ok, data } = await API.call('/api/auth/apply-promo', 'POST', { code: promoCode.trim() }, token);
           if (ok) {
-            setPromoStatus('success');
-            if (onUpgraded) onUpgraded(data.user);
-            setTimeout(onClose, 1500);
+            if (data.message === 'affiliate') {
+              setPromoStatus('affiliate');
+            } else {
+              setPromoStatus('success');
+              if (onUpgraded) onUpgraded(data.user);
+              setTimeout(onClose, 1500);
+            }
           } else {
             setPromoStatus(data.error || 'Invalid promo code');
           }
@@ -2246,7 +2283,13 @@
                   </button>
                 </form>
               )}
-              {promoStatus && promoStatus !== 'success' && (
+              {promoStatus === 'success' && (
+                <div style={{ fontSize:'13px', color:'var(--success)', marginTop:'6px', fontWeight:600 }}>Code applied! Upgrading your account...</div>
+              )}
+              {promoStatus === 'affiliate' && (
+                <div style={{ fontSize:'13px', color:'var(--slate)', marginTop:'6px' }}>Referral code noted — your account stays on the free plan until you subscribe.</div>
+              )}
+              {promoStatus && promoStatus !== 'success' && promoStatus !== 'affiliate' && (
                 <div style={{ fontSize:'13px', color:'var(--roof-red)', marginTop:'6px' }}>{promoStatus}</div>
               )}
             </div>
@@ -2883,25 +2926,155 @@
     // ---------------------------------------------------------------------------
     const TOOL_DISPLAY = { proposal:'Proposal', followup:'Follow-Up', review:'Review Request', referral:'Referral' };
 
+    function AffiliateDetailModal({ affiliateEmail, token, onClose }) {
+      const [commissions, setCommissions] = useState(null);
+      const [loading, setLoading] = useState(true);
+      const [markingPaid, setMarkingPaid] = useState(null);
+
+      useEffect(() => {
+        API.call(`/api/admin/affiliates/${encodeURIComponent(affiliateEmail)}/commissions`, 'GET', null, token)
+          .then(res => {
+            setCommissions(res.ok ? (res.data.commissions || []) : []);
+            setLoading(false);
+          });
+      }, [affiliateEmail, token]);
+
+      async function handleMarkPaid(commId) {
+        setMarkingPaid(commId);
+        const res = await API.call(`/api/admin/commissions/${commId}/mark-paid`, 'PATCH', {}, token);
+        if (res.ok) {
+          setCommissions(prev => prev.map(c => c.id === commId ? { ...c, status: 'paid' } : c));
+        }
+        setMarkingPaid(null);
+      }
+
+      function fmtDate(str) {
+        if (!str) return '—';
+        try { return new Date(str).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
+        catch { return str; }
+      }
+
+      const PLAN_PRICE = { starter: 49, pro: 79 };
+      const totalOwed = commissions ? commissions
+        .filter(c => c.status === 'pending' && (c.user_plan === 'starter' || c.user_plan === 'pro'))
+        .reduce((sum, c) => sum + Math.round((PLAN_PRICE[c.user_plan] || 0) * (c.commission_percent || 0) / 100), 0) : 0;
+
+      return (
+        <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
+          <div className="modal-box" style={{ maxWidth:'720px', maxHeight:'80vh', overflowY:'auto' }}>
+            <button className="modal-close" onClick={onClose}>✕</button>
+            <div className="modal-title" style={{ fontSize:'20px' }}>Affiliate Details</div>
+            <div style={{ color:'var(--slate)', marginBottom:'16px' }}>{affiliateEmail}</div>
+            <div style={{ fontSize:'12px', color:'var(--slate-light)', marginBottom:'16px', padding:'10px', background:'var(--light-gray)', borderRadius:'4px' }}>
+              Stripe integration will automate commission tracking. For now, mark commissions paid manually after processing.
+            </div>
+            {loading ? <div style={{padding:'20px',textAlign:'center'}}><Spinner dark /></div> : (
+              <>
+                <table className="admin-table">
+                  <thead>
+                    <tr>
+                      <th>User Email</th>
+                      <th>Date Joined</th>
+                      <th>Plan</th>
+                      <th>Commission</th>
+                      <th>Status</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {(commissions || []).map(c => (
+                      <tr key={c.id}>
+                        <td style={{fontSize:'13px'}}>{c.referred_user_email}</td>
+                        <td><span className="admin-date">{fmtDate(c.created_at)}</span></td>
+                        <td>
+                          <span className={`plan-badge ${getPlanBadgeClass(c.user_plan || 'free', false)}`}>
+                            {(c.user_plan || 'free').charAt(0).toUpperCase() + (c.user_plan || 'free').slice(1)}
+                          </span>
+                        </td>
+                        <td style={{fontSize:'13px'}}>{c.commission_percent}%{(c.user_plan === 'starter' || c.user_plan === 'pro') ? ` ($${Math.round(PLAN_PRICE[c.user_plan] * c.commission_percent / 100)}/mo)` : ''}</td>
+                        <td>
+                          <span style={{fontSize:'12px',fontWeight:700,color: c.status==='paid' ? 'var(--success)' : 'var(--warm-tan)'}}>
+                            {c.status === 'paid' ? '● Paid' : '○ Pending'}
+                          </span>
+                        </td>
+                        <td>
+                          {c.status === 'pending' && (
+                            <button
+                              className="btn btn-primary"
+                              style={{padding:'5px 10px',fontSize:'12px'}}
+                              disabled={markingPaid === c.id}
+                              onClick={() => handleMarkPaid(c.id)}
+                            >
+                              {markingPaid === c.id ? <Spinner /> : 'Mark Paid'}
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                    {(!commissions || commissions.length === 0) && (
+                      <tr><td colSpan={6} style={{textAlign:'center',color:'var(--slate)',padding:'20px'}}>No referrals yet.</td></tr>
+                    )}
+                  </tbody>
+                </table>
+                {totalOwed > 0 && (
+                  <div style={{marginTop:'16px',padding:'12px',background:'#fff3cd',borderRadius:'4px',fontSize:'14px',color:'#856404',fontWeight:600}}>
+                    Total pending owed (paying users only): ${totalOwed}/mo
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        </div>
+      );
+    }
+
     function AdminPage({ token }) {
       const [stats, setStats] = useState(null);
       const [users, setUsers] = useState(null);
       const [contacts, setContacts] = useState(null);
+      const [promoCodes, setPromoCodes] = useState(null);
+      const [affiliates, setAffiliates] = useState(null);
       const [loading, setLoading] = useState(true);
       const [error, setError] = useState('');
+
+      // Promo create form state
+      const [newCode, setNewCode] = useState('');
+      const [newCodeType, setNewCodeType] = useState('free_pro');
+      const [newAffEmail, setNewAffEmail] = useState('');
+      const [newCommPct, setNewCommPct] = useState('');
+      const [newNotes, setNewNotes] = useState('');
+      const [createMsg, setCreateMsg] = useState(null);
+      const [createLoading, setCreateLoading] = useState(false);
+
+      // Affiliate detail modal
+      const [viewAffiliate, setViewAffiliate] = useState(null);
+
+      function loadPromoData() {
+        Promise.all([
+          API.call('/api/admin/promo-codes', 'GET', null, token),
+          API.call('/api/admin/affiliates', 'GET', null, token),
+        ]).then(([pcRes, affRes]) => {
+          setPromoCodes(pcRes.ok ? (pcRes.data.codes || []) : []);
+          setAffiliates(affRes.ok ? (affRes.data.affiliates || []) : []);
+        });
+      }
 
       useEffect(() => {
         Promise.all([
           API.call('/api/admin/stats', 'GET', null, token),
           API.call('/api/admin/users', 'GET', null, token),
           API.call('/api/admin/contacts', 'GET', null, token),
-        ]).then(([statsRes, usersRes, contactsRes]) => {
+          API.call('/api/admin/promo-codes', 'GET', null, token),
+          API.call('/api/admin/affiliates', 'GET', null, token),
+        ]).then(([statsRes, usersRes, contactsRes, pcRes, affRes]) => {
           if (!statsRes.ok || !usersRes.ok) {
             setError('Failed to load admin data.');
           } else {
             setStats(statsRes.data);
             setUsers(usersRes.data.users || []);
             setContacts(contactsRes.ok ? (contactsRes.data.messages || []) : []);
+            setPromoCodes(pcRes.ok ? (pcRes.data.codes || []) : []);
+            setAffiliates(affRes.ok ? (affRes.data.affiliates || []) : []);
           }
           setLoading(false);
         }).catch(() => { setError('Connection error.'); setLoading(false); });
@@ -3065,6 +3238,228 @@
           )}
           {contacts && contacts.length === 0 && (
             <div style={{ marginTop:32, padding:'20px', color:'var(--slate)', fontSize:'14px' }}>No contact messages yet.</div>
+          )}
+
+          {/* ===================== PROMO CODES & AFFILIATES ===================== */}
+          <div style={{ marginTop:40 }}>
+            <h2 style={{ fontFamily:'Oswald,sans-serif', fontSize:'26px', fontWeight:600, color:'var(--near-black)', marginBottom:'24px', borderTop:'2px solid var(--border)', paddingTop:'32px' }}>
+              Promo Codes &amp; Affiliates
+            </h2>
+
+            {/* Create New Code */}
+            <div className="admin-section-title">Create New Code</div>
+            <div style={{ background:'var(--card-bg)', border:'1px solid var(--border)', borderRadius:'6px', padding:'24px', marginBottom:'24px' }}>
+              {createMsg && (
+                <div style={{
+                  padding:'10px 14px', borderRadius:'4px', marginBottom:'16px', fontSize:'14px',
+                  background: createMsg.type === 'success' ? '#d4edda' : '#f8d7da',
+                  color: createMsg.type === 'success' ? '#155724' : '#721c24',
+                  border: `1px solid ${createMsg.type === 'success' ? '#c3e6cb' : '#f5c6cb'}`,
+                }}>{createMsg.msg}</div>
+              )}
+              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'16px', marginBottom:'16px' }}>
+                <div className="form-group" style={{marginBottom:0}}>
+                  <label className="form-label">Code Name</label>
+                  <input className="form-input" type="text" value={newCode}
+                    onChange={e => setNewCode(e.target.value.toUpperCase().replace(/[^A-Z0-9_]/g,''))}
+                    placeholder="e.g. SUMMER2025 or MIKE_SALES" />
+                </div>
+                <div className="form-group" style={{marginBottom:0}}>
+                  <label className="form-label">Code Type</label>
+                  <div style={{ display:'flex', gap:'20px', marginTop:'10px' }}>
+                    <label style={{ display:'flex', alignItems:'center', gap:'8px', cursor:'pointer', fontSize:'14px' }}>
+                      <input type="radio" value="free_pro" checked={newCodeType==='free_pro'} onChange={() => setNewCodeType('free_pro')} />
+                      Free Pro Access
+                    </label>
+                    <label style={{ display:'flex', alignItems:'center', gap:'8px', cursor:'pointer', fontSize:'14px' }}>
+                      <input type="radio" value="affiliate" checked={newCodeType==='affiliate'} onChange={() => setNewCodeType('affiliate')} />
+                      Affiliate / Sales Commission
+                    </label>
+                  </div>
+                </div>
+              </div>
+              {newCodeType === 'affiliate' && (
+                <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:'16px', marginBottom:'16px' }}>
+                  <div className="form-group" style={{marginBottom:0}}>
+                    <label className="form-label">Affiliate Email</label>
+                    <input className="form-input" type="email" value={newAffEmail}
+                      onChange={e => setNewAffEmail(e.target.value)}
+                      placeholder="salesrep@example.com" />
+                  </div>
+                  <div className="form-group" style={{marginBottom:0}}>
+                    <label className="form-label">Commission % (1–100)</label>
+                    <input className="form-input" type="number" min="1" max="100" value={newCommPct}
+                      onChange={e => setNewCommPct(e.target.value)}
+                      placeholder="e.g. 20" />
+                  </div>
+                  <div className="form-group" style={{marginBottom:0}}>
+                    <label className="form-label">Notes (optional)</label>
+                    <input className="form-input" type="text" value={newNotes}
+                      onChange={e => setNewNotes(e.target.value)}
+                      placeholder="Internal notes about this person" />
+                  </div>
+                </div>
+              )}
+              <button
+                className="btn btn-primary"
+                style={{ marginTop:'8px' }}
+                disabled={createLoading}
+                onClick={async () => {
+                  setCreateMsg(null);
+                  if (!newCode.trim()) { setCreateMsg({type:'error',msg:'Code name is required.'}); return; }
+                  setCreateLoading(true);
+                  const body = { code: newCode.trim(), code_type: newCodeType };
+                  if (newCodeType === 'affiliate') {
+                    body.affiliate_email = newAffEmail.trim();
+                    body.commission_percent = parseInt(newCommPct);
+                    body.notes = newNotes.trim();
+                  }
+                  const res = await API.call('/api/admin/promo-codes/create', 'POST', body, token);
+                  setCreateLoading(false);
+                  if (res.ok) {
+                    setCreateMsg({type:'success', msg:'Code created successfully.'});
+                    setNewCode(''); setNewAffEmail(''); setNewCommPct(''); setNewNotes('');
+                    loadPromoData();
+                  } else {
+                    setCreateMsg({type:'error', msg: res.data?.error || 'Failed to create code.'});
+                  }
+                }}
+              >
+                {createLoading ? <><Spinner /> Creating...</> : 'Create Code'}
+              </button>
+            </div>
+
+            {/* Active Codes Table */}
+            <div className="admin-section-title">Active Codes</div>
+            {promoCodes && promoCodes.length > 0 ? (
+              <>
+                <div className="admin-table-wrap" style={{marginBottom:'12px'}}>
+                  <table className="admin-table">
+                    <thead>
+                      <tr>
+                        <th>Code</th>
+                        <th>Type</th>
+                        <th>Uses</th>
+                        <th>Affiliate Email</th>
+                        <th>Commission %</th>
+                        <th>Status</th>
+                        <th>Created</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {promoCodes.map(pc => (
+                        <tr key={pc.id}>
+                          <td>
+                            <span
+                              style={{ fontWeight:700, cursor:'pointer', fontFamily:'monospace', fontSize:'13px', color:'var(--charcoal)' }}
+                              title="Click to copy"
+                              onClick={() => { try { navigator.clipboard.writeText(pc.code); } catch(e){} }}
+                            >{pc.code} <span style={{fontSize:'10px',color:'var(--slate-light)'}}>⧉</span></span>
+                          </td>
+                          <td>
+                            <span style={{
+                              display:'inline-block', padding:'2px 8px', borderRadius:'10px', fontSize:'11px', fontWeight:700,
+                              background: pc.code_type === 'free_pro' ? '#d4edda' : '#cce5ff',
+                              color: pc.code_type === 'free_pro' ? '#155724' : '#004085',
+                            }}>
+                              {pc.code_type === 'free_pro' ? 'Free Pro' : 'Affiliate'}
+                            </span>
+                          </td>
+                          <td style={{textAlign:'center'}}>{pc.uses || 0}</td>
+                          <td style={{fontSize:'13px'}}>{pc.affiliate_email || '—'}</td>
+                          <td style={{textAlign:'center'}}>{pc.commission_percent != null ? `${pc.commission_percent}%` : '—'}</td>
+                          <td>
+                            <button
+                              style={{
+                                padding:'3px 10px', borderRadius:'12px', border:'none', cursor:'pointer', fontSize:'11px', fontWeight:700,
+                                background: pc.is_active ? '#d4edda' : '#f8d7da',
+                                color: pc.is_active ? '#155724' : '#721c24',
+                              }}
+                              onClick={async () => {
+                                await API.call(`/api/admin/promo-codes/${pc.id}/toggle`, 'PATCH', {}, token);
+                                loadPromoData();
+                              }}
+                            >
+                              {pc.is_active ? '● Active' : '○ Inactive'}
+                            </button>
+                          </td>
+                          <td><span className="admin-date">{fmtDate(pc.created_at)}</span></td>
+                          <td>
+                            <button
+                              style={{ padding:'3px 10px', borderRadius:'4px', border:'1px solid var(--roof-red)', background:'transparent', color:'var(--roof-red)', cursor:'pointer', fontSize:'12px', fontWeight:600 }}
+                              onClick={async () => {
+                                if (!confirm(`Delete code "${pc.code}"? This cannot be undone.`)) return;
+                                await API.call(`/api/admin/promo-codes/${pc.id}`, 'DELETE', null, token);
+                                loadPromoData();
+                              }}
+                            >Delete</button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                <div style={{ fontSize:'13px', color:'var(--slate)', marginBottom:'32px' }}>
+                  {promoCodes.length} total codes —{' '}
+                  {promoCodes.filter(c => c.code_type==='free_pro').length} free pro —{' '}
+                  {promoCodes.filter(c => c.code_type==='affiliate').length} affiliate
+                </div>
+              </>
+            ) : (
+              <div style={{ padding:'20px', color:'var(--slate)', fontSize:'14px', marginBottom:'32px' }}>No promo codes yet. Create one above.</div>
+            )}
+
+            {/* Affiliate Dashboard */}
+            {affiliates && affiliates.length > 0 && (
+              <>
+                <div className="admin-section-title">Affiliate Dashboard</div>
+                <div className="admin-table-wrap" style={{marginBottom:'12px'}}>
+                  <table className="admin-table">
+                    <thead>
+                      <tr>
+                        <th>Affiliate Email</th>
+                        <th>Code</th>
+                        <th>Commission %</th>
+                        <th>Total Referred</th>
+                        <th>Pending</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {affiliates.map(a => (
+                        <tr key={a.id}>
+                          <td style={{fontSize:'13px'}}>{a.affiliate_email}</td>
+                          <td><span style={{fontFamily:'monospace',fontWeight:700,fontSize:'13px'}}>{a.code}</span></td>
+                          <td style={{textAlign:'center'}}>{a.commission_percent}%</td>
+                          <td style={{textAlign:'center'}}>{a.total_referred || 0}</td>
+                          <td style={{textAlign:'center'}}>
+                            {a.pending_count > 0
+                              ? <span style={{fontWeight:700,color:'var(--warm-tan)'}}>{a.pending_count} pending</span>
+                              : <span style={{color:'var(--slate-light)'}}>—</span>}
+                          </td>
+                          <td>
+                            <button
+                              className="btn btn-primary"
+                              style={{padding:'5px 12px',fontSize:'12px'}}
+                              onClick={() => setViewAffiliate(a.affiliate_email)}
+                            >View Details</button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </>
+            )}
+          </div>
+
+          {viewAffiliate && (
+            <AffiliateDetailModal
+              affiliateEmail={viewAffiliate}
+              token={token}
+              onClose={() => setViewAffiliate(null)}
+            />
           )}
         </div>
       );

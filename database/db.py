@@ -169,12 +169,46 @@ def init_db():
         except Exception as e:
             print(f"[DB] contact_messages table note: {e}")
 
+        # promo_codes table
+        try:
+            pg_run("""CREATE TABLE IF NOT EXISTS promo_codes (
+                id SERIAL PRIMARY KEY,
+                code VARCHAR(50) UNIQUE NOT NULL,
+                code_type VARCHAR(20) NOT NULL DEFAULT 'free_pro',
+                is_active BOOLEAN DEFAULT TRUE,
+                uses INTEGER DEFAULT 0,
+                created_at TIMESTAMP DEFAULT NOW(),
+                affiliate_email VARCHAR(255) DEFAULT NULL,
+                commission_percent INTEGER DEFAULT NULL,
+                notes VARCHAR(255) DEFAULT NULL
+            )""")
+        except Exception as e:
+            print(f"[DB] promo_codes table note: {e}")
+
+        # affiliate_commissions table
+        try:
+            pg_run("""CREATE TABLE IF NOT EXISTS affiliate_commissions (
+                id SERIAL PRIMARY KEY,
+                affiliate_email VARCHAR(255) NOT NULL,
+                referred_user_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+                referred_user_email VARCHAR(255),
+                promo_code VARCHAR(50),
+                commission_percent INTEGER,
+                status VARCHAR(20) DEFAULT 'pending',
+                created_at TIMESTAMP DEFAULT NOW(),
+                notes VARCHAR(255) DEFAULT NULL
+            )""")
+        except Exception as e:
+            print(f"[DB] affiliate_commissions table note: {e}")
+
         migrations = [
             "ALTER TABLE users ADD COLUMN IF NOT EXISTS generations_this_month INTEGER DEFAULT 0",
             "ALTER TABLE users ADD COLUMN IF NOT EXISTS last_reset_month VARCHAR(7) DEFAULT ''",
             "ALTER TABLE users ADD COLUMN IF NOT EXISTS is_admin BOOLEAN DEFAULT FALSE",
             "ALTER TABLE users ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT TRUE",
             "ALTER TABLE drafts ADD COLUMN IF NOT EXISTS folder_id INTEGER REFERENCES job_folders(id) ON DELETE SET NULL",
+            "ALTER TABLE users ADD COLUMN IF NOT EXISTS referred_by_code VARCHAR(50) DEFAULT NULL",
+            "ALTER TABLE users ADD COLUMN IF NOT EXISTS affiliate_email VARCHAR(255) DEFAULT NULL",
         ]
         for sql in migrations:
             try:
@@ -182,6 +216,17 @@ def init_db():
                 print(f"[DB] Migration: {sql}")
             except Exception as e:
                 print(f"[DB] Migration note ({sql[:60]}): {e}")
+
+        # Seed default promo codes
+        try:
+            pg_run(
+                "INSERT INTO promo_codes (code, code_type, is_active, notes) "
+                "VALUES ('ROOFER2025', 'free_pro', TRUE, 'Default launch promo — grants permanent Pro') "
+                "ON CONFLICT (code) DO NOTHING"
+            )
+            print("[DB] Seeded ROOFER2025 promo code")
+        except Exception as e:
+            print(f"[DB] Promo seed note: {e}")
 
         # Ensure admin user
         try:
@@ -256,18 +301,54 @@ def init_db():
             message TEXT NOT NULL,
             created_at TEXT DEFAULT (datetime('now'))
         );
+        CREATE TABLE IF NOT EXISTS promo_codes (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            code TEXT UNIQUE NOT NULL,
+            code_type TEXT NOT NULL DEFAULT 'free_pro',
+            is_active INTEGER DEFAULT 1,
+            uses INTEGER DEFAULT 0,
+            created_at TEXT DEFAULT (datetime('now')),
+            affiliate_email TEXT DEFAULT NULL,
+            commission_percent INTEGER DEFAULT NULL,
+            notes TEXT DEFAULT NULL
+        );
+        CREATE TABLE IF NOT EXISTS affiliate_commissions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            affiliate_email TEXT NOT NULL,
+            referred_user_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+            referred_user_email TEXT,
+            promo_code TEXT,
+            commission_percent INTEGER,
+            status TEXT DEFAULT 'pending',
+            created_at TEXT DEFAULT (datetime('now')),
+            notes TEXT DEFAULT NULL
+        );
         CREATE INDEX IF NOT EXISTS idx_sessions_token ON sessions(token);
         CREATE INDEX IF NOT EXISTS idx_logs_user ON generation_logs(user_id);
         CREATE INDEX IF NOT EXISTS idx_drafts_user ON drafts(user_id);
         CREATE INDEX IF NOT EXISTS idx_folders_user ON job_folders(user_id);
         """)
         conn.commit()
-        # SQLite migration: add folder_id to existing drafts tables
+        # SQLite migrations for existing tables
+        for _col_sql in [
+            "ALTER TABLE drafts ADD COLUMN folder_id INTEGER",
+            "ALTER TABLE users ADD COLUMN referred_by_code TEXT DEFAULT NULL",
+            "ALTER TABLE users ADD COLUMN affiliate_email TEXT DEFAULT NULL",
+        ]:
+            try:
+                conn.execute(_col_sql)
+                conn.commit()
+            except Exception:
+                pass  # Column already exists
+        # Seed default promo code
         try:
-            conn.execute("ALTER TABLE drafts ADD COLUMN folder_id INTEGER")
+            conn.execute(
+                "INSERT OR IGNORE INTO promo_codes (code, code_type, is_active, notes) "
+                "VALUES ('ROOFER2025', 'free_pro', 1, 'Default launch promo — grants permanent Pro')"
+            )
             conn.commit()
         except Exception:
-            pass  # Column already exists
+            pass
         conn.close()
         print("[DB] Initialized using SQLite (local)")
 
