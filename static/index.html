@@ -3556,6 +3556,34 @@
         });
       }
 
+      const [defaultsPromoCode, setDefaultsPromoCode] = useState('');
+      const [defaultsPromoStatus, setDefaultsPromoStatus] = useState(null);
+      const [defaultsPromoLoading, setDefaultsPromoLoading] = useState(false);
+
+      async function handleDefaultsPromo(e) {
+        e.preventDefault();
+        if (!defaultsPromoCode.trim()) return;
+        setDefaultsPromoLoading(true);
+        setDefaultsPromoStatus(null);
+        try {
+          const { ok, data } = await API.call('/api/auth/apply-promo', 'POST', { code: defaultsPromoCode.trim() }, token);
+          if (ok) {
+            if (data.message === 'affiliate') {
+              setDefaultsPromoStatus({ type: 'info', msg: 'Referral code noted. Your account stays on the free plan until you subscribe.' });
+            } else {
+              setDefaultsPromoStatus({ type: 'success', msg: 'Code applied! Reloading with your new plan...' });
+              setTimeout(() => window.location.reload(), 1500);
+            }
+          } else {
+            setDefaultsPromoStatus({ type: 'error', msg: data.error || 'Invalid promo code' });
+          }
+        } catch {
+          setDefaultsPromoStatus({ type: 'error', msg: 'Something went wrong. Please try again.' });
+        } finally {
+          setDefaultsPromoLoading(false);
+        }
+      }
+
       if (!isPaying) {
         return (
           <div>
@@ -3574,6 +3602,29 @@
                 {/* STRIPE: replace this mailto link with Stripe checkout session call for pro plan */}
                 <a href="mailto:owen.murillo2533@gmail.com?subject=Upgrade Request — Pro Plan"
                   className="btn btn-primary btn-sm">Pro — $79/mo</a>
+              </div>
+              <div style={{ marginTop:'20px', borderTop:'1px solid var(--border)', paddingTop:'16px' }}>
+                <div style={{ fontSize:'13px', color:'var(--slate)', marginBottom:'8px', fontWeight:600 }}>Have a promo code?</div>
+                {defaultsPromoStatus && (
+                  <div style={{
+                    padding:'8px 12px', borderRadius:'4px', fontSize:'13px', marginBottom:'8px',
+                    background: defaultsPromoStatus.type === 'success' ? '#d4edda' : defaultsPromoStatus.type === 'error' ? '#f8d7da' : '#cce5ff',
+                    color: defaultsPromoStatus.type === 'success' ? '#155724' : defaultsPromoStatus.type === 'error' ? '#721c24' : '#004085',
+                  }}>{defaultsPromoStatus.msg}</div>
+                )}
+                <form onSubmit={handleDefaultsPromo} style={{ display:'flex', gap:'8px' }}>
+                  <input
+                    className="form-input"
+                    type="text"
+                    placeholder="Enter promo code"
+                    value={defaultsPromoCode}
+                    onChange={e => setDefaultsPromoCode(e.target.value.toUpperCase())}
+                    style={{ flex:1, fontSize:'14px', padding:'9px 12px' }}
+                  />
+                  <button type="submit" className="btn btn-outline-red btn-sm" disabled={defaultsPromoLoading}>
+                    {defaultsPromoLoading ? 'Applying...' : 'Apply'}
+                  </button>
+                </form>
               </div>
             </div>
           </div>
