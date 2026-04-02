@@ -1,5 +1,5 @@
 """
-RoofDraft AI — Job Folders Routes
+RoofDraft — Job Folders Routes
 Pro plan only.
 """
 from flask import Blueprint, request, jsonify

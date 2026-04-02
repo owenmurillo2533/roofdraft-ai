@@ -1,5 +1,5 @@
 """
-RoofDraft AI — Flask Application Server
+RoofDraft — Flask Application Server
 """
 
 import os
@@ -34,6 +34,7 @@ from routes.drafts import drafts_bp
 from routes.defaults import defaults_bp
 from routes.admin import admin_bp
 from routes.folders import folders_bp
+from routes.contact import contact_bp
 
 app.register_blueprint(auth_bp)
 app.register_blueprint(tools_bp)
@@ -41,6 +42,7 @@ app.register_blueprint(drafts_bp)
 app.register_blueprint(defaults_bp)
 app.register_blueprint(admin_bp)
 app.register_blueprint(folders_bp)
+app.register_blueprint(contact_bp)
 
 
 # ---------------------------------------------------------------------------
@@ -90,7 +92,7 @@ def health():
     env_status = {k: bool(os.environ.get(k)) for k in env_vars}
     return jsonify({
         'status': 'ok',
-        'service': 'RoofDraft AI',
+        'service': 'RoofDraft',
         'db_mode': 'postgres' if USE_POSTGRES else 'sqlite',
         'env': env_status,
     })

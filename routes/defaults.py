@@ -1,5 +1,5 @@
 """
-RoofDraft AI — User Defaults Routes
+RoofDraft — User Defaults Routes
 Saved company profile and proposal defaults for paying customers.
 """
 from flask import Blueprint, request, jsonify

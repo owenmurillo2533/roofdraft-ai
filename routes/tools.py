@@ -1,5 +1,5 @@
 """
-RoofDraft AI — Tools Routes
+RoofDraft — Tools Routes
 """
 import os
 from flask import Blueprint, request, jsonify

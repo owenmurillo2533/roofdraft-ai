@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>RoofDraft AI — Professional Roofing Proposals in 60 Seconds</title>
-  <meta name="description" content="RoofDraft AI generates professional roofing proposals, follow-up emails, review requests, and referral messages in under 60 seconds. Built for roofing contractors." />
+  <title>RoofDraft — Professional Roofing Proposals in 60 Seconds</title>
+  <meta name="description" content="RoofDraft generates professional roofing proposals, follow-up emails, review requests, and referral messages in under 60 seconds. Built for roofing contractors." />
   <meta name="robots" content="index, follow" />
 
   <!-- Open Graph -->
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://roofdraftai.com/" />
-  <meta property="og:title" content="RoofDraft AI — Win More Roofing Jobs With Better Proposals" />
+  <meta property="og:url" content="https://roofdraft.com/" />
+  <meta property="og:title" content="RoofDraft — Win More Roofing Jobs With Better Proposals" />
   <meta property="og:description" content="Generate professional roofing proposals, follow-up emails, and review requests in under 60 seconds. Built specifically for roofing contractors. Try free — no card needed." />
-  <meta property="og:site_name" content="RoofDraft AI" />
+  <meta property="og:site_name" content="RoofDraft" />
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="RoofDraft AI — Professional Roofing Proposals in 60 Seconds" />
+  <meta name="twitter:title" content="RoofDraft — Professional Roofing Proposals in 60 Seconds" />
   <meta name="twitter:description" content="Generate professional roofing proposals in under 60 seconds. Built for roofing contractors. Try free — no card needed." />
 
   <!-- Favicon (SVG inline) -->
@@ -1382,6 +1382,82 @@
       line-height: 1.65;
     }
 
+    /* Contact Section */
+    .contact-section {
+      background: var(--white);
+      padding: 80px 60px;
+      border-bottom: 1px solid var(--border);
+    }
+    .contact-inner { max-width: 800px; margin: 0 auto; }
+    .contact-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+    .contact-card {
+      background: var(--off-white);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 28px;
+      text-align: center;
+    }
+    .contact-card-icon { font-size: 28px; margin-bottom: 10px; }
+    .contact-card-label {
+      font-family: 'Oswald', sans-serif;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--near-black);
+      margin-bottom: 8px;
+    }
+    .contact-card-value {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--roof-red);
+      margin-bottom: 6px;
+    }
+    .contact-card-note { font-size: 13px; color: var(--slate); }
+    .contact-form-wrap {
+      background: var(--off-white);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 32px;
+    }
+    .contact-form-title {
+      font-family: 'Oswald', sans-serif;
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--near-black);
+      margin-bottom: 20px;
+    }
+    .contact-form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+    .contact-success {
+      background: #f0fdf4;
+      border: 1px solid #86efac;
+      border-radius: var(--radius);
+      padding: 14px 18px;
+      font-size: 15px;
+      color: #166534;
+      font-weight: 600;
+    }
+    .contact-error {
+      background: #fdf2f2;
+      border: 1px solid #f5c6c6;
+      border-radius: var(--radius);
+      padding: 14px 18px;
+      font-size: 15px;
+      color: var(--roof-red);
+    }
+    @media (max-width: 700px) {
+      .contact-cards { grid-template-columns: 1fr; }
+      .contact-form-grid { grid-template-columns: 1fr; }
+    }
+
     /* Footer */
     .landing-footer {
       background: var(--near-black);
@@ -1964,7 +2040,7 @@
           <div className="modal-box">
             <button className="modal-close" onClick={onClose}>✕</button>
             <div className="modal-title">Welcome Back</div>
-            <div className="modal-subtitle">Sign in to your RoofDraft AI account</div>
+            <div className="modal-subtitle">Sign in to your RoofDraft account</div>
             <form className="modal-form" onSubmit={handleSubmit}>
               {error && <div className="modal-error">{error}</div>}
               <div className="form-group">
@@ -1986,7 +2062,7 @@
               <button onClick={onSwitchToRegister}>Create one free</button>
             </div>
             <div style={{ textAlign: 'center', marginTop: '12px' }}>
-              <a href="mailto:owen.murillo2533@gmail.com?subject=Forgot Password — RoofDraft AI" style={{ fontSize: '13px', color: 'var(--slate)', textDecoration: 'underline' }}>
+              <a href="mailto:owen.murillo2533@gmail.com?subject=Forgot Password — RoofDraft" style={{ fontSize: '13px', color: 'var(--slate)', textDecoration: 'underline' }}>
                 Forgot your password?
               </a>
             </div>
@@ -2060,7 +2136,31 @@
     // ---------------------------------------------------------------------------
     // Upgrade Modal
     // ---------------------------------------------------------------------------
-    function UpgradeModal({ onClose }) {
+    function UpgradeModal({ onClose, token, onUpgraded }) {
+      const [promoCode, setPromoCode] = useState('');
+      const [promoStatus, setPromoStatus] = useState(null); // null | 'success' | string (error)
+      const [promoLoading, setPromoLoading] = useState(false);
+
+      async function handleApplyPromo(e) {
+        e.preventDefault();
+        if (!promoCode.trim()) return;
+        setPromoLoading(true);
+        setPromoStatus(null);
+        try {
+          const { ok, data } = await API.call('/api/auth/apply-promo', 'POST', { code: promoCode.trim() }, token);
+          if (ok) {
+            setPromoStatus('success');
+            if (onUpgraded) onUpgraded(data.user);
+            setTimeout(onClose, 1500);
+          } else {
+            setPromoStatus(data.error || 'Invalid promo code');
+          }
+        } catch {
+          setPromoStatus('Something went wrong. Please try again.');
+        } finally {
+          setPromoLoading(false);
+        }
+      }
       const PLANS = [
         {
           name: 'Free',
@@ -2073,6 +2173,7 @@
           name: 'Starter',
           price: '$49',
           period: '/mo',
+          // STRIPE: replace this mailto link with Stripe checkout session call for starter plan
           href: 'mailto:owen.murillo2533@gmail.com?subject=Upgrade Request — Starter Plan',
           features: ['Unlimited proposals', 'Proposal Generator', 'Saved defaults', '— Follow-Up Email', '— Job Folders'],
           highlight: false,
@@ -2081,6 +2182,7 @@
           name: 'Pro',
           price: '$79',
           period: '/mo',
+          // STRIPE: replace this mailto link with Stripe checkout session call for pro plan
           href: 'mailto:owen.murillo2533@gmail.com?subject=Upgrade Request — Pro Plan',
           features: ['Unlimited proposals', 'All 4 tools', 'Saved defaults', 'Job Folders', 'Priority support'],
           highlight: true,
@@ -2122,6 +2224,31 @@
                   )}
                 </div>
               ))}
+            </div>
+            {/* Promo code section */}
+            <div style={{ marginTop:'18px', borderTop:'1px solid var(--border)', paddingTop:'16px' }}>
+              {promoStatus === 'success' ? (
+                <div style={{ background:'#f0fdf4', border:'1px solid #86efac', borderRadius:'4px', padding:'10px 14px', fontSize:'14px', color:'#166534', fontWeight:600, textAlign:'center' }}>
+                  ✓ Promo code applied! Activating your plan...
+                </div>
+              ) : (
+                <form onSubmit={handleApplyPromo} style={{ display:'flex', gap:'8px' }}>
+                  <input
+                    className="form-input"
+                    type="text"
+                    placeholder="Have a promo code?"
+                    value={promoCode}
+                    onChange={e => setPromoCode(e.target.value.toUpperCase())}
+                    style={{ flex:1, fontSize:'14px', padding:'9px 12px' }}
+                  />
+                  <button type="submit" className="btn btn-outline btn-sm" disabled={promoLoading}>
+                    {promoLoading ? 'Applying...' : 'Apply'}
+                  </button>
+                </form>
+              )}
+              {promoStatus && promoStatus !== 'success' && (
+                <div style={{ fontSize:'13px', color:'var(--roof-red)', marginTop:'6px' }}>{promoStatus}</div>
+              )}
             </div>
             <button className="btn btn-ghost btn-full" style={{ marginTop:'14px' }} onClick={onClose}>
               Not right now
@@ -2709,8 +2836,10 @@
                 <span>Upgrade to keep generating professional roofing content.</span>
               </div>
               <div className="upgrade-actions">
+                {/* STRIPE: replace this mailto link with Stripe checkout session call for starter plan */}
                 <a href="mailto:owen.murillo2533@gmail.com?subject=Upgrade Request — Starter Plan"
                   className="btn btn-outline btn-sm">Starter — $49/mo</a>
+                {/* STRIPE: replace this mailto link with Stripe checkout session call for pro plan */}
                 <a href="mailto:owen.murillo2533@gmail.com?subject=Upgrade Request — Pro Plan"
                   className="btn btn-primary btn-sm">Pro — $79/mo</a>
               </div>
@@ -2757,6 +2886,7 @@
     function AdminPage({ token }) {
       const [stats, setStats] = useState(null);
       const [users, setUsers] = useState(null);
+      const [contacts, setContacts] = useState(null);
       const [loading, setLoading] = useState(true);
       const [error, setError] = useState('');
 
@@ -2764,12 +2894,14 @@
         Promise.all([
           API.call('/api/admin/stats', 'GET', null, token),
           API.call('/api/admin/users', 'GET', null, token),
-        ]).then(([statsRes, usersRes]) => {
+          API.call('/api/admin/contacts', 'GET', null, token),
+        ]).then(([statsRes, usersRes, contactsRes]) => {
           if (!statsRes.ok || !usersRes.ok) {
             setError('Failed to load admin data.');
           } else {
             setStats(statsRes.data);
             setUsers(usersRes.data.users || []);
+            setContacts(contactsRes.ok ? (contactsRes.data.messages || []) : []);
           }
           setLoading(false);
         }).catch(() => { setError('Connection error.'); setLoading(false); });
@@ -2901,6 +3033,39 @@
               </tbody>
             </table>
           </div>
+
+          {/* Contact Messages */}
+          {contacts && contacts.length > 0 && (
+            <div className="admin-table-wrap" style={{ marginTop:32 }}>
+              <div className="admin-table-header">
+                <div className="admin-table-title">Contact Form Submissions</div>
+                <div className="admin-user-count">{contacts.length} messages</div>
+              </div>
+              <table className="admin-table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Message</th>
+                    <th>Received</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {contacts.map(c => (
+                    <tr key={c.id}>
+                      <td style={{ fontWeight:600 }}>{c.name}</td>
+                      <td><a href={`mailto:${c.email}`} style={{ color:'var(--roof-red)' }}>{c.email}</a></td>
+                      <td style={{ maxWidth:'360px', fontSize:'13px', color:'var(--charcoal)', whiteSpace:'pre-wrap' }}>{c.message}</td>
+                      <td><span className="admin-date">{fmtDate(c.created_at)}</span></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+          {contacts && contacts.length === 0 && (
+            <div style={{ marginTop:32, padding:'20px', color:'var(--slate)', fontSize:'14px' }}>No contact messages yet.</div>
+          )}
         </div>
       );
     }
@@ -3008,8 +3173,10 @@
                 Saved defaults let you store your company name, contact info, warranty terms, and common materials so you never have to type them again. Available on Starter and Pro plans.
               </div>
               <div className="defaults-upgrade-actions">
+                {/* STRIPE: replace this mailto link with Stripe checkout session call for starter plan */}
                 <a href="mailto:owen.murillo2533@gmail.com?subject=Upgrade Request — Starter Plan"
                   className="btn btn-outline-red btn-sm">Starter — $49/mo</a>
+                {/* STRIPE: replace this mailto link with Stripe checkout session call for pro plan */}
                 <a href="mailto:owen.murillo2533@gmail.com?subject=Upgrade Request — Pro Plan"
                   className="btn btn-primary btn-sm">Pro — $79/mo</a>
               </div>
@@ -3284,6 +3451,7 @@
                 Job Folders let you save, name, and organize every proposal, email, and message you generate — sorted by client or job site. Access everything in one place.
               </div>
               <div className="defaults-upgrade-actions">
+                {/* STRIPE: replace this mailto link with Stripe checkout session call for pro plan */}
                 <a href="mailto:owen.murillo2533@gmail.com?subject=Upgrade Request — Pro Plan"
                   className="btn btn-primary btn-sm"
                   style={{ fontFamily:'Oswald, sans-serif', letterSpacing:'0.03em', textTransform:'uppercase' }}>
@@ -3589,6 +3757,7 @@
             </table>
             {plan !== 'pro' && !user.is_admin && (
               <div style={{ marginTop:20 }}>
+                {/* STRIPE: replace this mailto link with Stripe checkout session call for pro plan */}
                 <a href="mailto:owen.murillo2533@gmail.com?subject=Upgrade Request — Pro Plan"
                   className="btn btn-primary btn-full"
                   style={{ fontFamily:'Oswald, sans-serif', letterSpacing:'0.03em', textTransform:'uppercase' }}>
@@ -3626,7 +3795,7 @@
       return (
         <div className={`sidebar${mobileOpen ? ' mobile-open' : ''}`}>
           <div className="sidebar-logo" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <div className="sidebar-logo-text">Roof<span>Draft</span> AI</div>
+            <div className="sidebar-logo-text">Roof<span>Draft</span></div>
             {onMobileClose && (
               <button onClick={onMobileClose} style={{ background:'none', border:'none', cursor:'pointer', fontSize:'20px', color:'var(--slate-light)', padding:'4px', lineHeight:1 }} aria-label="Close menu">✕</button>
             )}
@@ -3695,7 +3864,7 @@
         <div className="dashboard">
           {/* Mobile top bar */}
           <div className="mobile-nav-bar">
-            <div className="mobile-nav-logo">Roof<span>Draft</span> AI</div>
+            <div className="mobile-nav-logo">Roof<span>Draft</span></div>
             <button className="mobile-nav-btn" onClick={() => setSidebarOpen(true)} aria-label="Open menu">☰</button>
           </div>
 
@@ -3727,7 +3896,7 @@
             {activeTab === 'defaults' && <DefaultsPage token={token} user={user} onNavigate={setActiveTab} />}
             {activeTab === 'admin'    && user.is_admin && <AdminPage token={token} />}
           </main>
-          {showUpgrade && <UpgradeModal onClose={() => setShowUpgrade(false)} />}
+          {showUpgrade && <UpgradeModal onClose={() => setShowUpgrade(false)} token={token} onUpgraded={u => { onUserUpdate(u); setShowUpgrade(false); }} />}
           {showFeatures && <FeatureComparisonModal user={user} onClose={() => setShowFeatures(false)} />}
         </div>
       );
@@ -3744,9 +3913,9 @@
             <div className="modal-title" style={{ marginBottom: 20 }}>Terms of Service</div>
             <div style={{ fontSize: '14px', lineHeight: '1.7', color: 'var(--slate)' }}>
               <p style={{ marginBottom: 14 }}><strong style={{ color: 'var(--near-black)' }}>Effective date:</strong> March 2026</p>
-              <p style={{ marginBottom: 14 }}>By using RoofDraft AI ("the Service"), you agree to the following terms.</p>
+              <p style={{ marginBottom: 14 }}>By using RoofDraft ("the Service"), you agree to the following terms.</p>
               <p style={{ marginBottom: 8 }}><strong style={{ color: 'var(--near-black)' }}>Use of the Service</strong></p>
-              <p style={{ marginBottom: 14 }}>RoofDraft AI is a tool that helps roofing contractors generate professional written content. You are responsible for reviewing and customizing all generated content before sending it to customers. Do not use the Service to generate misleading or fraudulent content.</p>
+              <p style={{ marginBottom: 14 }}>RoofDraft is a tool that helps roofing contractors generate professional written content. You are responsible for reviewing and customizing all generated content before sending it to customers. Do not use the Service to generate misleading or fraudulent content.</p>
               <p style={{ marginBottom: 8 }}><strong style={{ color: 'var(--near-black)' }}>Account</strong></p>
               <p style={{ marginBottom: 14 }}>You are responsible for keeping your account credentials secure. One account per person. We may terminate accounts that violate these terms.</p>
               <p style={{ marginBottom: 8 }}><strong style={{ color: 'var(--near-black)' }}>Billing</strong></p>
@@ -3754,7 +3923,7 @@
               <p style={{ marginBottom: 8 }}><strong style={{ color: 'var(--near-black)' }}>Content</strong></p>
               <p style={{ marginBottom: 14 }}>You retain ownership of the content you generate. We do not claim rights to your proposals or emails.</p>
               <p style={{ marginBottom: 8 }}><strong style={{ color: 'var(--near-black)' }}>Limitation of Liability</strong></p>
-              <p style={{ marginBottom: 14 }}>RoofDraft AI is provided "as is." We are not liable for any lost business, errors in generated content, or damages arising from use of the Service.</p>
+              <p style={{ marginBottom: 14 }}>RoofDraft is provided "as is." We are not liable for any lost business, errors in generated content, or damages arising from use of the Service.</p>
               <p style={{ marginBottom: 8 }}><strong style={{ color: 'var(--near-black)' }}>Contact</strong></p>
               <p>Questions? Email owen.murillo2533@gmail.com</p>
             </div>
@@ -3774,7 +3943,7 @@
               <p style={{ marginBottom: 8 }}><strong style={{ color: 'var(--near-black)' }}>What we collect</strong></p>
               <p style={{ marginBottom: 14 }}>We collect your email address, username, and the content you enter into our tools (job details, customer names, etc.) in order to provide the Service. We store a record of each generation so you can access your saved drafts.</p>
               <p style={{ marginBottom: 8 }}><strong style={{ color: 'var(--near-black)' }}>How we use it</strong></p>
-              <p style={{ marginBottom: 14 }}>Your data is used solely to operate RoofDraft AI. We do not sell your data. We do not share it with third parties except the AI provider (Anthropic) used to generate your content, and our database provider (Neon).</p>
+              <p style={{ marginBottom: 14 }}>Your data is used solely to operate RoofDraft. We do not sell your data. We do not share it with third parties except the AI provider (Anthropic) used to generate your content, and our database provider (Neon).</p>
               <p style={{ marginBottom: 8 }}><strong style={{ color: 'var(--near-black)' }}>Cookies & storage</strong></p>
               <p style={{ marginBottom: 14 }}>We use browser localStorage to store your session token. No tracking cookies are used.</p>
               <p style={{ marginBottom: 8 }}><strong style={{ color: 'var(--near-black)' }}>Data retention</strong></p>
@@ -3801,6 +3970,28 @@
 
     function LandingPage({ onShowLogin, onShowRegister }) {
       const [legalModal, setLegalModal] = useState(null);
+      const [contactForm, setContactForm] = useState({ name: '', email: '', message: '' });
+      const [contactStatus, setContactStatus] = useState(null); // null | 'success' | 'error'
+      const [contactSending, setContactSending] = useState(false);
+
+      async function handleContactSubmit(e) {
+        e.preventDefault();
+        setContactSending(true);
+        setContactStatus(null);
+        try {
+          const { ok } = await API.call('/api/contact', 'POST', contactForm);
+          if (ok) {
+            setContactStatus('success');
+            setContactForm({ name: '', email: '', message: '' });
+          } else {
+            setContactStatus('error');
+          }
+        } catch {
+          setContactStatus('error');
+        } finally {
+          setContactSending(false);
+        }
+      }
 
       const tools = [
         { name: 'Proposal Generator', desc: 'Complete, professional proposal letters that win jobs. Fill out the job details and get a client-ready document in under 60 seconds.' },
@@ -3810,10 +4001,10 @@
       ];
 
       const faqs = [
-        { q: 'What is RoofDraft AI?', a: 'A set of AI-powered tools built specifically for roofing contractors. It generates proposals, follow-up emails, review requests, and referral messages in seconds.' },
+        { q: 'What is RoofDraft?', a: 'A set of AI-powered tools built specifically for roofing contractors. It generates proposals, follow-up emails, review requests, and referral messages in seconds.' },
         { q: 'Do I need a credit card to start?', a: 'No. The free plan gives you 5 generations per month with no card required. Upgrade when you\'re ready.' },
         { q: 'How long does it take to generate a proposal?', a: 'Under 60 seconds. Fill in the form, click generate, and you\'ll have a complete client-ready proposal.' },
-        { q: 'Can I use it on my phone?', a: 'Yes. RoofDraft AI is fully mobile-friendly. Use it from the job site, your truck, or anywhere.' },
+        { q: 'Can I use it on my phone?', a: 'Yes. RoofDraft is fully mobile-friendly. Use it from the job site, your truck, or anywhere.' },
         { q: 'What\'s included in the Pro plan?', a: 'All 4 tools: Proposal Generator, Follow-Up Email, Review Request, and Referral Message. Plus unlimited generations and Job Folders.' },
         { q: 'Is there a contract or setup fee?', a: 'No contracts, no setup fees, no hidden costs. Cancel any time.' },
       ];
@@ -3838,12 +4029,12 @@
         <div className="landing">
           {/* Nav */}
           <nav className="landing-nav">
-            <div className="landing-logo">Roof<span>Draft</span> AI</div>
+            <div className="landing-logo">Roof<span>Draft</span></div>
             <ul className="landing-nav-links">
               <li><a href="#tools">Tools</a></li>
               <li><a href="#pricing">Pricing</a></li>
               <li><a href="#faq">FAQ</a></li>
-              <li><a href="mailto:owen.murillo2533@gmail.com">Contact</a></li>
+              <li><a href="#contact">Contact</a></li>
             </ul>
             <div className="landing-nav-actions">
               <button className="btn btn-ghost" onClick={onShowLogin}
@@ -3860,7 +4051,7 @@
                 Stop Losing Jobs to<br /><span>Better-Looking Proposals</span>
               </h1>
               <p className="hero-sub">
-                RoofDraft AI generates professional proposals, follow-ups, and review requests in under 60 seconds — so you spend less time writing and more time on roofs.
+                RoofDraft generates professional proposals, follow-ups, and review requests in under 60 seconds — so you spend less time writing and more time on roofs.
               </p>
               <div className="hero-actions">
                 <button className="btn btn-primary" onClick={onShowRegister}
@@ -3928,7 +4119,7 @@
                   The job goes to the contractor who shows up with a clean, professional proposal — not the best roofer. Homeowners don't know the difference until the work is done. They buy the proposal first.
                 </p>
                 <p className="problem-text">
-                  Writing a good proposal takes 30–45 minutes. Most contractors skip it or send a basic quote that looks like everyone else's. RoofDraft AI does it in under 60 seconds.
+                  Writing a good proposal takes 30–45 minutes. Most contractors skip it or send a basic quote that looks like everyone else's. RoofDraft does it in under 60 seconds.
                 </p>
                 <p className="problem-text" style={{marginBottom:0}}>
                   Fill out what you know about the job. Click generate. You'll have a complete, client-ready proposal letter — one that actually wins work.
@@ -4008,6 +4199,7 @@
                     <li><span className="pf-x">✗</span><span className="pf-x-text">Job folders & organization</span></li>
                     <li><span className="pf-check">✓</span><span>Email support</span></li>
                   </ul>
+                  {/* STRIPE: replace this mailto link with Stripe checkout session call for starter plan */}
                   <a href="mailto:owen.murillo2533@gmail.com?subject=Upgrade Request — Starter Plan"
                     className="btn btn-primary btn-full"
                     style={{ fontFamily:'Oswald, sans-serif', letterSpacing:'0.03em', textTransform:'uppercase' }}>
@@ -4032,6 +4224,7 @@
                     <li><span className="pf-check">✓</span><span>Job folders & organization</span></li>
                     <li><span className="pf-check">✓</span><span>Priority support</span></li>
                   </ul>
+                  {/* STRIPE: replace this mailto link with Stripe checkout session call for pro plan */}
                   <a href="mailto:owen.murillo2533@gmail.com?subject=Upgrade Request — Pro Plan"
                     className="btn btn-primary btn-full"
                     style={{ fontFamily:'Oswald, sans-serif', letterSpacing:'0.03em', textTransform:'uppercase' }}>
@@ -4090,15 +4283,85 @@
             </div>
           </section>
 
+          {/* Contact */}
+          <section id="contact" className="contact-section">
+            <div className="contact-inner">
+              <div className="section-eyebrow">Contact</div>
+              <h2 className="section-title">Get In Touch</h2>
+              <p style={{ color:'var(--slate)', fontSize:'16px', marginBottom:'32px', marginTop:'-20px' }}>
+                Have a question about RoofDraft? We're here to help.
+              </p>
+              <div className="contact-cards">
+                <div className="contact-card">
+                  <div className="contact-card-icon">✉</div>
+                  <div className="contact-card-label">Email Us</div>
+                  <div className="contact-card-value">
+                    <a href="mailto:support@roofdraft.com">support@roofdraft.com</a>
+                  </div>
+                  <div className="contact-card-note">We respond within 24 hours</div>
+                </div>
+                <div className="contact-card">
+                  <div className="contact-card-icon">☎</div>
+                  <div className="contact-card-label">Call or Text</div>
+                  <div className="contact-card-value">
+                    <a href="tel:+19858592855">(985) 859-2855</a>
+                  </div>
+                  <div className="contact-card-note">Mon–Fri, 8am–6pm CST</div>
+                </div>
+              </div>
+              <div className="contact-form-wrap">
+                <div className="contact-form-title">Send a Message</div>
+                {contactStatus === 'success' ? (
+                  <div className="contact-success">Message sent. We'll get back to you within 24 hours.</div>
+                ) : (
+                  <form onSubmit={handleContactSubmit}>
+                    <div className="contact-form-grid">
+                      <div className="form-group">
+                        <label className="form-label">Name</label>
+                        <input className="form-input" type="text" required
+                          value={contactForm.name}
+                          onChange={e => setContactForm(f => ({...f, name: e.target.value}))}
+                          placeholder="Your name" />
+                      </div>
+                      <div className="form-group">
+                        <label className="form-label">Email</label>
+                        <input className="form-input" type="email" required
+                          value={contactForm.email}
+                          onChange={e => setContactForm(f => ({...f, email: e.target.value}))}
+                          placeholder="your@email.com" />
+                      </div>
+                    </div>
+                    <div className="form-group" style={{ marginBottom:'16px' }}>
+                      <label className="form-label">Message</label>
+                      <textarea className="form-textarea" rows={4} required
+                        value={contactForm.message}
+                        onChange={e => setContactForm(f => ({...f, message: e.target.value}))}
+                        placeholder="What can we help you with?" />
+                    </div>
+                    {contactStatus === 'error' && (
+                      <div className="contact-error" style={{ marginBottom:'14px' }}>
+                        Something went wrong. Please email us directly at <a href="mailto:support@roofdraft.com">support@roofdraft.com</a>
+                      </div>
+                    )}
+                    <button type="submit" className="btn btn-primary" disabled={contactSending}
+                      style={{ fontFamily:'Oswald, sans-serif', letterSpacing:'0.03em', textTransform:'uppercase', padding:'12px 28px' }}>
+                      {contactSending ? <><Spinner /> Sending...</> : 'Send Message'}
+                    </button>
+                  </form>
+                )}
+              </div>
+            </div>
+          </section>
+
           {/* Footer */}
           <footer className="landing-footer">
-            <div className="footer-logo">Roof<span>Draft</span> AI</div>
+            <div className="footer-logo">Roof<span>Draft</span></div>
             <div className="footer-tagline">Built for roofers.</div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '18px', flexWrap: 'wrap', justifyContent: 'center' }}>
-              <div className="footer-copy">© {new Date().getFullYear()} RoofDraft AI. All rights reserved.</div>
+              <div className="footer-copy">© 2025 RoofDraft. Built for roofers.</div>
               <button onClick={() => setLegalModal('terms')} style={{ background:'none', border:'none', color:'#888', fontSize:'13px', cursor:'pointer', padding:0, textDecoration:'underline' }}>Terms</button>
               <button onClick={() => setLegalModal('privacy')} style={{ background:'none', border:'none', color:'#888', fontSize:'13px', cursor:'pointer', padding:0, textDecoration:'underline' }}>Privacy</button>
-              <a href="mailto:owen.murillo2533@gmail.com" style={{ color:'#888', fontSize:'13px' }}>Contact</a>
+              <a href="#contact" style={{ color:'#888', fontSize:'13px' }}>Contact</a>
             </div>
           </footer>
 

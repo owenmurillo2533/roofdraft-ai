@@ -1,9 +1,9 @@
 """
-RoofDraft AI — Admin Routes
+RoofDraft — Admin Routes
 Only accessible by users with is_admin = TRUE.
 """
 from flask import Blueprint, jsonify
-from database.db import require_auth, USE_POSTGRES, pg_run, get_db, row_to_dict
+from database.db import require_auth, USE_POSTGRES, pg_run, get_db, row_to_dict, get_contact_messages
 
 admin_bp = Blueprint('admin', __name__)
 
@@ -142,3 +142,12 @@ def admin_users():
         conn.close()
 
     return jsonify({"users": users})
+
+
+@admin_bp.route('/api/admin/contacts', methods=['GET'])
+def admin_contacts():
+    _, err = require_admin()
+    if err:
+        return err
+    messages = get_contact_messages()
+    return jsonify({"messages": messages})

@@ -1,5 +1,5 @@
 """
-RoofDraft AI — Drafts Routes
+RoofDraft — Drafts Routes
 Saved generations for paying customers. Job folder features are Pro-only.
 """
 from flask import Blueprint, jsonify, request

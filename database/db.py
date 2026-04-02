@@ -1,5 +1,5 @@
 """
-RoofDraft AI — Database Layer
+RoofDraft — Database Layer
 PostgreSQL (Neon) in production, SQLite locally.
 """
 
@@ -157,6 +157,18 @@ def init_db():
         except Exception as e:
             print(f"[DB] job_folders table note: {e}")
 
+        # contact_messages table
+        try:
+            pg_run("""CREATE TABLE IF NOT EXISTS contact_messages (
+                id SERIAL PRIMARY KEY,
+                name VARCHAR(255) NOT NULL,
+                email VARCHAR(255) NOT NULL,
+                message TEXT NOT NULL,
+                created_at TIMESTAMP DEFAULT NOW()
+            )""")
+        except Exception as e:
+            print(f"[DB] contact_messages table note: {e}")
+
         migrations = [
             "ALTER TABLE users ADD COLUMN IF NOT EXISTS generations_this_month INTEGER DEFAULT 0",
             "ALTER TABLE users ADD COLUMN IF NOT EXISTS last_reset_month VARCHAR(7) DEFAULT ''",
@@ -236,6 +248,13 @@ def init_db():
             created_at TEXT DEFAULT (datetime('now')),
             FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
             FOREIGN KEY (folder_id) REFERENCES job_folders(id) ON DELETE SET NULL
+        );
+        CREATE TABLE IF NOT EXISTS contact_messages (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            email TEXT NOT NULL,
+            message TEXT NOT NULL,
+            created_at TEXT DEFAULT (datetime('now'))
         );
         CREATE INDEX IF NOT EXISTS idx_sessions_token ON sessions(token);
         CREATE INDEX IF NOT EXISTS idx_logs_user ON generation_logs(user_id);
@@ -724,6 +743,51 @@ def move_draft(user_id: int, draft_id: int, folder_id='__unset__', title=None) -
         conn.commit()
         conn.close()
     return True
+
+
+# ---------------------------------------------------------------------------
+# Contact Messages
+# ---------------------------------------------------------------------------
+
+def save_contact_message(name: str, email: str, message: str) -> int:
+    if USE_POSTGRES:
+        rows = pg_run(
+            "INSERT INTO contact_messages (name, email, message) VALUES ($1, $2, $3) RETURNING id",
+            [name, email, message]
+        )
+        return rows[0]['id'] if rows else None
+    else:
+        conn = get_db()
+        cur = conn.cursor()
+        cur.execute(
+            "INSERT INTO contact_messages (name, email, message) VALUES (?, ?, ?)",
+            (name, email, message)
+        )
+        conn.commit()
+        msg_id = cur.lastrowid
+        conn.close()
+        return msg_id
+
+
+def get_contact_messages() -> list:
+    if USE_POSTGRES:
+        rows = pg_run(
+            "SELECT id, name, email, message, created_at FROM contact_messages ORDER BY created_at DESC"
+        )
+        result = []
+        for r in rows:
+            r = dict(r)
+            if r.get('created_at') and not isinstance(r['created_at'], str):
+                r['created_at'] = r['created_at'].isoformat()
+            result.append(r)
+        return result
+    else:
+        conn = get_db()
+        rows = conn.execute(
+            "SELECT id, name, email, message, created_at FROM contact_messages ORDER BY created_at DESC"
+        ).fetchall()
+        conn.close()
+        return [row_to_dict(r) for r in rows]
 
 
 if __name__ == '__main__':

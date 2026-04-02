@@ -1,5 +1,5 @@
 """
-RoofDraft AI — Auth Routes
+RoofDraft — Auth Routes
 """
 import re
 from flask import Blueprint, request, jsonify
@@ -192,3 +192,50 @@ def me():
             user = row_to_dict(row)
 
     return jsonify(_user_response(user))
+
+
+@auth_bp.route('/api/auth/apply-promo', methods=['POST'])
+def apply_promo():
+    from database.db import require_auth
+    user = require_auth()
+    if not user:
+        return jsonify({"error": "Unauthorized"}), 401
+
+    data = request.get_json() or {}
+    code = (data.get('code') or '').strip().upper()
+
+    VALID_CODES = {
+        'ROOFER2025': 'pro',
+    }
+
+    if code not in VALID_CODES:
+        return jsonify({"error": "Invalid promo code"}), 400
+
+    new_plan = VALID_CODES[code]
+
+    try:
+        if USE_POSTGRES:
+            pg_run(
+                "UPDATE users SET plan=$1 WHERE id=$2",
+                [new_plan, user['id']]
+            )
+            rows = pg_run(
+                "SELECT id, email, username, plan, generations_this_month, is_admin FROM users WHERE id=$1",
+                [user['id']]
+            )
+            updated = rows[0] if rows else user
+        else:
+            conn = get_db()
+            conn.execute("UPDATE users SET plan=? WHERE id=?", (new_plan, user['id']))
+            conn.commit()
+            row = conn.execute(
+                "SELECT id, email, username, plan, generations_this_month, is_admin FROM users WHERE id=?",
+                (user['id'],)
+            ).fetchone()
+            conn.close()
+            updated = row_to_dict(row) if row else user
+
+        return jsonify({"user": _user_response(updated), "plan": new_plan})
+    except Exception as e:
+        print(f"[Promo] Error: {e}")
+        return jsonify({"error": "Failed to apply promo code"}), 500
