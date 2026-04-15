@@ -94,11 +94,15 @@ def health():
                 'STRIPE_SECRET_KEY', 'STRIPE_STARTER_PRICE_ID', 'STRIPE_PRO_PRICE_ID',
                 'STRIPE_WEBHOOK_SECRET', 'YOUR_DOMAIN']
     env_status = {k: bool(os.environ.get(k)) for k in env_vars}
+    # Also show any STRIPE_* keys found (names only, no values) to catch typos
+    stripe_keys_found = [k for k in os.environ if 'STRIPE' in k.upper() or 'stripe' in k]
     return jsonify({
         'status': 'ok',
         'service': 'RoofDraft',
+        'version': '2.1.0',
         'db_mode': 'postgres' if USE_POSTGRES else 'sqlite',
         'env': env_status,
+        'stripe_keys_found': stripe_keys_found,
     })
 
 
