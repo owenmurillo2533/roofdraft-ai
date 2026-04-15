@@ -1981,6 +1981,22 @@
     };
 
     // ---------------------------------------------------------------------------
+    // Stripe checkout helper
+    // ---------------------------------------------------------------------------
+    async function initiateCheckout(plan, token) {
+      try {
+        const { ok, data } = await API.call('/api/stripe/create-checkout-session', 'POST', { plan }, token);
+        if (ok && data.url) {
+          window.location.href = data.url;
+        } else {
+          alert(data?.error || 'Unable to start checkout. Please try again.');
+        }
+      } catch {
+        alert('Unable to start checkout. Please check your connection and try again.');
+      }
+    }
+
+    // ---------------------------------------------------------------------------
     // Plan helpers
     // ---------------------------------------------------------------------------
     const FREE_LIMIT = 5;
@@ -2199,26 +2215,24 @@
       const PLANS = [
         {
           name: 'Free',
+          plan: null,
           price: '$0',
           period: '/mo',
-          href: null,
           features: ['5 proposals/month', 'Proposal Generator', '— Follow-Up Email', '— Review Request', '— Job Folders'],
         },
         {
           name: 'Starter',
+          plan: 'starter',
           price: '$49',
           period: '/mo',
-          // STRIPE: replace this mailto link with Stripe checkout session call for starter plan
-          href: 'mailto:owen.murillo2533@gmail.com?subject=Upgrade Request — Starter Plan',
           features: ['Unlimited proposals', 'Proposal Generator', 'Saved defaults', '— Follow-Up Email', '— Job Folders'],
           highlight: false,
         },
         {
           name: 'Pro',
+          plan: 'pro',
           price: '$79',
           period: '/mo',
-          // STRIPE: replace this mailto link with Stripe checkout session call for pro plan
-          href: 'mailto:owen.murillo2533@gmail.com?subject=Upgrade Request — Pro Plan',
           features: ['Unlimited proposals', 'All 4 tools', 'Saved defaults', 'Job Folders', 'Priority support'],
           highlight: true,
         },
@@ -2246,12 +2260,12 @@
                       </li>
                     ))}
                   </ul>
-                  {p.href ? (
-                    <a href={p.href}
+                  {p.plan ? (
+                    <button onClick={() => initiateCheckout(p.plan, token)}
                       className={`btn btn-sm btn-full${p.highlight ? ' btn-primary' : ' btn-outline-red'}`}
                       style={p.highlight ? { fontFamily:'Oswald, sans-serif', letterSpacing:'0.03em', textTransform:'uppercase', marginTop:'auto' } : { marginTop:'auto' }}>
                       Get {p.name}
-                    </a>
+                    </button>
                   ) : (
                     <button className="btn btn-sm btn-ghost btn-full" style={{ marginTop:'auto' }} onClick={onClose}>
                       Current Plan
@@ -2863,7 +2877,7 @@
       { key: 'referral', tab: 'referral', name: 'Referral Message',   desc: 'Text and email to ask happy customers for referrals without being awkward.' },
     ];
 
-    function DashboardHome({ user, onSelectTab }) {
+    function DashboardHome({ user, token, onSelectTab }) {
       const isFree = user.plan === 'free' && !user.is_admin;
       const genCount = user.generations_this_month || 0;
       const allUsed = isFree && genCount >= FREE_LIMIT;
@@ -2877,12 +2891,10 @@
                 <span>Upgrade to keep generating professional roofing content.</span>
               </div>
               <div className="upgrade-actions">
-                {/* STRIPE: replace this mailto link with Stripe checkout session call for starter plan */}
-                <a href="mailto:owen.murillo2533@gmail.com?subject=Upgrade Request — Starter Plan"
-                  className="btn btn-outline btn-sm">Starter — $49/mo</a>
-                {/* STRIPE: replace this mailto link with Stripe checkout session call for pro plan */}
-                <a href="mailto:owen.murillo2533@gmail.com?subject=Upgrade Request — Pro Plan"
-                  className="btn btn-primary btn-sm">Pro — $79/mo</a>
+                <button onClick={() => initiateCheckout('starter', token)}
+                  className="btn btn-outline btn-sm">Starter — $49/mo</button>
+                <button onClick={() => initiateCheckout('pro', token)}
+                  className="btn btn-primary btn-sm">Pro — $79/mo</button>
               </div>
             </div>
           )}
@@ -3594,12 +3606,10 @@
                 Saved defaults let you store your company name, contact info, warranty terms, and common materials so you never have to type them again. Available on Starter and Pro plans.
               </div>
               <div className="defaults-upgrade-actions">
-                {/* STRIPE: replace this mailto link with Stripe checkout session call for starter plan */}
-                <a href="mailto:owen.murillo2533@gmail.com?subject=Upgrade Request — Starter Plan"
-                  className="btn btn-outline-red btn-sm">Starter — $49/mo</a>
-                {/* STRIPE: replace this mailto link with Stripe checkout session call for pro plan */}
-                <a href="mailto:owen.murillo2533@gmail.com?subject=Upgrade Request — Pro Plan"
-                  className="btn btn-primary btn-sm">Pro — $79/mo</a>
+                <button onClick={() => initiateCheckout('starter', token)}
+                  className="btn btn-outline-red btn-sm">Starter — $49/mo</button>
+                <button onClick={() => initiateCheckout('pro', token)}
+                  className="btn btn-primary btn-sm">Pro — $79/mo</button>
               </div>
               <div style={{ marginTop:'20px', borderTop:'1px solid var(--border)', paddingTop:'16px' }}>
                 <div style={{ fontSize:'13px', color:'var(--slate)', marginBottom:'8px', fontWeight:600 }}>Have a promo code?</div>
@@ -3895,12 +3905,11 @@
                 Job Folders let you save, name, and organize every proposal, email, and message you generate — sorted by client or job site. Access everything in one place.
               </div>
               <div className="defaults-upgrade-actions">
-                {/* STRIPE: replace this mailto link with Stripe checkout session call for pro plan */}
-                <a href="mailto:owen.murillo2533@gmail.com?subject=Upgrade Request — Pro Plan"
+                <button onClick={() => initiateCheckout('pro', token)}
                   className="btn btn-primary btn-sm"
                   style={{ fontFamily:'Oswald, sans-serif', letterSpacing:'0.03em', textTransform:'uppercase' }}>
                   Upgrade to Pro — $79/mo
-                </a>
+                </button>
               </div>
             </div>
           </div>
@@ -4155,7 +4164,7 @@
     // ---------------------------------------------------------------------------
     // Feature Comparison Modal
     // ---------------------------------------------------------------------------
-    function FeatureComparisonModal({ user, onClose }) {
+    function FeatureComparisonModal({ user, token, onClose }) {
       const plan = user.is_admin ? 'pro' : (user.plan || 'free');
       const FEATURES = [
         ['Monthly proposals', '5/mo', 'Unlimited', 'Unlimited'],
@@ -4201,12 +4210,11 @@
             </table>
             {plan !== 'pro' && !user.is_admin && (
               <div style={{ marginTop:20 }}>
-                {/* STRIPE: replace this mailto link with Stripe checkout session call for pro plan */}
-                <a href="mailto:owen.murillo2533@gmail.com?subject=Upgrade Request — Pro Plan"
+                <button onClick={() => initiateCheckout('pro', token)}
                   className="btn btn-primary btn-full"
                   style={{ fontFamily:'Oswald, sans-serif', letterSpacing:'0.03em', textTransform:'uppercase' }}>
                   Upgrade to Pro — $79/mo
-                </a>
+                </button>
               </div>
             )}
           </div>
@@ -4330,7 +4338,7 @@
                 <span className="back-to-dash-arrow">←</span> Back to Dashboard
               </button>
             )}
-            {activeTab === 'home'     && <DashboardHome user={user} onSelectTab={setActiveTab} />}
+            {activeTab === 'home'     && <DashboardHome user={user} token={token} onSelectTab={setActiveTab} />}
             {activeTab === 'proposal' && <ProposalTool {...toolProps} />}
             {activeTab === 'followup' && <FollowUpTool {...toolProps} />}
             {activeTab === 'review'   && <ReviewTool {...toolProps} />}
@@ -4341,7 +4349,7 @@
             {activeTab === 'admin'    && user.is_admin && <AdminPage token={token} />}
           </main>
           {showUpgrade && <UpgradeModal onClose={() => setShowUpgrade(false)} token={token} onUpgraded={u => { onUserUpdate(u); setShowUpgrade(false); }} />}
-          {showFeatures && <FeatureComparisonModal user={user} onClose={() => setShowFeatures(false)} />}
+          {showFeatures && <FeatureComparisonModal user={user} token={token} onClose={() => setShowFeatures(false)} />}
         </div>
       );
     }
@@ -4643,12 +4651,11 @@
                     <li><span className="pf-x">✗</span><span className="pf-x-text">Job folders & organization</span></li>
                     <li><span className="pf-check">✓</span><span>Email support</span></li>
                   </ul>
-                  {/* STRIPE: replace this mailto link with Stripe checkout session call for starter plan */}
-                  <a href="mailto:owen.murillo2533@gmail.com?subject=Upgrade Request — Starter Plan"
+                  <button onClick={onShowRegister}
                     className="btn btn-primary btn-full"
                     style={{ fontFamily:'Oswald, sans-serif', letterSpacing:'0.03em', textTransform:'uppercase' }}>
-                    Get Starter
-                  </a>
+                    Get Started
+                  </button>
                 </div>
 
                 {/* Pro */}
@@ -4668,12 +4675,11 @@
                     <li><span className="pf-check">✓</span><span>Job folders & organization</span></li>
                     <li><span className="pf-check">✓</span><span>Priority support</span></li>
                   </ul>
-                  {/* STRIPE: replace this mailto link with Stripe checkout session call for pro plan */}
-                  <a href="mailto:owen.murillo2533@gmail.com?subject=Upgrade Request — Pro Plan"
+                  <button onClick={onShowRegister}
                     className="btn btn-primary btn-full"
                     style={{ fontFamily:'Oswald, sans-serif', letterSpacing:'0.03em', textTransform:'uppercase' }}>
-                    Get Pro
-                  </a>
+                    Get Started
+                  </button>
                   <div className="pricing-pro-note">Best for contractors running 10+ estimates per week</div>
                 </div>
               </div>
@@ -4823,8 +4829,20 @@
       const [token, setToken] = useState(null);
       const [loading, setLoading] = useState(true);
       const [modal, setModal] = useState(null);
+      const [checkoutBanner, setCheckoutBanner] = useState(null); // 'success' | 'cancelled' | null
 
       useEffect(() => {
+        // Check for Stripe redirect params
+        const params = new URLSearchParams(window.location.search);
+        const checkout = params.get('checkout');
+        if (checkout === 'success') {
+          setCheckoutBanner('success');
+          window.history.replaceState({}, '', window.location.pathname);
+        } else if (checkout === 'cancelled') {
+          setCheckoutBanner('cancelled');
+          window.history.replaceState({}, '', window.location.pathname);
+        }
+
         const stored = localStorage.getItem('rd_token');
         if (!stored) { setLoading(false); return; }
         API.call('/api/auth/me', 'GET', null, stored).then(({ ok, data }) => {
@@ -4858,6 +4876,30 @@
 
       return (
         <>
+          {checkoutBanner === 'success' && (
+            <div style={{
+              position:'fixed', top:0, left:0, right:0, zIndex:2000,
+              background:'#27AE60', color:'#fff', padding:'14px 20px',
+              display:'flex', alignItems:'center', justifyContent:'space-between',
+              fontFamily:'Source Sans 3, sans-serif', fontSize:'15px', fontWeight:600,
+              boxShadow:'0 2px 8px rgba(0,0,0,0.15)'
+            }}>
+              <span>Payment successful — your plan has been upgraded! Refresh if your plan hasn't updated yet.</span>
+              <button onClick={() => setCheckoutBanner(null)} style={{ background:'none', border:'none', color:'#fff', cursor:'pointer', fontSize:'18px', lineHeight:1, padding:'0 4px' }}>✕</button>
+            </div>
+          )}
+          {checkoutBanner === 'cancelled' && (
+            <div style={{
+              position:'fixed', top:0, left:0, right:0, zIndex:2000,
+              background:'var(--slate)', color:'#fff', padding:'14px 20px',
+              display:'flex', alignItems:'center', justifyContent:'space-between',
+              fontFamily:'Source Sans 3, sans-serif', fontSize:'15px', fontWeight:600,
+              boxShadow:'0 2px 8px rgba(0,0,0,0.15)'
+            }}>
+              <span>Checkout cancelled — no charge was made.</span>
+              <button onClick={() => setCheckoutBanner(null)} style={{ background:'none', border:'none', color:'#fff', cursor:'pointer', fontSize:'18px', lineHeight:1, padding:'0 4px' }}>✕</button>
+            </div>
+          )}
           {user ? (
             <Dashboard user={user} token={token} onLogout={handleLogout} onUserUpdate={setUser} />
           ) : (

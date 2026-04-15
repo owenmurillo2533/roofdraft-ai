@@ -35,6 +35,7 @@ from routes.defaults import defaults_bp
 from routes.admin import admin_bp
 from routes.folders import folders_bp
 from routes.contact import contact_bp
+from routes.stripe import stripe_bp
 
 app.register_blueprint(auth_bp)
 app.register_blueprint(tools_bp)
@@ -43,6 +44,7 @@ app.register_blueprint(defaults_bp)
 app.register_blueprint(admin_bp)
 app.register_blueprint(folders_bp)
 app.register_blueprint(contact_bp)
+app.register_blueprint(stripe_bp)
 
 
 # ---------------------------------------------------------------------------
