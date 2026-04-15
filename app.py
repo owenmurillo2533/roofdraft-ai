@@ -35,7 +35,12 @@ from routes.defaults import defaults_bp
 from routes.admin import admin_bp
 from routes.folders import folders_bp
 from routes.contact import contact_bp
-from routes.stripe import stripe_bp
+try:
+    from routes.stripe import stripe_bp
+    _stripe_bp_loaded = True
+except Exception as _e:
+    print(f'[App] WARNING: Failed to load stripe blueprint: {_e}')
+    _stripe_bp_loaded = False
 
 app.register_blueprint(auth_bp)
 app.register_blueprint(tools_bp)
@@ -44,7 +49,8 @@ app.register_blueprint(defaults_bp)
 app.register_blueprint(admin_bp)
 app.register_blueprint(folders_bp)
 app.register_blueprint(contact_bp)
-app.register_blueprint(stripe_bp)
+if _stripe_bp_loaded:
+    app.register_blueprint(stripe_bp)
 
 
 # ---------------------------------------------------------------------------
