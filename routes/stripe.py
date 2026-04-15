@@ -4,28 +4,32 @@ Handles checkout session creation and webhook processing.
 """
 import os
 import json
-import stripe
 from flask import Blueprint, request, jsonify
 from database.db import require_auth, USE_POSTGRES, pg_run, get_db
 
 stripe_bp = Blueprint('stripe', __name__)
 
-STARTER_PRICE_ID = os.environ.get('STRIPE_STARTER_PRICE_ID', '')
-PRO_PRICE_ID     = os.environ.get('STRIPE_PRO_PRICE_ID', '')
-DOMAIN           = os.environ.get('YOUR_DOMAIN', 'https://roofdraftai.com')
-
-PLAN_PRICES = {
-    'starter': STARTER_PRICE_ID,
-    'pro':     PRO_PRICE_ID,
-}
+DOMAIN = os.environ.get('YOUR_DOMAIN', 'https://roofdraftai.com')
 
 
 def _get_stripe():
+    try:
+        import stripe as _stripe
+    except ImportError:
+        print('[Stripe] stripe package not installed')
+        return None
     key = os.environ.get('STRIPE_SECRET_KEY', '')
     if not key:
         return None
-    stripe.api_key = key
-    return stripe
+    _stripe.api_key = key
+    return _stripe
+
+
+def _plan_prices():
+    return {
+        'starter': os.environ.get('STRIPE_STARTER_PRICE_ID', ''),
+        'pro':     os.environ.get('STRIPE_PRO_PRICE_ID', ''),
+    }
 
 
 @stripe_bp.route('/api/stripe/create-checkout-session', methods=['POST'])
@@ -41,20 +45,23 @@ def create_checkout_session():
     data = request.get_json() or {}
     plan = (data.get('plan') or '').strip().lower()
 
-    if plan not in PLAN_PRICES:
+    prices = _plan_prices()
+    if plan not in prices:
         return jsonify({'error': 'Invalid plan. Must be starter or pro.'}), 400
 
-    price_id = PLAN_PRICES[plan]
+    price_id = prices[plan]
     if not price_id:
         return jsonify({'error': f'{plan.capitalize()} plan price not configured on server'}), 503
+
+    domain = os.environ.get('YOUR_DOMAIN', 'https://roofdraftai.com')
 
     try:
         session = s.checkout.Session.create(
             payment_method_types=['card'],
             line_items=[{'price': price_id, 'quantity': 1}],
             mode='subscription',
-            success_url=f'{DOMAIN}/?checkout=success&plan={plan}',
-            cancel_url=f'{DOMAIN}/?checkout=cancelled',
+            success_url=f'{domain}/?checkout=success&plan={plan}',
+            cancel_url=f'{domain}/?checkout=cancelled',
             customer_email=user['email'],
             client_reference_id=str(user['id']),
             metadata={'user_id': str(user['id']), 'plan': plan},
@@ -112,9 +119,5 @@ def webhook():
                 import traceback; traceback.print_exc()
         else:
             print('[Stripe] checkout.session.completed missing client_reference_id')
-
-    elif event_type in ('customer.subscription.deleted', 'customer.subscription.updated'):
-        # Future: handle cancellations / downgrades via subscription events
-        print(f'[Stripe] Subscription event (unhandled): {event_type}')
 
     return jsonify({'received': True})
