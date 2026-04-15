@@ -90,7 +90,9 @@ def frontend(path=''):
 
 @app.route('/api/health')
 def health():
-    env_vars = ['ANTHROPIC_API_KEY', 'DATABASE_URL', 'SECRET_KEY', 'DEBUG', 'STRIPE_SECRET_KEY']
+    env_vars = ['ANTHROPIC_API_KEY', 'DATABASE_URL', 'SECRET_KEY', 'DEBUG',
+                'STRIPE_SECRET_KEY', 'STRIPE_STARTER_PRICE_ID', 'STRIPE_PRO_PRICE_ID',
+                'STRIPE_WEBHOOK_SECRET', 'YOUR_DOMAIN']
     env_status = {k: bool(os.environ.get(k)) for k in env_vars}
     return jsonify({
         'status': 'ok',
