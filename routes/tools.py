@@ -9,7 +9,7 @@ from database.db import require_auth, log_generation, get_monthly_count, save_dr
 tools_bp = Blueprint('tools', __name__)
 
 client = Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
-MODEL = "claude-sonnet-4-20250514"
+MODEL = "claude-sonnet-4-6"
 MAX_TOKENS = 2000
 
 # ---------------------------------------------------------------------------

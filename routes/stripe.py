@@ -72,18 +72,19 @@ def webhook():
     if not s:
         return jsonify({'error': 'Stripe not configured'}), 503
 
-    payload    = request.get_data()
-    sig_header = request.headers.get('Stripe-Signature', '')
+    payload        = request.get_data()
+    sig_header     = request.headers.get('Stripe-Signature', '')
     webhook_secret = os.environ.get('STRIPE_WEBHOOK_SECRET', '')
 
+    if not webhook_secret:
+        print('[Stripe] STRIPE_WEBHOOK_SECRET not set — rejecting webhook')
+        return jsonify({'error': 'Webhook not configured'}), 503
+
     try:
-        if webhook_secret and sig_header:
-            event = s.Webhook.construct_event(payload, sig_header, webhook_secret)
-        else:
-            event = s.Event.construct_from(json.loads(payload), s.api_key)
+        event = s.Webhook.construct_event(payload, sig_header, webhook_secret)
     except Exception as e:
-        print(f'[Stripe] Webhook parse error: {e}')
-        return jsonify({'error': str(e)}), 400
+        print(f'[Stripe] Webhook signature error: {e}')
+        return jsonify({'error': 'Invalid signature'}), 400
 
     event_type = event.get('type', '')
     print(f'[Stripe] Webhook received: {event_type}')
@@ -93,6 +94,8 @@ def webhook():
         user_id  = session.get('client_reference_id')
         metadata = session.get('metadata') or {}
         plan     = metadata.get('plan', 'starter')
+        if plan not in ('starter', 'pro'):
+            plan = 'starter'
 
         if user_id:
             try:
