@@ -86,6 +86,35 @@ def handle_options():
 # Static file serving
 # ---------------------------------------------------------------------------
 
+@app.route('/robots.txt')
+def robots_txt():
+    return send_from_directory(app.static_folder, 'robots.txt')
+
+
+@app.route('/sitemap.xml')
+def sitemap_xml():
+    return send_from_directory(app.static_folder, 'sitemap.xml')
+
+
+@app.route('/terms')
+def terms_page():
+    return send_from_directory(app.static_folder, 'terms.html')
+
+
+@app.route('/privacy')
+def privacy_page():
+    return send_from_directory(app.static_folder, 'privacy.html')
+
+
+@app.route('/sample-proposal')
+def sample_proposal_page():
+    return send_from_directory(app.static_folder, 'sample-proposal.html')
+
+
+@app.route('/sample-proposal.pdf')
+def sample_proposal_pdf():
+    return send_from_directory(app.static_folder, 'sample-proposal.pdf')
+
 @app.route('/')
 @app.route('/<path:path>')
 def frontend(path=''):

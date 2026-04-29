@@ -3,7 +3,7 @@ services:
     name: roofdraft-ai
     runtime: python
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn --workers 2 --timeout 120 --bind 0.0.0.0:$PORT app:app
+    startCommand: gunicorn --worker-class gevent --workers 2 --timeout 120 --bind 0.0.0.0:$PORT app:app
     envVars:
       - key: ANTHROPIC_API_KEY
         sync: false
@@ -11,5 +11,17 @@ services:
         sync: false
       - key: SECRET_KEY
         sync: false
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_PRO_PRICE_ID
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: YOUR_DOMAIN
+        value: https://roofdraftai.com
+      - key: ALLOWED_ORIGINS
+        value: https://roofdraftai.com
+      - key: EXPOSE_DIAGNOSTICS
+        value: false
       - key: DEBUG
         value: false

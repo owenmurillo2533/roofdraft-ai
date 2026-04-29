@@ -2403,9 +2403,9 @@
             <button class="btn btn-primary" data-auth-target="register" type="button" style="padding: 14px 32px; font-size: 17px; font-family: 'Oswald', sans-serif; letter-spacing: 0.04em; text-transform: uppercase;">
               Get My First Proposal
             </button>
-            <a href="/static/sample-proposal.pdf" class="btn btn-outline-white" target="_blank" rel="noopener" style="padding: 14px 26px; font-size: 16px;">
-              See a Sample Proposal
-            </a>
+          <a href="/sample-proposal.pdf" class="btn btn-outline-white" target="_blank" rel="noopener" style="padding: 14px 26px; font-size: 16px;">
+            See a Sample Proposal
+          </a>
           </div>
           <p class="landing-trust-note">1 free proposal included. No card required to evaluate the quality.</p>
         </div>
@@ -2472,8 +2472,8 @@
             The goal is simple: make your proposal look like it came from a serious company, not a rushed note typed on a phone between appointments.
           </p>
           <div class="sample-link-row">
-            <a href="/static/sample-proposal.pdf" class="btn btn-primary" target="_blank" rel="noopener">Download Sample PDF</a>
-            <a href="/static/sample-proposal.html" class="btn btn-outline-red" target="_blank" rel="noopener">Open HTML Preview</a>
+          <a href="/sample-proposal.pdf" class="btn btn-primary" target="_blank" rel="noopener">Download Sample PDF</a>
+          <a href="/sample-proposal" class="btn btn-outline-red" target="_blank" rel="noopener">Open HTML Preview</a>
           </div>
         </div>
         <div class="problem-doc">
@@ -2662,7 +2662,7 @@
             <h4>Product</h4>
             <a href="#how-it-works">How It Works</a>
             <a href="#tools">Tools</a>
-            <a href="/static/sample-proposal.pdf" target="_blank" rel="noopener">Sample Proposal</a>
+            <a href="/sample-proposal.pdf" target="_blank" rel="noopener">Sample Proposal</a>
             <button data-auth-target="register" type="button">Get My First Proposal</button>
           </div>
           <div class="footer-v2-col">
@@ -2670,6 +2670,8 @@
             <a href="#pricing">Pricing</a>
             <a href="#faq">FAQ</a>
             <a href="#contact">Contact</a>
+            <a href="/terms">Terms</a>
+            <a href="/privacy">Privacy</a>
           </div>
         </div>
         <div class="footer-v2-bottom">
@@ -5681,14 +5683,7 @@
     // ---------------------------------------------------------------------------
     // Landing Page
     // ---------------------------------------------------------------------------
-    const LANDING_TESTIMONIALS = [
-      { quote: "I used to spend 45 minutes writing proposals. Now it takes me two minutes and they look more professional than anything I was writing myself.", name: "Mike T.", location: "Roofing Contractor — Phoenix, AZ" },
-      { quote: "The follow-up emails are the part I hate most about sales. These come out sounding like a real person wrote them, not a robot.", name: "Danny R.", location: "Owner, DRR Roofing — Nashville, TN" },
-      { quote: "I was skeptical at first. But I sent a proposal it generated and the homeowner called me back the same day. First time that's happened in years.", name: "James W.", location: "Independent Contractor — Columbus, OH" },
-      { quote: "I sent a proposal from my truck before I even left the driveway. Customer signed the same day.", name: "Chris B.", location: "Roofing Contractor — Denver, CO" },
-      { quote: "Went from losing bids to winning them. My proposals used to look like I typed them on my phone. Now they look like I have a real office.", name: "Marcus W.", location: "Roofing Contractor — Tampa, FL" },
-      { quote: "The follow up email tool alone is worth it. I closed a $22,000 job from a lead I thought ghosted me.", name: "Tony R.", location: "Roofing Contractor — Indianapolis, IN" },
-    ];
+    const LANDING_TESTIMONIALS = [];
 
     function LandingPage({ onShowLogin, onShowRegister }) {
       const [legalModal, setLegalModal] = useState(null);
@@ -5724,7 +5719,7 @@
 
       const faqs = [
         { q: 'What is RoofDraft?', a: 'A set of AI-powered tools built specifically for roofing contractors. It generates proposals, follow-up emails, review requests, and referral messages in seconds.' },
-        { q: 'Do I need a credit card to start?', a: 'No. The free plan gives you 5 generations per month with no card required. Upgrade when you\'re ready.' },
+        { q: 'Do I need a credit card to start?', a: 'No. You get one free proposal so you can evaluate the output before upgrading.' },
         { q: 'How long does it take to generate a proposal?', a: 'Under 60 seconds. Fill in the form, click generate, and you\'ll have a complete client-ready proposal.' },
         { q: 'Can I use it on my phone?', a: 'Yes. RoofDraft is fully mobile-friendly. Use it from the job site, your truck, or anywhere.' },
         { q: 'What\'s included in the Pro plan?', a: 'All 4 tools: Proposal Generator, Follow-Up Email, Review Request, and Referral Message. Plus unlimited generations and Job Folders.' },
@@ -5791,23 +5786,24 @@
             </div>
           </section>
 
-          {/* Testimonials — second section for immediate social proof */}
-          <section className="testimonials-section">
-            <div className="testimonials-inner">
-              <div className="section-eyebrow">What Contractors Are Saying</div>
-              <h2 className="section-title">Real results from real roofers</h2>
-              <div className="testimonials-grid-static">
-                {LANDING_TESTIMONIALS.map((t, i) => (
-                  <div key={i} className="testimonial-card">
-                    <div className="testimonial-stars">★★★★★</div>
-                    <div className="testimonial-quote">"{t.quote}"</div>
-                    <div className="testimonial-author">{t.name}</div>
-                    <div className="testimonial-location">{t.location}</div>
-                  </div>
-                ))}
+          {LANDING_TESTIMONIALS.length > 0 && (
+            <section className="testimonials-section">
+              <div className="testimonials-inner">
+                <div className="section-eyebrow">What Contractors Are Saying</div>
+                <h2 className="section-title">Real results from real roofers</h2>
+                <div className="testimonials-grid-static">
+                  {LANDING_TESTIMONIALS.map((t, i) => (
+                    <div key={i} className="testimonial-card">
+                      <div className="testimonial-stars">★★★★★</div>
+                      <div className="testimonial-quote">"{t.quote}"</div>
+                      <div className="testimonial-author">{t.name}</div>
+                      <div className="testimonial-location">{t.location}</div>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
-          </section>
+            </section>
+          )}
 
           {/* Trust bar */}
           <div className="trust-bar">
@@ -6045,7 +6041,7 @@
                   <div className="contact-card-icon">✉</div>
                   <div className="contact-card-label">Email Us</div>
                   <div className="contact-card-value">
-                    <a href="mailto:support@roofdraft.com">support@roofdraft.com</a>
+                    <a href="mailto:owen.murillo2533@gmail.com">owen.murillo2533@gmail.com</a>
                   </div>
                   <div className="contact-card-note">We respond within 24 hours</div>
                 </div>
@@ -6089,7 +6085,7 @@
                     </div>
                     {contactStatus === 'error' && (
                       <div className="contact-error" style={{ marginBottom:'14px' }}>
-                        Something went wrong. Please email us directly at <a href="mailto:support@roofdraft.com">support@roofdraft.com</a>
+                        Something went wrong. Please email us directly at <a href="mailto:owen.murillo2533@gmail.com">owen.murillo2533@gmail.com</a>
                       </div>
                     )}
                     <button type="submit" className="btn btn-primary" disabled={contactSending}
