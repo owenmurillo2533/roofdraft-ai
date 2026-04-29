@@ -1,5 +1,5 @@
-"""
-RoofDraft — User Defaults Routes
+﻿"""
+RoofDraftAI - User Defaults Routes
 Saved company profile and proposal defaults for paying customers.
 """
 from flask import Blueprint, request, jsonify
@@ -33,12 +33,15 @@ def save_user_defaults():
 
     new_data = request.get_json() or {}
 
-    # Only allow known fields — no arbitrary data storage
+    # Only allow known fields â€” no arbitrary data storage
     allowed = {
         'company_name', 'contractor_name', 'contractor_phone',
         'contractor_email', 'license_number', 'warranty_labor',
         'warranty_materials', 'payment_terms', 'completion_days',
-        'common_materials',
+        'common_materials', 'company_website', 'company_address',
+        'service_area', 'default_financing_note', 'default_cleanup_language',
+        'default_proposal_tone', 'default_weather_delay_note',
+        'default_warranty_notes', 'review_link',
     }
     filtered = {k: v for k, v in new_data.items() if k in allowed}
 

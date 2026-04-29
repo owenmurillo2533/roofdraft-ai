@@ -1,5 +1,5 @@
 """
-RoofDraft — Flask Application Server
+RoofDraftAI - Flask Application Server
 """
 
 import os
@@ -132,7 +132,7 @@ def frontend(path=''):
 def health():
     payload = {
         'status': 'ok',
-        'service': 'RoofDraft',
+        'service': 'RoofDraftAI',
         'version': '2.1.0',
         'db_mode': 'postgres' if USE_POSTGRES else 'sqlite',
     }
