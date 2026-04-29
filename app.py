@@ -8,7 +8,12 @@ import json
 from flask import Flask, request, jsonify, send_from_directory
 
 app = Flask(__name__, static_folder='static')
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'roofdraft-dev-secret-change-in-production')
+_debug_enabled = os.environ.get('DEBUG', 'false').lower() == 'true'
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY') or (
+    'roofdraft-dev-secret-change-in-production' if _debug_enabled else os.urandom(32).hex()
+)
+DEFAULT_ALLOWED_ORIGIN = os.environ.get('ALLOWED_ORIGINS', 'https://roofdraftai.com')
+EXPOSE_DIAGNOSTICS = os.environ.get('EXPOSE_DIAGNOSTICS', 'false').lower() == 'true'
 
 sys.path.insert(0, os.path.dirname(__file__))
 
@@ -18,8 +23,8 @@ init_db()
 # Startup migrations
 if USE_POSTGRES:
     _startup_sqls = [
-        "UPDATE users SET is_admin=TRUE, plan='pro', generations_this_month=0 WHERE email='owen.murillo2533@gmail.com'",
-        "UPDATE users SET plan='pro', generations_this_month=0 WHERE email='z.oncale.t@gmail.com'",
+        "UPDATE users SET is_admin=TRUE, plan='pro' WHERE email='owen.murillo2533@gmail.com'",
+        "UPDATE users SET plan='pro' WHERE email='z.oncale.t@gmail.com'",
     ]
     for _sql in _startup_sqls:
         try:
@@ -59,7 +64,7 @@ if _stripe_bp_loaded:
 
 @app.after_request
 def add_cors(response):
-    response.headers['Access-Control-Allow-Origin'] = os.environ.get('ALLOWED_ORIGINS', '*')
+    response.headers['Access-Control-Allow-Origin'] = DEFAULT_ALLOWED_ORIGIN
     response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, PATCH, DELETE, OPTIONS'
     response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
     response.headers['Access-Control-Max-Age'] = '3600'
@@ -71,7 +76,7 @@ def handle_options():
     if request.method == 'OPTIONS':
         from flask import make_response
         r = make_response()
-        r.headers['Access-Control-Allow-Origin'] = '*'
+        r.headers['Access-Control-Allow-Origin'] = DEFAULT_ALLOWED_ORIGIN
         r.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, PATCH, DELETE, OPTIONS'
         r.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
         return r
@@ -96,24 +101,24 @@ def frontend(path=''):
 
 @app.route('/api/health')
 def health():
-    env_vars = ['ANTHROPIC_API_KEY', 'DATABASE_URL', 'SECRET_KEY', 'DEBUG',
-                'STRIPE_SECRET_KEY', 'STRIPE_STARTER_PRICE_ID', 'STRIPE_PRO_PRICE_ID',
-                'STRIPE_WEBHOOK_SECRET', 'YOUR_DOMAIN']
-    env_status = {k: bool(os.environ.get(k)) for k in env_vars}
-    # Also show any STRIPE_* keys found (names only, no values) to catch typos
-    stripe_keys_found = [k for k in os.environ if 'STRIPE' in k.upper() or 'stripe' in k]
-    return jsonify({
+    payload = {
         'status': 'ok',
         'service': 'RoofDraft',
         'version': '2.1.0',
         'db_mode': 'postgres' if USE_POSTGRES else 'sqlite',
-        'env': env_status,
-        'stripe_keys_found': stripe_keys_found,
-    })
+    }
+    if EXPOSE_DIAGNOSTICS:
+        env_vars = ['ANTHROPIC_API_KEY', 'DATABASE_URL', 'SECRET_KEY', 'DEBUG',
+                    'STRIPE_SECRET_KEY', 'STRIPE_STARTER_PRICE_ID', 'STRIPE_PRO_PRICE_ID',
+                    'STRIPE_WEBHOOK_SECRET', 'YOUR_DOMAIN']
+        payload['env'] = {k: bool(os.environ.get(k)) for k in env_vars}
+    return jsonify(payload)
 
 
 @app.route('/api/debug-db')
 def debug_db():
+    if not EXPOSE_DIAGNOSTICS:
+        return jsonify({'error': 'Not found'}), 404
     if not USE_POSTGRES:
         return jsonify({'error': 'postgres not active'})
     try:
@@ -131,6 +136,8 @@ def debug_db():
 
 @app.route('/api/test-claude')
 def test_claude():
+    if not EXPOSE_DIAGNOSTICS:
+        return jsonify({'error': 'Not found'}), 404
     key = os.environ.get("ANTHROPIC_API_KEY", "")
     if not key:
         return jsonify({"error": "ANTHROPIC_API_KEY not set"})
@@ -183,5 +190,5 @@ def server_error(e):
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
-    debug = os.environ.get('DEBUG', 'true').lower() == 'true'
+    debug = _debug_enabled
     app.run(host='0.0.0.0', port=port, debug=debug, threaded=True)

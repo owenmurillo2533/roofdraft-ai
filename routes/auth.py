@@ -10,7 +10,7 @@ from database.db import (
     hash_password, verify_password, generate_token,
     USE_POSTGRES, pg_run, get_db, row_to_dict,
     create_user, create_session, get_user_by_token,
-    maybe_reset_monthly_count
+    maybe_reset_monthly_count, get_total_generations
 )
 
 auth_bp = Blueprint('auth', __name__)
@@ -23,8 +23,20 @@ def _user_response(user):
         "username": user['username'],
         "plan": user.get('plan', 'free'),
         "generations_this_month": user.get('generations_this_month', 0),
+        "total_generations": user.get('total_generations', 0),
         "is_admin": bool(user.get('is_admin', False)),
     }
+
+
+def _with_usage(user):
+    if not user:
+        return user
+    enriched = dict(user)
+    try:
+        enriched['total_generations'] = get_total_generations(enriched['id'])
+    except Exception:
+        enriched['total_generations'] = enriched.get('total_generations', 0)
+    return enriched
 
 
 def _lookup_promo_code(code: str):
@@ -188,6 +200,7 @@ def register():
             'username': username,
             'plan': 'free',
             'generations_this_month': 0,
+            'total_generations': 0,
             'is_admin': False,
         }
 
@@ -269,6 +282,7 @@ def login():
             if row:
                 user = row_to_dict(row)
 
+        user = _with_usage(user)
         return jsonify({"token": token, "user": _user_response(user)})
 
     except Exception as e:
@@ -323,6 +337,7 @@ def me():
         if row:
             user = row_to_dict(row)
 
+    user = _with_usage(user)
     return jsonify(_user_response(user))
 
 
@@ -357,6 +372,7 @@ def apply_promo():
         conn.close()
         updated = row_to_dict(row) if row else user
 
+    updated = _with_usage(updated)
     return jsonify({
         "user": _user_response(updated),
         "plan": updated.get('plan'),

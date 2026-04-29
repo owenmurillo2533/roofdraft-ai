@@ -10,6 +10,7 @@ from database.db import require_auth, USE_POSTGRES, pg_run, get_db
 stripe_bp = Blueprint('stripe', __name__)
 
 DOMAIN = os.environ.get('YOUR_DOMAIN', 'https://roofdraftai.com')
+ENABLE_LEGACY_STARTER_CHECKOUT = os.environ.get('ENABLE_LEGACY_STARTER_CHECKOUT', 'false').lower() == 'true'
 
 
 def _get_stripe():
@@ -26,10 +27,12 @@ def _get_stripe():
 
 
 def _plan_prices():
-    return {
-        'starter': os.environ.get('STRIPE_STARTER_PRICE_ID', ''),
-        'pro':     os.environ.get('STRIPE_PRO_PRICE_ID', ''),
+    prices = {
+        'pro': os.environ.get('STRIPE_PRO_PRICE_ID', ''),
     }
+    if ENABLE_LEGACY_STARTER_CHECKOUT:
+        prices['starter'] = os.environ.get('STRIPE_STARTER_PRICE_ID', '')
+    return prices
 
 
 @stripe_bp.route('/api/stripe/create-checkout-session', methods=['POST'])
@@ -47,7 +50,9 @@ def create_checkout_session():
 
     prices = _plan_prices()
     if plan not in prices:
-        return jsonify({'error': 'Invalid plan. Must be starter or pro.'}), 400
+        if ENABLE_LEGACY_STARTER_CHECKOUT:
+            return jsonify({'error': 'Invalid plan. Must be starter or pro.'}), 400
+        return jsonify({'error': 'Invalid plan. Only Pro checkout is available.'}), 400
 
     price_id = prices[plan]
     if not price_id:
@@ -100,9 +105,9 @@ def webhook():
         session  = event['data']['object']
         user_id  = session.get('client_reference_id')
         metadata = session.get('metadata') or {}
-        plan     = metadata.get('plan', 'starter')
+        plan     = metadata.get('plan', 'pro')
         if plan not in ('starter', 'pro'):
-            plan = 'starter'
+            plan = 'pro'
 
         if user_id:
             try:

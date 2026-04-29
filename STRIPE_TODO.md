@@ -1,23 +1,25 @@
-# Stripe Integration TODO
+# Stripe Launch Checklist
 
-## What needs to be done
-1. Create Stripe account at stripe.com
-2. Create two products in Stripe dashboard:
-   - Starter: $49/month recurring → copy the Price ID
-   - Pro: $79/month recurring → copy the Price ID
-3. Add these environment variables to Render:
-   - STRIPE_SECRET_KEY
-   - STRIPE_STARTER_PRICE_ID
-   - STRIPE_PRO_PRICE_ID
-   - YOUR_DOMAIN=https://roofdraft.com
-4. Run the Stripe integration prompt in Claude Code
+## What still needs to happen in Stripe
+1. Revoke any previously exposed secret key and generate a fresh live `STRIPE_SECRET_KEY`.
+2. In live mode, create the public Pro product:
+   - Pro: $79/month recurring -> copy the Price ID into `STRIPE_PRO_PRICE_ID`
+3. Add these environment variables in Render:
+   - `STRIPE_SECRET_KEY`
+   - `STRIPE_PRO_PRICE_ID`
+   - `STRIPE_WEBHOOK_SECRET`
+   - `YOUR_DOMAIN=https://roofdraftai.com`
+4. Create a webhook endpoint in Stripe for:
+   - `https://roofdraftai.com/api/stripe/webhook`
+   - event: `checkout.session.completed`
+5. Run one real end-to-end purchase test in live mode with your own card, then cancel it.
 
-## Files that need updating when Stripe is added
-Search the codebase for the comment: // STRIPE: and update each one
+## Legacy Starter plan
+- Public checkout is now Pro-only.
+- If legacy Starter billing ever needs to be reopened for existing users, set:
+  - `ENABLE_LEGACY_STARTER_CHECKOUT=true`
+  - `STRIPE_STARTER_PRICE_ID=<legacy starter price id>`
 
-## Routes to add
-- POST /api/stripe/create-checkout-session
-- POST /api/stripe/webhook
-
-## Webhook event to handle
-- checkout.session.completed → update user plan in database
+## Current routes in code
+- `POST /api/stripe/create-checkout-session`
+- `POST /api/stripe/webhook`

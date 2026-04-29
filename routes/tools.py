@@ -2,9 +2,10 @@
 RoofDraft — Tools Routes
 """
 import os
+from datetime import date
 from flask import Blueprint, request, jsonify
 from anthropic import Anthropic
-from database.db import require_auth, log_generation, get_monthly_count, save_draft, USE_POSTGRES, pg_run
+from database.db import require_auth, log_generation, get_monthly_count, get_total_generations, save_draft, USE_POSTGRES, pg_run
 
 tools_bp = Blueprint('tools', __name__)
 
@@ -23,7 +24,7 @@ TOOL_ACCESS = {
     'admin':   ['proposal', 'followup', 'review', 'referral'],
 }
 
-FREE_LIMIT = 5
+FREE_LIMIT = 1
 PAYING_PLANS = {'starter', 'pro'}
 
 
@@ -41,12 +42,12 @@ def check_access(user, tool_name):
 
     allowed_tools = TOOL_ACCESS.get(plan, ['proposal'])
     if tool_name not in allowed_tools:
-        return False, "This tool requires a Pro plan. Upgrade to access all 4 tools."
+        return False, "This tool requires the Pro plan. Upgrade to unlock all 4 tools."
 
     if plan == 'free':
-        count = get_monthly_count(user['id'])
+        count = get_total_generations(user['id'])
         if count >= FREE_LIMIT:
-            return False, "You've used all your free generations this month. Upgrade to continue."
+            return False, "Your free trial proposal has already been used. Upgrade to keep generating client-ready roofing documents."
 
     return True, None
 
@@ -96,7 +97,11 @@ def proposal():
     start_date        = data.get('start_date', '')
     completion_days   = data.get('completion_days', '')
 
+    today_str = date.today().strftime('%B %d, %Y')
+
     user_prompt = f"""Using the inputs provided, write a complete, professional roofing proposal letter formatted for a homeowner or property owner.
+
+TODAY'S DATE: {today_str} — use this as the proposal date. Do NOT use any other date.
 
 TONE: Confident and professional, not salesy. Clear and easy for a homeowner to understand. Warm but businesslike.
 

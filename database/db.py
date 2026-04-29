@@ -231,7 +231,7 @@ def init_db():
         # Ensure admin user
         try:
             pg_run(
-                "UPDATE users SET is_admin=TRUE, plan='pro', generations_this_month=0 "
+                "UPDATE users SET is_admin=TRUE, plan='pro' "
                 "WHERE email='owen.murillo2533@gmail.com'"
             )
             print("[DB] Admin user migration applied")
@@ -498,6 +498,23 @@ def get_monthly_count(user_id: int) -> int:
         ).fetchone()
         conn.close()
         return row_to_dict(row)['generations_this_month'] if row else 0
+
+
+def get_total_generations(user_id: int) -> int:
+    if USE_POSTGRES:
+        rows = pg_run(
+            "SELECT COUNT(*) AS cnt FROM generation_logs WHERE user_id = $1",
+            [user_id]
+        )
+        return rows[0]['cnt'] if rows else 0
+    else:
+        conn = get_db()
+        row = conn.execute(
+            "SELECT COUNT(*) AS cnt FROM generation_logs WHERE user_id = ?",
+            (user_id,)
+        ).fetchone()
+        conn.close()
+        return row_to_dict(row)['cnt'] if row else 0
 
 
 def maybe_reset_monthly_count(user_id: int, current_month: str):

@@ -3,21 +3,44 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>RoofDraft — Professional Roofing Proposals in 60 Seconds</title>
-  <meta name="description" content="RoofDraft generates professional roofing proposals, follow-up emails, review requests, and referral messages in under 60 seconds. Built for roofing contractors." />
+  <title>RoofDraft - Professional Roofing Proposals in 60 Seconds</title>
+  <meta name="description" content="Stop sending rough roofing quotes. RoofDraft helps contractors generate polished proposals, follow-up emails, review requests, and referral messages in about 60 seconds." />
   <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://roofdraftai.com/" />
 
   <!-- Open Graph -->
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://roofdraft.com/" />
-  <meta property="og:title" content="RoofDraft — Win More Roofing Jobs With Better Proposals" />
-  <meta property="og:description" content="Generate professional roofing proposals, follow-up emails, and review requests in under 60 seconds. Built specifically for roofing contractors. Try free — no card needed." />
+  <meta property="og:url" content="https://roofdraftai.com/" />
+  <meta property="og:title" content="RoofDraft - Professional Roofing Proposals in 60 Seconds" />
+  <meta property="og:description" content="Stop spending hours on proposals. Generate polished roofing proposals, follow-ups, review requests, and referral messages that look established and easy to trust." />
+  <meta property="og:image" content="https://roofdraftai.com/static/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
   <meta property="og:site_name" content="RoofDraft" />
 
   <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="RoofDraft — Professional Roofing Proposals in 60 Seconds" />
-  <meta name="twitter:description" content="Generate professional roofing proposals in under 60 seconds. Built for roofing contractors. Try free — no card needed." />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="RoofDraft - Professional Roofing Proposals in 60 Seconds" />
+  <meta name="twitter:description" content="Generate polished roofing proposals, follow-up emails, review requests, and referral messages in about 60 seconds." />
+
+  <meta name="twitter:image" content="https://roofdraftai.com/static/og-image.png" />
+
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "RoofDraft",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Web",
+      "url": "https://roofdraftai.com/",
+      "description": "RoofDraft helps roofing contractors generate professional proposals, follow-up emails, review requests, and referral messages in about 60 seconds.",
+      "offers": {
+        "@type": "Offer",
+        "price": "79",
+        "priceCurrency": "USD"
+      }
+    }
+  </script>
 
   <!-- Favicon (SVG inline) -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%23C0392B'/><path d='M16 7L4 17h4v8h16v-8h4L16 7z' fill='white'/></svg>" />
@@ -25,11 +48,16 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet" />
+  <script src="/static/marketing.js" defer></script>
   <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
 
     :root {
       --white: #FFFFFF;
@@ -52,7 +80,10 @@
       --radius: 4px;
     }
 
-    html, body, #root { height: 100%; }
+    html, body { min-height: 100%; }
+    #root { position: relative; z-index: 20; }
+    #marketing-shell { position: relative; z-index: 1; }
+    body.app-authenticated #marketing-shell { display: none; }
 
     body {
       background: var(--background);
@@ -220,6 +251,57 @@
       border-top-color: var(--charcoal);
     }
     @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ---- Markdown content rendering ---- */
+    .result-content { font-size: 15px; line-height: 1.7; color: var(--charcoal); }
+    .result-content h1, .result-content h2, .result-content h3 {
+      font-family: 'Oswald', sans-serif; color: var(--near-black);
+      margin: 20px 0 8px; line-height: 1.2;
+    }
+    .result-content h1 { font-size: 22px; font-weight: 600; }
+    .result-content h2 { font-size: 19px; font-weight: 600; }
+    .result-content h3 { font-size: 16px; font-weight: 600; }
+    .result-content p { margin-bottom: 12px; }
+    .result-content p:last-child { margin-bottom: 0; }
+    .result-content hr { border: none; border-top: 1px solid var(--mid-gray); margin: 18px 0; }
+    .result-content strong { font-weight: 700; }
+    .result-content em { font-style: italic; }
+    .result-content ul, .result-content ol { margin: 8px 0 12px 20px; }
+    .result-content li { margin-bottom: 4px; }
+    .result-content table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 14px; }
+    .result-content th, .result-content td { border: 1px solid var(--mid-gray); padding: 8px 12px; text-align: left; }
+    .result-content th { background: var(--light-gray); font-weight: 600; }
+    .result-content pre { background: var(--light-gray); padding: 12px; border-radius: 4px; overflow-x: auto; font-size: 13px; margin: 8px 0; }
+    .result-content blockquote { border-left: 3px solid var(--mid-gray); padding-left: 14px; color: var(--slate); margin: 8px 0; }
+
+    /* ---- Toast notifications ---- */
+    .toast-container {
+      position: fixed; bottom: 24px; right: 24px; z-index: 9000;
+      display: flex; flex-direction: column; gap: 8px; pointer-events: none;
+    }
+    .toast {
+      padding: 12px 18px; border-radius: 6px; font-size: 14px; font-weight: 600;
+      font-family: 'Source Sans 3', sans-serif; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      min-width: 220px; max-width: 340px; pointer-events: auto;
+      animation: toast-in 0.2s ease;
+    }
+    .toast-success { background: var(--near-black); color: #fff; }
+    .toast-error { background: var(--roof-red); color: #fff; }
+    .toast-info { background: var(--slate); color: #fff; }
+    @keyframes toast-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ---- Tool card icons ---- */
+    .tool-card-icon {
+      width: 40px; height: 40px; margin-bottom: 14px; flex-shrink: 0;
+      color: var(--roof-red);
+    }
+    .tool-card-icon svg { width: 40px; height: 40px; }
+
+    /* ---- PDF download button ---- */
+    .btn-pdf { }
+
+    /* ---- Required field indicator ---- */
+    .required-star { color: var(--roof-red); margin-left: 2px; }
 
     /* ---- Dashboard layout ---- */
     .dashboard {
@@ -645,13 +727,38 @@
     /* Hero */
     .hero {
       padding: 96px 60px 86px;
-      background: linear-gradient(rgba(0,0,0,0.56), rgba(0,0,0,0.60)),
-                  url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1600&q=80') center/cover no-repeat;
+      background:
+        radial-gradient(circle at top left, rgba(192,57,43,0.28), transparent 28%),
+        radial-gradient(circle at right center, rgba(212,168,83,0.18), transparent 30%),
+        linear-gradient(140deg, #1f1a17 0%, #2b2420 42%, #382a25 100%);
       border-bottom: none;
       position: relative;
     }
     .hero-inner {
-      max-width: 720px;
+      max-width: 1180px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: minmax(0, 670px) minmax(320px, 420px);
+      gap: 56px;
+      align-items: center;
+    }
+    .hero-copy {
+      max-width: 760px;
+    }
+    .hero-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 18px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.06);
+      color: rgba(255,255,255,0.74);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
     }
     .hero-headline {
       font-family: 'Oswald', sans-serif;
@@ -665,12 +772,86 @@
     .hero-headline span { color: var(--roof-red); }
     .hero-sub {
       font-size: 18px;
-      color: rgba(255,255,255,0.68);
-      max-width: 560px;
-      margin-bottom: 38px;
-      line-height: 1.68;
+      color: rgba(255,255,255,0.78);
+      max-width: 620px;
+      margin-bottom: 34px;
+      line-height: 1.7;
     }
     .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; }
+    .landing-trust-note {
+      margin-top: 18px;
+      font-size: 13px;
+      color: rgba(255,255,255,0.52);
+    }
+    .hero-proof {
+      display: flex;
+      justify-content: flex-end;
+    }
+    .hero-proof-card {
+      width: min(100%, 390px);
+      padding: 18px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      box-shadow: 0 24px 60px rgba(0,0,0,0.28);
+      backdrop-filter: blur(8px);
+    }
+    .hero-proof-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .hero-proof-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.72);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .hero-proof-badge {
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(192,57,43,0.18);
+      color: #ffd7d1;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .hero-proof-image {
+      width: 100%;
+      display: block;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.08);
+      margin-bottom: 14px;
+      background: rgba(255,255,255,0.95);
+    }
+    .hero-proof-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .hero-proof-stat {
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .hero-proof-stat-num {
+      font-family: 'Oswald', sans-serif;
+      font-size: 22px;
+      line-height: 1.1;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+    .hero-proof-stat-label {
+      font-size: 12px;
+      line-height: 1.45;
+      color: rgba(255,255,255,0.66);
+    }
     .btn-outline-white {
       background: transparent;
       color: rgba(255,255,255,0.85);
@@ -788,6 +969,24 @@
       padding-top: 14px;
       margin-top: 4px;
       border-top: 2px solid var(--near-black);
+    }
+    .problem-doc-preview {
+      width: 100%;
+      display: block;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      margin-bottom: 14px;
+    }
+    .problem-doc-note {
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--slate);
+    }
+    .sample-link-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 28px;
     }
 
     /* Tools section */
@@ -912,6 +1111,12 @@
       gap: 20px;
       align-items: start;
       margin-top: 0;
+    }
+    .pricing-grid-public {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px;
+      align-items: start;
     }
     .pricing-card-v2 {
       background: var(--white);
@@ -1261,7 +1466,7 @@
 
     @media (max-width: 960px) {
       .testimonials-grid-static { grid-template-columns: 1fr; }
-      .pricing-grid-v2 { grid-template-columns: 1fr; }
+    .pricing-grid-v2, .pricing-grid-public { grid-template-columns: 1fr; }
       .pricing-card-pro { transform: none; }
       .folders-layout { grid-template-columns: 1fr; }
       .upgrade-plans-grid { grid-template-columns: 1fr; }
@@ -1902,6 +2107,10 @@
       .landing-nav { padding: 0 24px; }
       .landing-nav-links { display: none; }
       .hero { padding: 60px 24px 60px; }
+      .hero-inner { grid-template-columns: 1fr; gap: 28px; }
+      .hero-copy { max-width: none; }
+      .hero-proof { justify-content: flex-start; }
+      .hero-proof-card { max-width: 440px; }
       .trust-bar { padding: 24px; }
       .trust-stats { grid-template-columns: repeat(2, 1fr); gap: 18px; }
       .trust-stat { border-right: none; padding: 0; }
@@ -1931,14 +2140,647 @@
       .main-content { padding: 20px 16px; }
       .tool-form-grid { grid-template-columns: 1fr; }
       .tool-form-grid .span-2 { grid-column: span 1; }
+      .hero-proof-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ── Button micro-animations ── */
+    .btn { transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.15s ease, box-shadow 0.15s ease; }
+    .btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.12); }
+    .btn:active:not(:disabled) { transform: scale(0.98) translateY(0); box-shadow: none; }
+    .btn-primary:hover:not(:disabled) { background: var(--roof-red-dark); }
+    .btn:disabled { opacity: 0.65; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+
+    /* ── Page fade-in transition ── */
+    @keyframes fadeSlideIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+    .page-fade-in { animation: fadeSlideIn 0.28s ease forwards; }
+
+    /* ── Dashboard stats row ── */
+    .dash-stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 32px; }
+    .dash-stat-card { background: var(--white); border: 1px solid var(--border); border-radius: 8px; padding: 20px 22px; display: flex; align-items: center; gap: 16px; box-shadow: 0 1px 3px rgba(26,23,21,0.05); transition: box-shadow 0.2s ease, transform 0.2s ease; }
+    .dash-stat-card:hover { box-shadow: 0 4px 12px rgba(26,23,21,0.08); transform: translateY(-2px); }
+    .dash-stat-icon { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .dash-stat-icon svg { width: 22px; height: 22px; }
+    .dash-stat-icon.red { background: rgba(192,57,43,0.1); color: var(--roof-red); }
+    .dash-stat-icon.gold { background: rgba(212,168,83,0.15); color: var(--warm-tan); }
+    .dash-stat-icon.slate { background: rgba(74,85,104,0.1); color: var(--slate); }
+    .dash-stat-icon.green { background: rgba(39,174,96,0.1); color: var(--success); }
+    .dash-stat-num { font-family: 'Oswald', sans-serif; font-size: 28px; font-weight: 600; color: var(--near-black); line-height: 1; }
+    .dash-stat-label { font-size: 12px; color: var(--slate-light); font-weight: 500; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.04em; }
+
+    /* ── Tool cards upgrade ── */
+    .tool-card { display: flex; flex-direction: column; position: relative; overflow: hidden; }
+    .tool-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--roof-red); opacity: 0; transition: opacity 0.2s ease; }
+    .tool-card:hover::before { opacity: 1; }
+    .tool-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(192,57,43,0.12); }
+    .tool-card-name { flex-grow: 0; }
+    .tool-card-desc { flex-grow: 1; }
+    .tool-generate-hint { font-size: 12px; color: var(--roof-red); font-weight: 600; margin-top: 10px; display: flex; align-items: center; gap: 4px; }
+
+    /* ── Recent activity feed ── */
+    .activity-section { margin-top: 36px; }
+    .activity-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+    .activity-header h3 { font-family: 'Oswald', sans-serif; font-size: 18px; font-weight: 600; color: var(--near-black); }
+    .activity-list { display: flex; flex-direction: column; gap: 0; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: var(--white); }
+    .activity-item { display: flex; align-items: center; gap: 14px; padding: 14px 18px; border-bottom: 1px solid var(--light-gray); transition: background 0.15s ease; cursor: pointer; }
+    .activity-item:last-child { border-bottom: none; }
+    .activity-item:hover { background: var(--off-white); }
+    .activity-type-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .dot-proposal { background: #C0392B; }
+    .dot-followup { background: #3498DB; }
+    .dot-review { background: #27AE60; }
+    .dot-referral { background: #8E44AD; }
+    .activity-info { flex: 1; min-width: 0; }
+    .activity-title { font-size: 14px; font-weight: 600; color: var(--near-black); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .activity-meta { font-size: 12px; color: var(--slate-light); margin-top: 2px; }
+    .activity-badge { font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 3px; text-transform: uppercase; letter-spacing: 0.04em; flex-shrink: 0; }
+    .badge-proposal { background: rgba(192,57,43,0.1); color: var(--roof-red); }
+    .badge-followup { background: rgba(52,152,219,0.1); color: #2980B9; }
+    .badge-review { background: rgba(39,174,96,0.1); color: #1E8449; }
+    .badge-referral { background: rgba(142,68,173,0.1); color: #7D3C98; }
+    .activity-empty { text-align: center; padding: 36px 24px; }
+    .activity-empty-icon { font-size: 36px; margin-bottom: 12px; opacity: 0.3; }
+    .activity-empty h4 { font-size: 15px; color: var(--slate); font-weight: 600; margin-bottom: 6px; }
+    .activity-empty p { font-size: 13px; color: var(--slate-light); }
+
+    /* ── Onboarding checklist ── */
+    .onboarding-card { background: var(--white); border: 1px solid var(--border); border-radius: 8px; padding: 20px 24px; margin-bottom: 28px; box-shadow: 0 1px 3px rgba(26,23,21,0.05); }
+    .onboarding-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .onboarding-title { font-family: 'Oswald', sans-serif; font-size: 16px; font-weight: 600; color: var(--near-black); }
+    .onboarding-dismiss { font-size: 12px; color: var(--slate-light); cursor: pointer; background: none; border: none; padding: 0; text-decoration: underline; }
+    .onboarding-progress-bar { height: 6px; background: var(--light-gray); border-radius: 3px; margin-bottom: 16px; overflow: hidden; }
+    .onboarding-progress-fill { height: 100%; background: var(--roof-red); border-radius: 3px; transition: width 0.4s ease; }
+    .onboarding-progress-label { font-size: 12px; color: var(--slate); margin-bottom: 12px; font-weight: 500; }
+    .onboarding-items { display: flex; flex-direction: column; gap: 8px; }
+    .onboarding-item { display: flex; align-items: center; gap: 12px; font-size: 14px; padding: 4px 0; }
+    .onboarding-check { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--mid-gray); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s ease; }
+    .onboarding-check.done { background: var(--success); border-color: var(--success); color: #fff; font-size: 11px; font-weight: 700; }
+    .onboarding-item.done span { color: var(--slate-light); text-decoration: line-through; }
+    .onboarding-item button { background: none; border: none; padding: 0; color: var(--roof-red); font-size: 14px; cursor: pointer; text-decoration: underline; font-family: 'Source Sans 3', sans-serif; }
+
+    /* ── Welcome header upgrade ── */
+    .welcome-header { margin-bottom: 28px; }
+    .welcome-header-row { display: flex; align-items: flex-end; justify-content: space-between; }
+    .welcome-date { font-size: 13px; color: var(--slate-light); font-weight: 500; }
+    .welcome-h { font-family: 'Oswald', sans-serif; font-size: 32px; font-weight: 600; color: var(--near-black); line-height: 1.1; }
+    .welcome-sub { font-size: 14px; color: var(--slate); margin-top: 5px; }
+
+    /* ── User avatar in sidebar ── */
+    .user-avatar { width: 38px; height: 38px; border-radius: 50%; background: var(--roof-red); color: #fff; display: flex; align-items: center; justify-content: center; font-family: 'Oswald', sans-serif; font-weight: 600; font-size: 15px; flex-shrink: 0; }
+    .user-info-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .user-info-text { flex: 1; min-width: 0; }
+    .user-name { font-size: 14px; font-weight: 700; color: var(--near-black); margin-bottom: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    /* ── Breadcrumb ── */
+    .breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--slate-light); margin-bottom: 20px; }
+    .breadcrumb-sep { color: var(--mid-gray); }
+    .breadcrumb-current { color: var(--charcoal); font-weight: 600; }
+    .breadcrumb button { background: none; border: none; padding: 0; color: var(--roof-red); cursor: pointer; font-size: 13px; font-family: 'Source Sans 3', sans-serif; }
+    .breadcrumb button:hover { text-decoration: underline; }
+
+    /* ── How It Works section (landing) ── */
+    .how-section { padding: 80px 40px; background: var(--white); }
+    .how-inner { max-width: 1100px; margin: 0 auto; }
+    .how-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin-top: 48px; position: relative; }
+    .how-step { background: var(--off-white); border: 1px solid var(--border); border-radius: 12px; padding: 32px 28px; text-align: center; position: relative; transition: box-shadow 0.2s ease, transform 0.2s ease; }
+    .how-step:hover { box-shadow: 0 6px 20px rgba(192,57,43,0.1); transform: translateY(-3px); }
+    .how-step-num { width: 40px; height: 40px; background: var(--roof-red); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Oswald', sans-serif; font-size: 18px; font-weight: 700; margin: 0 auto 20px; }
+    .how-step-icon { font-size: 36px; margin-bottom: 16px; }
+    .how-step-title { font-family: 'Oswald', sans-serif; font-size: 18px; font-weight: 600; color: var(--near-black); margin-bottom: 10px; }
+    .how-step-desc { font-size: 14px; color: var(--slate); line-height: 1.6; }
+    .how-connector { display: none; }
+
+    /* ── FAQ accordion ── */
+    .faq-accordion { display: flex; flex-direction: column; gap: 0; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; max-width: 760px; margin: 0 auto; }
+    .faq-accordion-item { border-bottom: 1px solid var(--border); }
+    .faq-accordion-item:last-child { border-bottom: none; }
+    .faq-accordion-q { width: 100%; text-align: left; background: var(--white); border: none; padding: 18px 22px; display: flex; align-items: center; justify-content: space-between; gap: 12px; cursor: pointer; font-size: 15px; font-weight: 600; color: var(--near-black); font-family: 'Source Sans 3', sans-serif; transition: background 0.15s ease; }
+    .faq-accordion-q:hover { background: var(--off-white); }
+    .faq-accordion-q.open { background: var(--off-white); color: var(--roof-red); }
+    .faq-accordion-arrow { font-size: 12px; flex-shrink: 0; transition: transform 0.2s ease; color: var(--slate-light); }
+    .faq-accordion-arrow.open { transform: rotate(180deg); color: var(--roof-red); }
+    .faq-accordion-a { padding: 0 22px 18px; font-size: 14px; color: var(--slate); line-height: 1.65; background: var(--off-white); }
+    .static-faq-list { display: flex; flex-direction: column; gap: 0; max-width: 760px; margin: 0 auto; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: var(--white); }
+    .static-faq-item { border-bottom: 1px solid var(--border); }
+    .static-faq-item:last-child { border-bottom: none; }
+    .static-faq-question {
+      width: 100%;
+      background: var(--white);
+      border: none;
+      padding: 18px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      text-align: left;
+      cursor: pointer;
+      color: var(--near-black);
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+    }
+    .static-faq-question:hover { background: var(--off-white); }
+    .static-faq-arrow { font-size: 12px; color: var(--slate-light); transition: transform 0.2s ease, color 0.2s ease; }
+    .static-faq-answer {
+      display: none;
+      padding: 0 22px 18px;
+      background: var(--off-white);
+      color: var(--slate);
+      font-size: 14px;
+      line-height: 1.65;
+    }
+    .static-faq-item.open .static-faq-question { background: var(--off-white); color: var(--roof-red); }
+    .static-faq-item.open .static-faq-answer { display: block; }
+    .static-faq-item.open .static-faq-arrow { transform: rotate(180deg); color: var(--roof-red); }
+
+    /* ── Landing tool card icons ── */
+    .landing-tool-card-icon { color: var(--roof-red); margin-bottom: 14px; }
+    .landing-tool-card-icon svg { width: 36px; height: 36px; }
+    .landing-tool-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(192,57,43,0.12); border-color: var(--roof-red); }
+
+    /* ── Proposal document view ── */
+    .proposal-doc { background: #fff; border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); padding: 48px 56px; margin-top: 24px; max-width: 760px; }
+    @media (max-width: 600px) { .proposal-doc { padding: 24px 20px; } }
+
+    /* ── Loading skeleton ── */
+    @keyframes skeleton-pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+    .skeleton { background: var(--light-gray); border-radius: 4px; animation: skeleton-pulse 1.5s ease-in-out infinite; }
+    .skeleton-card { background: var(--white); border: 1px solid var(--border); border-radius: 8px; padding: 24px; }
+    .skeleton-line { height: 14px; border-radius: 3px; background: var(--light-gray); animation: skeleton-pulse 1.5s ease-in-out infinite; margin-bottom: 10px; }
+    .skeleton-line.short { width: 40%; }
+    .skeleton-line.med { width: 65%; }
+    .skeleton-line.full { width: 100%; }
+    .skeleton-h { height: 24px; border-radius: 3px; background: var(--light-gray); animation: skeleton-pulse 1.5s ease-in-out infinite; margin-bottom: 14px; width: 55%; }
+
+    /* ── Improved footer ── */
+    .landing-footer-v2 { background: var(--near-black); color: rgba(255,255,255,0.75); padding: 48px 40px 32px; }
+    .footer-v2-inner { max-width: 1100px; margin: 0 auto; }
+    .footer-v2-top { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 48px; margin-bottom: 40px; }
+    .footer-v2-brand .footer-logo { font-family: 'Oswald', sans-serif; font-size: 24px; font-weight: 700; color: #fff; margin-bottom: 10px; }
+    .footer-v2-brand .footer-logo span { color: var(--roof-red); }
+    .footer-v2-brand p { font-size: 14px; line-height: 1.6; color: rgba(255,255,255,0.55); }
+    .footer-v2-col h4 { font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.9); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 14px; }
+    .footer-v2-col a, .footer-v2-col button { display: block; font-size: 14px; color: rgba(255,255,255,0.55); text-decoration: none; margin-bottom: 9px; background: none; border: none; cursor: pointer; padding: 0; text-align: left; font-family: 'Source Sans 3', sans-serif; transition: color 0.15s ease; }
+    .footer-v2-col a:hover, .footer-v2-col button:hover { color: rgba(255,255,255,0.9); text-decoration: none; }
+    .footer-v2-bottom { display: flex; align-items: center; justify-content: space-between; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 24px; }
+    .footer-v2-copy { font-size: 13px; color: rgba(255,255,255,0.4); }
+    .footer-v2-tagline { font-size: 13px; color: rgba(255,255,255,0.35); font-style: italic; }
+
+    /* ── Draft card improvements ── */
+    .draft-card { background: var(--white); border: 1px solid var(--border); border-radius: 8px; padding: 18px 20px; margin-bottom: 10px; display: flex; align-items: flex-start; gap: 14px; transition: box-shadow 0.15s ease, transform 0.15s ease; cursor: pointer; }
+    .draft-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.07); transform: translateY(-1px); }
+    .draft-type-stripe { width: 4px; border-radius: 2px; flex-shrink: 0; align-self: stretch; min-height: 40px; }
+    .stripe-proposal { background: var(--roof-red); }
+    .stripe-followup { background: #3498DB; }
+    .stripe-review { background: #27AE60; }
+    .stripe-referral { background: #8E44AD; }
+    .draft-card-body { flex: 1; min-width: 0; }
+    .draft-card-title { font-size: 14px; font-weight: 600; color: var(--near-black); margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .draft-card-meta { font-size: 12px; color: var(--slate-light); display: flex; align-items: center; gap: 10px; }
+    .draft-card-actions { display: flex; gap: 6px; align-items: center; flex-shrink: 0; }
+    .draft-card-btn { padding: 5px 12px; font-size: 12px; border-radius: 4px; border: 1px solid var(--border); background: var(--white); color: var(--slate); cursor: pointer; font-family: 'Source Sans 3', sans-serif; font-weight: 600; transition: all 0.15s ease; }
+    .draft-card-btn:hover { border-color: var(--roof-red); color: var(--roof-red); }
+    .draft-card-btn.delete:hover { border-color: var(--roof-red); background: rgba(192,57,43,0.06); color: var(--roof-red); }
+
+    /* ── Drafts search/filter ── */
+    .drafts-toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+    .drafts-search { flex: 1; min-width: 200px; position: relative; }
+    .drafts-search input { width: 100%; padding: 9px 12px 9px 36px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px; background: var(--white); color: var(--charcoal); font-family: 'Source Sans 3', sans-serif; transition: border-color 0.15s ease; }
+    .drafts-search input:focus { outline: none; border-color: var(--roof-red); }
+    .drafts-search-icon { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--slate-light); pointer-events: none; }
+    .drafts-filter-btns { display: flex; gap: 6px; flex-wrap: wrap; }
+    .filter-btn { padding: 7px 14px; font-size: 13px; border-radius: 20px; border: 1px solid var(--border); background: var(--white); color: var(--slate); cursor: pointer; font-family: 'Source Sans 3', sans-serif; font-weight: 600; transition: all 0.15s ease; white-space: nowrap; }
+    .filter-btn:hover { border-color: var(--roof-red); color: var(--roof-red); }
+    .filter-btn.active { background: var(--roof-red); border-color: var(--roof-red); color: #fff; }
+
+    /* ── Nav icon ── */
+    .nav-icon { width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .nav-icon svg { width: 16px; height: 16px; }
+
+    /* ── Variant tabs (Follow-Up / Review / Referral) ── */
+    .variant-tabs { display: flex; gap: 0; border-bottom: 2px solid var(--border); margin-bottom: 20px; }
+    .variant-tab { padding: 10px 18px; font-size: 14px; font-weight: 600; color: var(--slate); cursor: pointer; border: none; background: none; font-family: 'Source Sans 3', sans-serif; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: color 0.15s, border-color 0.15s; white-space: nowrap; }
+    .variant-tab:hover { color: var(--near-black); }
+    .variant-tab.active { color: var(--roof-red); border-bottom-color: var(--roof-red); }
+    .variant-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .variant-label { font-family: 'Oswald', sans-serif; font-size: 16px; font-weight: 600; color: var(--near-black); }
+
+    /* ── Responsive extras ── */
+    @media (max-width: 900px) { .dash-stats-row { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 600px) {
+      .dash-stats-row { grid-template-columns: 1fr 1fr; gap: 10px; }
+      .how-steps { grid-template-columns: 1fr; }
+      .footer-v2-top { grid-template-columns: 1fr; gap: 28px; }
+      .footer-v2-bottom { flex-direction: column; gap: 8px; text-align: center; }
     }
   </style>
 </head>
 <body>
+  <div id="marketing-shell" class="landing">
+    <nav class="landing-nav">
+      <div class="landing-logo">Roof<span>Draft</span></div>
+      <ul class="landing-nav-links">
+        <li><a href="#how-it-works">How It Works</a></li>
+        <li><a href="#tools">Tools</a></li>
+        <li><a href="#pricing">Pricing</a></li>
+        <li><a href="#faq">FAQ</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+      <div class="landing-nav-actions">
+        <button class="btn btn-ghost" data-auth-target="login" type="button" style="padding: 9px 18px; font-size: 14px;">Log In</button>
+        <button class="btn btn-primary" data-auth-target="register" type="button" style="padding: 9px 18px; font-size: 14px;">Get My First Proposal</button>
+      </div>
+    </nav>
+
+    <section class="hero">
+      <div class="hero-inner">
+        <div class="hero-copy">
+          <div class="hero-kicker">Built for roofing contractors who need to move fast</div>
+          <h1 class="hero-headline">Professional roofing proposals that look <span>ready to sign</span></h1>
+          <p class="hero-sub">
+            RoofDraft helps you generate polished proposals, follow-up emails, review requests, and referral messages without sounding generic, rushed, or slapped together.
+          </p>
+          <div class="hero-actions">
+            <button class="btn btn-primary" data-auth-target="register" type="button" style="padding: 14px 32px; font-size: 17px; font-family: 'Oswald', sans-serif; letter-spacing: 0.04em; text-transform: uppercase;">
+              Get My First Proposal
+            </button>
+            <a href="/static/sample-proposal.pdf" class="btn btn-outline-white" target="_blank" rel="noopener" style="padding: 14px 26px; font-size: 16px;">
+              See a Sample Proposal
+            </a>
+          </div>
+          <p class="landing-trust-note">1 free proposal included. No card required to evaluate the quality.</p>
+        </div>
+        <div class="hero-proof">
+          <div class="hero-proof-card">
+            <div class="hero-proof-top">
+              <div class="hero-proof-label">Sample proposal preview</div>
+              <div class="hero-proof-badge">Ready in about 60 sec</div>
+            </div>
+            <img class="hero-proof-image" src="/static/sample-proposal-preview.png" alt="Preview of a professional roofing proposal generated by RoofDraft" />
+            <div class="hero-proof-grid">
+              <div class="hero-proof-stat">
+                <div class="hero-proof-stat-num">1</div>
+                <div class="hero-proof-stat-label">Free proposal included so the quality can be judged before paying</div>
+              </div>
+              <div class="hero-proof-stat">
+                <div class="hero-proof-stat-num">4</div>
+                <div class="hero-proof-stat-label">Customer-facing tools for the full roofing sales follow-through</div>
+              </div>
+              <div class="hero-proof-stat">
+                <div class="hero-proof-stat-num">Pro</div>
+                <div class="hero-proof-stat-label">Keeps company defaults, saved drafts, and job folders in one place</div>
+              </div>
+              <div class="hero-proof-stat">
+                <div class="hero-proof-stat-num">Field</div>
+                <div class="hero-proof-stat-label">Built to work from the truck, office, or right after inspection</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="trust-bar">
+      <div class="trust-bar-label">Built to make the customer-facing side of roofing feel more established</div>
+      <div class="trust-stats">
+        <div class="trust-stat">
+          <div class="trust-stat-num">60 sec</div>
+          <div class="trust-stat-label">Typical time to generate finished copy</div>
+        </div>
+        <div class="trust-stat" style="padding-left: 28px;">
+          <div class="trust-stat-num">4 tools</div>
+          <div class="trust-stat-label">Proposal, follow-up, review, and referral</div>
+        </div>
+        <div class="trust-stat" style="padding-left: 28px;">
+          <div class="trust-stat-num">Field ready</div>
+          <div class="trust-stat-label">Works from your truck, office, or job site</div>
+        </div>
+        <div class="trust-stat" style="padding-left: 28px;">
+          <div class="trust-stat-num">No fluff</div>
+          <div class="trust-stat-label">Professional tone without fake corporate language</div>
+        </div>
+      </div>
+    </div>
+
+    <section class="problem-section">
+      <div class="problem-inner">
+        <div>
+          <h2 class="problem-heading">Send something that looks established before the homeowner ever sees your crew</h2>
+          <p class="problem-text">
+            Most contractors lose time writing proposals after hours, or they send a rough quote that does not reflect the quality of their actual work. RoofDraft is built for the moment after the inspection, when you need to turn job details into something clear, credible, and easy to approve.
+          </p>
+          <p class="problem-text">
+            The goal is simple: make your proposal look like it came from a serious company, not a rushed note typed on a phone between appointments.
+          </p>
+          <div class="sample-link-row">
+            <a href="/static/sample-proposal.pdf" class="btn btn-primary" target="_blank" rel="noopener">Download Sample PDF</a>
+            <a href="/static/sample-proposal.html" class="btn btn-outline-red" target="_blank" rel="noopener">Open HTML Preview</a>
+          </div>
+        </div>
+        <div class="problem-doc">
+          <div class="problem-doc-header">Sample proposal preview</div>
+          <img class="problem-doc-preview" src="/static/sample-proposal-preview.png" alt="Preview of a sample RoofDraft proposal document" />
+          <div class="problem-doc-note">
+            This sample is linked directly from the page so a contractor can judge the output before creating an account or paying for the product.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="how-it-works" class="how-section">
+      <div class="how-inner">
+        <div class="section-eyebrow">Simple Process</div>
+        <h2 class="section-title">Three steps from roof inspection to ready-to-send proposal</h2>
+        <div class="how-steps">
+          <div class="how-step">
+            <div class="how-step-num">1</div>
+            <div class="how-step-title">Enter the job details</div>
+            <div class="how-step-desc">Customer info, scope, materials, pricing, and your company defaults. The form is built for real roofing jobs, not generic prompts.</div>
+          </div>
+          <div class="how-step">
+            <div class="how-step-num">2</div>
+            <div class="how-step-title">Generate polished customer copy</div>
+            <div class="how-step-desc">RoofDraft produces a proposal or customer follow-up that reads clean, professional, and easy to trust without sounding robotic.</div>
+          </div>
+          <div class="how-step">
+            <div class="how-step-num">3</div>
+            <div class="how-step-title">Copy, save, and send</div>
+            <div class="how-step-desc">Use it as-is, save it to a job folder, or come back later. The paid plan is built to keep your defaults and customer-facing material organized.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="tools" class="tools-section" style="background: var(--light-gray);">
+      <div class="tools-section-inner">
+        <div class="section-eyebrow">What You Get</div>
+        <h2 class="section-title">A focused toolkit for the customer side of roofing sales</h2>
+        <div class="landing-tools-grid">
+          <div class="landing-tool-card" style="display: flex; flex-direction: column; gap: 10px;">
+            <div class="landing-tool-card-name">Proposal Generator</div>
+            <div class="landing-tool-card-desc">Create a clean, professional roofing proposal from job details, materials, warranty terms, pricing, and your company information.</div>
+          </div>
+          <div class="landing-tool-card" style="display: flex; flex-direction: column; gap: 10px;">
+            <div class="landing-tool-card-name">Follow-Up Email</div>
+            <div class="landing-tool-card-desc">Write follow-up messages for homeowners who have gone quiet without sounding needy, pushy, or obviously templated.</div>
+          </div>
+          <div class="landing-tool-card" style="display: flex; flex-direction: column; gap: 10px;">
+            <div class="landing-tool-card-name">Review Request</div>
+            <div class="landing-tool-card-desc">Generate review requests that feel personal and easy to send after the work is done.</div>
+          </div>
+          <div class="landing-tool-card" style="display: flex; flex-direction: column; gap: 10px;">
+            <div class="landing-tool-card-name">Referral Message</div>
+            <div class="landing-tool-card-desc">Ask happy customers for referrals in a way that sounds natural instead of awkward or over-rehearsed.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="pricing" class="pricing-section">
+      <div class="pricing-section-inner">
+        <div class="section-eyebrow">Pricing</div>
+        <h2 class="section-title">Simple pricing that matches how the product is actually used</h2>
+        <div class="pricing-grid-public">
+          <div class="pricing-card-v2">
+            <div class="pricing-plan">Free</div>
+            <div class="pricing-amount">$0</div>
+            <div class="pricing-period">one proposal to evaluate the quality</div>
+            <hr class="pricing-divider" />
+            <ul class="pricing-features-v2">
+              <li><span class="pf-check">✓</span><span>1 proposal generation included</span></li>
+              <li><span class="pf-check">✓</span><span>See the actual output before paying</span></li>
+              <li><span class="pf-x">✕</span><span class="pf-x-text">No follow-up, review, or referral tools</span></li>
+              <li><span class="pf-x">✕</span><span class="pf-x-text">No saved defaults or job folders</span></li>
+            </ul>
+            <button class="btn btn-outline-red btn-full" data-auth-target="register" type="button">Try It Free</button>
+          </div>
+
+          <div class="pricing-card-v2 pricing-card-pro">
+            <div class="pricing-badge-all">Best Fit For Active Roofers</div>
+            <div class="pricing-plan">Pro</div>
+            <div class="pricing-amount">$79</div>
+            <div class="pricing-period">per month</div>
+            <hr class="pricing-divider" />
+            <ul class="pricing-features-v2">
+              <li><span class="pf-check">✓</span><span>Unlimited proposal generation</span></li>
+              <li><span class="pf-check">✓</span><span>All 4 roofing sales tools</span></li>
+              <li><span class="pf-check">✓</span><span>Saved company defaults</span></li>
+              <li><span class="pf-check">✓</span><span>Saved drafts and job folders</span></li>
+              <li><span class="pf-check">✓</span><span>Priority support</span></li>
+            </ul>
+            <button class="btn btn-primary btn-full" data-auth-target="register" type="button" style="font-family: 'Oswald', sans-serif; letter-spacing: 0.03em; text-transform: uppercase;">Start With Pro</button>
+            <div class="pricing-pro-note">If it helps you send one better proposal that gets approved, it has already paid for itself.</div>
+          </div>
+        </div>
+        <div class="pricing-note" style="margin-top: 28px;">
+          No contracts. Cancel any time.
+        </div>
+      </div>
+    </section>
+
+    <section id="faq" class="faq-section">
+      <div class="faq-inner">
+        <div class="section-eyebrow">FAQ</div>
+        <h2 class="section-title">Common questions before you try it</h2>
+        <div class="static-faq-list">
+          <div class="static-faq-item open">
+            <button class="static-faq-question" type="button" aria-expanded="true">Do I need a card to see what the proposal quality is like?<span class="static-faq-arrow">▼</span></button>
+            <div class="static-faq-answer">No. You get one free proposal so you can judge the output before paying.</div>
+          </div>
+          <div class="static-faq-item">
+            <button class="static-faq-question" type="button" aria-expanded="false">Can I use RoofDraft from my phone in the field?<span class="static-faq-arrow">▼</span></button>
+            <div class="static-faq-answer">Yes. The app is designed to work from your truck, office, or job site so you can send polished customer-facing copy without waiting to get back home.</div>
+          </div>
+          <div class="static-faq-item">
+            <button class="static-faq-question" type="button" aria-expanded="false">What makes this different from using ChatGPT directly?<span class="static-faq-arrow">▼</span></button>
+            <div class="static-faq-answer">RoofDraft is tuned for the roofing sales workflow. It keeps your company defaults, structures the proposal correctly, and gives you follow-up, review, and referral tools in the same place.</div>
+          </div>
+          <div class="static-faq-item">
+            <button class="static-faq-question" type="button" aria-expanded="false">Are my defaults and drafts saved?<span class="static-faq-arrow">▼</span></button>
+            <div class="static-faq-answer">Yes on the Pro plan. That is the stickiest part of the product: once your company info, warranty language, and saved drafts are in place, future jobs move much faster.</div>
+          </div>
+          <div class="static-faq-item">
+            <button class="static-faq-question" type="button" aria-expanded="false">Can I cancel any time?<span class="static-faq-arrow">▼</span></button>
+            <div class="static-faq-answer">Yes. There are no contracts and no long-term commitments.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact" class="contact-section">
+      <div class="contact-inner">
+        <div class="section-eyebrow">Contact</div>
+        <h2 class="section-title">Questions before you roll it into your sales process?</h2>
+        <p style="color: var(--slate); font-size: 16px; margin-bottom: 32px; margin-top: -20px;">
+          Send a note and we will get back to you as quickly as we can.
+        </p>
+        <div class="contact-cards">
+          <div class="contact-card">
+            <div class="contact-card-label">Response Time</div>
+            <div class="contact-card-value">Within one business day</div>
+            <div class="contact-card-note">Use the form below for setup, pricing, or product questions.</div>
+          </div>
+          <div class="contact-card">
+            <div class="contact-card-label">Phone</div>
+            <div class="contact-card-value"><a href="tel:+19858592855">(985) 859-2855</a></div>
+            <div class="contact-card-note">Call or text if you prefer to talk through the workflow directly.</div>
+          </div>
+        </div>
+        <div class="contact-form-wrap">
+          <div class="contact-form-title">Send a Message</div>
+          <div id="marketing-contact-success" class="contact-success" hidden>Message sent. We will get back to you within one business day.</div>
+          <div id="marketing-contact-error" class="contact-error" hidden>Something went wrong. Please call or text us at <a href="tel:+19858592855">(985) 859-2855</a>.</div>
+          <form id="marketing-contact-form">
+            <div class="contact-form-grid">
+              <div class="form-group">
+                <label class="form-label" for="marketing-name">Name</label>
+                <input id="marketing-name" class="form-input" name="name" type="text" placeholder="Your name" required />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="marketing-email">Email</label>
+                <input id="marketing-email" class="form-input" name="email" type="email" placeholder="you@company.com" required />
+              </div>
+            </div>
+            <div class="form-group" style="margin-bottom: 16px;">
+              <label class="form-label" for="marketing-message">Message</label>
+              <textarea id="marketing-message" class="form-textarea" name="message" rows="4" placeholder="What can we help you with?" required></textarea>
+            </div>
+            <button id="marketing-contact-submit" type="submit" class="btn btn-primary" style="font-family: 'Oswald', sans-serif; letter-spacing: 0.03em; text-transform: uppercase; padding: 12px 28px;">Send Message</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <footer class="landing-footer-v2">
+      <div class="footer-v2-inner">
+        <div class="footer-v2-top">
+          <div class="footer-v2-brand">
+            <div class="footer-logo">Roof<span>Draft</span></div>
+            <p>Customer-facing roofing copy that looks organized, trustworthy, and ready to send.</p>
+            <p style="margin-top: 12px; color: rgba(255,255,255,0.35); font-style: italic; font-size: 13px;">Built to help roofers move from inspection to signed proposal faster.</p>
+          </div>
+          <div class="footer-v2-col">
+            <h4>Product</h4>
+            <a href="#how-it-works">How It Works</a>
+            <a href="#tools">Tools</a>
+            <a href="/static/sample-proposal.pdf" target="_blank" rel="noopener">Sample Proposal</a>
+            <button data-auth-target="register" type="button">Get My First Proposal</button>
+          </div>
+          <div class="footer-v2-col">
+            <h4>Company</h4>
+            <a href="#pricing">Pricing</a>
+            <a href="#faq">FAQ</a>
+            <a href="#contact">Contact</a>
+          </div>
+        </div>
+        <div class="footer-v2-bottom">
+          <div class="footer-v2-copy">© 2026 RoofDraft. All rights reserved.</div>
+          <div class="footer-v2-tagline">RoofDraftAI.com</div>
+        </div>
+      </div>
+    </footer>
+  </div>
+
   <div id="root"></div>
 
   <script type="text/babel">
     const { useState, useEffect, useCallback, useRef } = React;
+
+    // ---------------------------------------------------------------------------
+    // Markdown helper
+    // ---------------------------------------------------------------------------
+    function renderMarkdown(text) {
+      if (!text) return '';
+      try {
+        const html = (typeof marked !== 'undefined') ? marked.parse(text) : text.replace(/\n/g, '<br>');
+        return (typeof DOMPurify !== 'undefined') ? DOMPurify.sanitize(html) : html;
+      } catch (e) {
+        return text;
+      }
+    }
+
+    // ---------------------------------------------------------------------------
+    // Toast context
+    // ---------------------------------------------------------------------------
+    const ToastContext = React.createContext(() => {});
+    function useToast() { return React.useContext(ToastContext); }
+
+    function ToastProvider({ children }) {
+      const [toasts, setToasts] = useState([]);
+      const addToast = useCallback((msg, type = 'success') => {
+        const id = Date.now() + Math.random();
+        setToasts(prev => [...prev, { id, msg, type }]);
+        setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), 3200);
+      }, []);
+      return (
+        <ToastContext.Provider value={addToast}>
+          {children}
+          <div className="toast-container">
+            {toasts.map(t => (
+              <div key={t.id} className={`toast toast-${t.type}`}>{t.msg}</div>
+            ))}
+          </div>
+        </ToastContext.Provider>
+      );
+    }
+
+    // ---------------------------------------------------------------------------
+    // SVG Icons
+    // ---------------------------------------------------------------------------
+    function IconFileText({ size = 32 }) {
+      return (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14,2 14,8 20,8"/>
+          <line x1="16" y1="13" x2="8" y2="13"/>
+          <line x1="16" y1="17" x2="8" y2="17"/>
+          <polyline points="10,9 9,9 8,9"/>
+        </svg>
+      );
+    }
+    function IconMail({ size = 32 }) {
+      return (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+          <polyline points="22,6 12,13 2,6"/>
+        </svg>
+      );
+    }
+    function IconStar({ size = 32 }) {
+      return (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+        </svg>
+      );
+    }
+    function IconUsers({ size = 32 }) {
+      return (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+      );
+    }
+    const TOOL_ICON_MAP = { proposal: IconFileText, followup: IconMail, review: IconStar, referral: IconUsers };
+
+    // ---------------------------------------------------------------------------
+    // PDF download helper
+    // ---------------------------------------------------------------------------
+    function downloadPDF(elementId, filename) {
+      if (typeof html2pdf === 'undefined') {
+        alert('PDF library not loaded yet. Please wait a moment and try again.');
+        return;
+      }
+      const el = document.getElementById(elementId);
+      if (!el) return;
+      html2pdf().set({
+        margin: 0.75,
+        filename: filename || 'RoofDraft.pdf',
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'in', format: 'letter' }
+      }).from(el).save();
+    }
 
     // ---------------------------------------------------------------------------
     // Error Boundary
@@ -1999,7 +2841,7 @@
     // ---------------------------------------------------------------------------
     // Plan helpers
     // ---------------------------------------------------------------------------
-    const FREE_LIMIT = 5;
+    const FREE_LIMIT = 1;
 
     function canUseTool(user, toolKey) {
       if (!user) return false;
@@ -2132,8 +2974,8 @@
         <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
           <div className="modal-box">
             <button className="modal-close" onClick={onClose}>✕</button>
-            <div className="modal-title">Start Free Trial</div>
-            <div className="modal-subtitle">5 free generations — no credit card required</div>
+            <div className="modal-title">Try RoofDraft Free</div>
+            <div className="modal-subtitle">One free proposal included - no card required</div>
             <form className="modal-form" onSubmit={handleSubmit}>
               {error && <div className="modal-error">{error}</div>}
               {promoNotice && (
@@ -2218,15 +3060,7 @@
           plan: null,
           price: '$0',
           period: '/mo',
-          features: ['5 proposals/month', 'Proposal Generator', '— Follow-Up Email', '— Review Request', '— Job Folders'],
-        },
-        {
-          name: 'Starter',
-          plan: 'starter',
-          price: '$49',
-          period: '/mo',
-          features: ['Unlimited proposals', 'Proposal Generator', 'Saved defaults', '— Follow-Up Email', '— Job Folders'],
-          highlight: false,
+          features: ['1 proposal included', 'Proposal Generator', '— Follow-Up Email', '— Review Request', '— Job Folders'],
         },
         {
           name: 'Pro',
@@ -2242,7 +3076,7 @@
           <div className="modal-box" style={{ maxWidth:'560px' }}>
             <button className="modal-close" onClick={onClose}>✕</button>
             <div className="modal-title">Upgrade Your Plan</div>
-            <div className="modal-subtitle">You've hit your free limit. Choose a plan to keep generating.</div>
+            <div className="modal-subtitle">Upgrade your plan to unlock more tools and unlimited generations.</div>
             <div className="upgrade-plans-grid">
               {PLANS.map(p => (
                 <div key={p.name} className={`upgrade-plan-card${p.highlight ? ' featured' : ''}`}>
@@ -2389,17 +3223,25 @@
     // Result Card
     // ---------------------------------------------------------------------------
     function ResultCard({ result, draftSaved, token, user, toolName, onUpgradeNeeded }) {
-      const isPro = user && (user.is_admin || user.plan === 'pro');
-      const isPaying = user && (user.is_admin || user.plan === 'starter' || user.plan === 'pro');
-      const [copied, setCopied] = useState(false);
+      const safeUser = user || {};
+      const isPro = safeUser.is_admin || safeUser.plan === 'pro';
+      const isPaying = safeUser.is_admin || safeUser.plan === 'starter' || safeUser.plan === 'pro';
+      const toast = useToast();
       const [showSaveModal, setShowSaveModal] = useState(false);
       const [savedToFolder, setSavedToFolder] = useState('');
+      const [resultId] = useState(() => 'result-' + Math.random().toString(36).slice(2));
 
       function handleCopy() {
         navigator.clipboard.writeText(result).then(() => {
-          setCopied(true);
-          setTimeout(() => setCopied(false), 2000);
+          toast('Copied to clipboard!', 'success');
+        }).catch(() => {
+          toast('Failed to copy. Please select and copy manually.', 'error');
         });
+      }
+
+      function handleDownloadPDF() {
+        const toolLabel = { proposal: 'Proposal', followup: 'FollowUp', review: 'ReviewRequest', referral: 'Referral' };
+        downloadPDF(resultId, `RoofDraft_${toolLabel[toolName] || 'Result'}.pdf`);
       }
 
       return (
@@ -2416,15 +3258,18 @@
                   Save to Folder
                 </button>
               )}
+              <button className="btn btn-sm btn-ghost" onClick={handleDownloadPDF}>
+                Download PDF
+              </button>
               <button
-                className={`btn btn-sm btn-outline-red${copied ? ' copy-btn-success' : ''}`}
+                className="btn btn-sm btn-outline-red"
                 onClick={handleCopy}
               >
-                {copied ? '✓ Copied!' : 'Copy to Clipboard'}
+                Copy to Clipboard
               </button>
             </div>
           </div>
-          <div className="result-text">{result}</div>
+          <div id={resultId} className="result-content" dangerouslySetInnerHTML={{ __html: renderMarkdown(result) }} />
           {user && !isPro && (
             <div className="pro-upsell-line">
               Pro users can save and organize drafts into job folders.{' '}
@@ -2440,7 +3285,136 @@
               toolName={toolName}
               token={token}
               onClose={() => setShowSaveModal(false)}
-              onSaved={name => { setSavedToFolder(name); setShowSaveModal(false); }}
+              onSaved={name => { setSavedToFolder(name); setShowSaveModal(false); toast(`Saved to ${name}!`, 'success'); }}
+            />
+          )}
+        </div>
+      );
+    }
+
+    // ---------------------------------------------------------------------------
+    // Variant parser — splits AI output into labeled sections for tabbed display
+    // ---------------------------------------------------------------------------
+    function parseVariants(text, tool) {
+      if (tool === 'followup') {
+        const parts = text.split(/\n(?=(?:#{1,3} )?(?:\*\*)?Option [ABC](?:\*\*)?(?:\s|$))/i);
+        if (parts.length >= 2) {
+          return parts.filter(p => p.trim()).map(part => {
+            const m = part.match(/^(?:#{1,3} )?(?:\*\*)?Option ([ABC])(?:\*\*)?/i);
+            return { label: m ? 'Option ' + m[1].toUpperCase() : 'Variant', content: part.trim() };
+          });
+        }
+      }
+      if (tool === 'review' || tool === 'referral') {
+        const sections = text.split(/\n(?=(?:#{1,3} )?(?:\*\*)?(?:Text(?: Message)?(?: Version)?|Email(?: Version)?)(?:\*\*)?(?:\s|$))/i);
+        if (sections.length >= 2) {
+          return sections.filter(s => s.trim()).map(s => {
+            const m = s.match(/^(?:#{1,3} )?(?:\*\*)?(\w+(?:\s+\w+)?)/);
+            let label = m ? m[1].trim() : 'Section';
+            if (/^text/i.test(label)) label = 'Text Message';
+            if (/^email/i.test(label)) label = 'Email';
+            return { label, content: s.trim() };
+          });
+        }
+      }
+      return null;
+    }
+
+    // ---------------------------------------------------------------------------
+    // TabbedResultCard — for tools that return multiple variants
+    // ---------------------------------------------------------------------------
+    function TabbedResultCard({ result, draftSaved, token, user, toolName, onUpgradeNeeded }) {
+      const safeUser = user || {};
+      const isPro = safeUser.is_admin || safeUser.plan === 'pro';
+      const isPaying = safeUser.is_admin || safeUser.plan === 'starter' || safeUser.plan === 'pro';
+      const toast = useToast();
+      const [showSaveModal, setShowSaveModal] = useState(false);
+      const [savedToFolder, setSavedToFolder] = useState('');
+      const [activeTab, setActiveTab] = useState(0);
+      const [resultId] = useState(() => 'result-' + Math.random().toString(36).slice(2));
+
+      const variants = parseVariants(result, toolName);
+
+      if (!variants) {
+        return (
+          <ResultCard result={result} draftSaved={draftSaved} token={token} user={user}
+            toolName={toolName} onUpgradeNeeded={onUpgradeNeeded} />
+        );
+      }
+
+      const currentVariant = variants[Math.min(activeTab, variants.length - 1)];
+
+      function handleCopyAll() {
+        navigator.clipboard.writeText(result)
+          .then(() => toast('All variants copied!', 'success'))
+          .catch(() => toast('Failed to copy. Please select and copy manually.', 'error'));
+      }
+
+      function handleCopyVariant() {
+        navigator.clipboard.writeText(currentVariant.content)
+          .then(() => toast(`${currentVariant.label} copied!`, 'success'))
+          .catch(() => toast('Failed to copy.', 'error'));
+      }
+
+      function handleDownloadPDF() {
+        const toolLabel = { followup: 'FollowUp', review: 'ReviewRequest', referral: 'Referral' };
+        downloadPDF(resultId, `RoofDraft_${toolLabel[toolName] || 'Result'}.pdf`);
+      }
+
+      return (
+        <div className="result-card">
+          <div className="result-header">
+            <div>
+              <div className="result-title">Your Results</div>
+              {draftSaved && <div className="draft-saved-indicator">✓ Auto-saved to Drafts</div>}
+              {savedToFolder && <div className="draft-saved-indicator">✓ Saved to {savedToFolder}</div>}
+            </div>
+            <div style={{ display:'flex', gap:8, flexWrap:'wrap', justifyContent:'flex-end' }}>
+              {isPro && !savedToFolder && (
+                <button className="btn btn-sm btn-ghost" onClick={() => setShowSaveModal(true)}>Save to Folder</button>
+              )}
+              <button className="btn btn-sm btn-ghost" onClick={handleDownloadPDF}>Download PDF</button>
+              <button className="btn btn-sm btn-outline-red" onClick={handleCopyAll}>Copy All</button>
+            </div>
+          </div>
+
+          <div className="variant-tabs">
+            {variants.map((v, i) => (
+              <button key={i}
+                className={`variant-tab${activeTab === i ? ' active' : ''}`}
+                onClick={() => setActiveTab(i)}>
+                {v.label}
+              </button>
+            ))}
+          </div>
+
+          <div id={resultId}>
+            <div className="variant-header">
+              <span className="variant-label">{currentVariant.label}</span>
+              <button className="btn btn-sm btn-outline-red" onClick={handleCopyVariant}>
+                Copy {currentVariant.label}
+              </button>
+            </div>
+            <div className="result-content" dangerouslySetInnerHTML={{ __html: renderMarkdown(currentVariant.content) }} />
+          </div>
+
+          {user && !isPro && (
+            <div className="pro-upsell-line">
+              Pro users can save and organize drafts into job folders.{' '}
+              <button onClick={onUpgradeNeeded}
+                style={{ background:'none', border:'none', color:'var(--roof-red)', cursor:'pointer', textDecoration:'underline', fontSize:'13px', fontFamily:'Source Sans 3, sans-serif', padding:0, fontWeight:600 }}>
+                Upgrade to Pro →
+              </button>
+            </div>
+          )}
+
+          {showSaveModal && (
+            <SaveDraftModal
+              result={result}
+              toolName={toolName}
+              token={token}
+              onClose={() => setShowSaveModal(false)}
+              onSaved={name => { setSavedToFolder(name); setShowSaveModal(false); toast(`Saved to ${name}!`, 'success'); }}
             />
           )}
         </div>
@@ -2507,7 +3481,7 @@
       }
 
       return (
-        <div>
+        <div className="page-fade-in">
           <div className="page-title">Proposal Generator</div>
           <div className="page-subtitle">Fill in the job details and get a complete, client-ready proposal letter.</div>
           <div className="content-card">
@@ -2643,7 +3617,7 @@
     // ---------------------------------------------------------------------------
     // Follow-Up Tool
     // ---------------------------------------------------------------------------
-    function FollowUpTool({ token, onUpgradeNeeded }) {
+    function FollowUpTool({ token, user, onUpgradeNeeded }) {
       const [form, setForm] = useState({
         customer_name: '', days_since_proposal: '', proposal_amount: '',
         job_type: '', contractor_name: '', company_name: '', contractor_phone: ''
@@ -2673,7 +3647,7 @@
       }
 
       return (
-        <div>
+        <div className="page-fade-in">
           <div className="page-title">Follow-Up Email</div>
           <div className="page-subtitle">Get 3 ready-to-send follow-up email variations for prospects who haven't responded.</div>
           <div className="content-card">
@@ -2715,7 +3689,7 @@
               </button>
             </form>
           </div>
-          {result && <ResultCard result={result} draftSaved={draftSaved} token={token} user={user} toolName="followup" onUpgradeNeeded={onUpgradeNeeded} />}
+          {result && <TabbedResultCard result={result} draftSaved={draftSaved} token={token} user={user} toolName="followup" onUpgradeNeeded={onUpgradeNeeded} />}
         </div>
       );
     }
@@ -2723,7 +3697,7 @@
     // ---------------------------------------------------------------------------
     // Review Request Tool
     // ---------------------------------------------------------------------------
-    function ReviewTool({ token, onUpgradeNeeded }) {
+    function ReviewTool({ token, user, onUpgradeNeeded }) {
       const [form, setForm] = useState({
         customer_name: '', job_type: '', contractor_name: '', company_name: '', review_link: ''
       });
@@ -2752,7 +3726,7 @@
       }
 
       return (
-        <div>
+        <div className="page-fade-in">
           <div className="page-title">Review Request</div>
           <div className="page-subtitle">Generate a text and email version of a Google review request — personal, not corporate.</div>
           <div className="content-card">
@@ -2786,7 +3760,7 @@
               </button>
             </form>
           </div>
-          {result && <ResultCard result={result} draftSaved={draftSaved} token={token} user={user} toolName="review" onUpgradeNeeded={onUpgradeNeeded} />}
+          {result && <TabbedResultCard result={result} draftSaved={draftSaved} token={token} user={user} toolName="review" onUpgradeNeeded={onUpgradeNeeded} />}
         </div>
       );
     }
@@ -2794,7 +3768,7 @@
     // ---------------------------------------------------------------------------
     // Referral Message Tool
     // ---------------------------------------------------------------------------
-    function ReferralTool({ token, onUpgradeNeeded }) {
+    function ReferralTool({ token, user, onUpgradeNeeded }) {
       const [form, setForm] = useState({
         customer_name: '', job_completed: '', contractor_name: '',
         company_name: '', referral_incentive: '', phone_number: ''
@@ -2824,7 +3798,7 @@
       }
 
       return (
-        <div>
+        <div className="page-fade-in">
           <div className="page-title">Referral Message</div>
           <div className="page-subtitle">Ask happy customers for referrals — naturally, without being awkward.</div>
           <div className="content-card">
@@ -2862,7 +3836,7 @@
               </button>
             </form>
           </div>
-          {result && <ResultCard result={result} draftSaved={draftSaved} token={token} user={user} toolName="referral" onUpgradeNeeded={onUpgradeNeeded} />}
+          {result && <TabbedResultCard result={result} draftSaved={draftSaved} token={token} user={user} toolName="referral" onUpgradeNeeded={onUpgradeNeeded} />}
         </div>
       );
     }
@@ -2880,52 +3854,207 @@
     function DashboardHome({ user, token, onSelectTab }) {
       const isFree = user.plan === 'free' && !user.is_admin;
       const genCount = user.generations_this_month || 0;
-      const allUsed = isFree && genCount >= FREE_LIMIT;
+      const totalGens = user.total_generations || 0;
+      const freeUsed = totalGens;
+      const allUsed = isFree && freeUsed >= FREE_LIMIT;
+      const toast = useToast();
+
+      const [recentDrafts, setRecentDrafts] = useState(null);
+      const [dismissed, setDismissed] = useState(() => {
+        try { return localStorage.getItem('rd_onboarding_dismissed') === '1'; } catch { return false; }
+      });
+
+      useEffect(() => {
+        API.call('/api/drafts', 'GET', null, token).then(({ ok, data }) => {
+          if (ok) setRecentDrafts((data.drafts || []).slice(0, 5));
+          else setRecentDrafts([]);
+        }).catch(() => setRecentDrafts([]));
+      }, [token]);
+
+      const todayStr = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+      const hasDrafts = recentDrafts && recentDrafts.length > 0;
+      const hasDefaults = false; // simplified — full implementation would check API
+
+      const onboardingSteps = [
+        { id: 'proposal', label: 'Generate your first proposal', done: totalGens > 0, action: () => onSelectTab('proposal') },
+        { id: 'defaults', label: 'Set up your company defaults', done: false, action: () => onSelectTab('defaults') },
+        { id: 'draft', label: 'Save a draft', done: hasDrafts, action: () => onSelectTab('proposal') },
+      ];
+      const doneCount = onboardingSteps.filter(s => s.done).length;
+      const allDone = doneCount === onboardingSteps.length;
+      const showOnboarding = !dismissed && !allDone && totalGens < 3;
+
+      const TOOL_STRIPE_COLORS = {
+        proposal: 'var(--roof-red)',
+        followup: '#3498DB',
+        review: '#27AE60',
+        referral: '#8E44AD',
+      };
 
       return (
-        <div>
+        <div className="page-fade-in">
           {allUsed && (
             <div className="upgrade-banner">
               <div className="upgrade-banner-text">
-                <strong>You've used all 5 free generations this month</strong>
-                <span>Upgrade to keep generating professional roofing content.</span>
+                <strong>Your free proposal has already been used</strong>
+                <span>Upgrade to keep generating polished proposals, follow-ups, reviews, and referral messages.</span>
               </div>
               <div className="upgrade-actions">
-                <button onClick={() => initiateCheckout('starter', token)}
-                  className="btn btn-outline btn-sm">Starter — $49/mo</button>
-                <button onClick={() => initiateCheckout('pro', token)}
-                  className="btn btn-primary btn-sm">Pro — $79/mo</button>
+                <button onClick={() => initiateCheckout('pro', token)} className="btn btn-primary btn-sm">Pro — $79/mo</button>
               </div>
             </div>
           )}
-          <div className="welcome-greeting">
-            <h2>Welcome back, {user.username}</h2>
-            <p>Choose a tool below to get started.</p>
+
+          {/* Welcome header */}
+          <div className="welcome-header">
+            <div className="welcome-header-row">
+              <div>
+                <div className="welcome-h">Welcome back, {user.username}</div>
+                <div className="welcome-sub">
+                  {isFree
+                    ? (freeUsed > 0 ? 'Your free proposal has been used. Upgrade any time to keep going.' : 'Ready to generate your first proposal?')
+                    : (genCount > 0 ? `You've generated ${genCount} document${genCount !== 1 ? 's' : ''} this month.` : 'Ready to generate your next document?')}
+                </div>
+              </div>
+              <div className="welcome-date">{todayStr}</div>
+            </div>
           </div>
+
+          {/* Stats row */}
+          <div className="dash-stats-row">
+            <div className="dash-stat-card">
+              <div className="dash-stat-icon red">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
+              </div>
+              <div>
+                <div className="dash-stat-num">{totalGens}</div>
+                <div className="dash-stat-label">Total Generated</div>
+              </div>
+            </div>
+            <div className="dash-stat-card">
+              <div className="dash-stat-icon gold">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              </div>
+              <div>
+                <div className="dash-stat-num">{genCount}</div>
+                <div className="dash-stat-label">This Month</div>
+              </div>
+            </div>
+            <div className="dash-stat-card">
+              <div className="dash-stat-icon slate">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="21,8 21,21 3,21 3,8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+              </div>
+              <div>
+                <div className="dash-stat-num">{recentDrafts ? recentDrafts.length : '—'}</div>
+                <div className="dash-stat-label">Saved Drafts</div>
+              </div>
+            </div>
+            <div className="dash-stat-card">
+              <div className="dash-stat-icon green">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22,4 12,14.01 9,11.01"/></svg>
+              </div>
+              <div>
+                <div className="dash-stat-num">{isFree ? `${Math.max(0, FREE_LIMIT - freeUsed)}` : '∞'}</div>
+                <div className="dash-stat-label">{isFree ? 'Free Proposals Left' : 'Generations Left'}</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Onboarding checklist */}
+          {showOnboarding && (
+            <div className="onboarding-card">
+              <div className="onboarding-header">
+                <div className="onboarding-title">Get started with RoofDraft</div>
+                <button className="onboarding-dismiss" onClick={() => { setDismissed(true); try { localStorage.setItem('rd_onboarding_dismissed','1'); } catch {} }}>Dismiss</button>
+              </div>
+              <div className="onboarding-progress-label">{doneCount} of {onboardingSteps.length} complete</div>
+              <div className="onboarding-progress-bar">
+                <div className="onboarding-progress-fill" style={{ width: `${(doneCount / onboardingSteps.length) * 100}%` }} />
+              </div>
+              <div className="onboarding-items">
+                {onboardingSteps.map(step => (
+                  <div key={step.id} className={`onboarding-item${step.done ? ' done' : ''}`}>
+                    <div className={`onboarding-check${step.done ? ' done' : ''}`}>{step.done ? '✓' : ''}</div>
+                    {step.done ? <span>{step.label}</span> : <button onClick={step.action}>{step.label}</button>}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Tool cards */}
           <div className="section-header"><h3>Your Tools</h3></div>
           <div className="tools-grid">
             {TOOLS.map(tool => {
               const accessible = canUseTool(user, tool.key);
+              const stripeColor = TOOL_STRIPE_COLORS[tool.key] || 'var(--roof-red)';
               return (
                 <div
                   key={tool.key}
                   className={`tool-card${!accessible ? ' tool-card-locked' : ''}`}
                   onClick={() => accessible && onSelectTab(tool.tab)}
+                  style={{ borderTop: `3px solid ${stripeColor}` }}
                 >
-                  <div className="tool-card-accent" />
+                  <div className="tool-card-icon">
+                    {React.createElement(TOOL_ICON_MAP[tool.key] || IconFileText, { size: 36 })}
+                  </div>
                   <div className="tool-card-name">{tool.name}</div>
                   <div className="tool-card-desc">{tool.desc}</div>
                   {accessible ? (
-                    <button className="btn btn-primary btn-sm"
-                      onClick={e => { e.stopPropagation(); onSelectTab(tool.tab); }}>
-                      Open Tool
-                    </button>
+                    <div style={{ marginTop: 'auto', paddingTop: 12 }}>
+                      <button className="btn btn-primary btn-sm"
+                        onClick={e => { e.stopPropagation(); onSelectTab(tool.tab); }}>
+                        Open Tool →
+                      </button>
+                    </div>
                   ) : (
                     <div className="locked-badge">🔒 Pro Plan Required</div>
                   )}
                 </div>
               );
             })}
+          </div>
+
+          {/* Recent Activity */}
+          <div className="activity-section">
+            <div className="activity-header">
+              <h3>Recent Activity</h3>
+              {hasDrafts && (
+                <button className="btn btn-ghost btn-sm" onClick={() => onSelectTab('drafts')} style={{ fontSize: 13 }}>
+                  View All Drafts →
+                </button>
+              )}
+            </div>
+            {recentDrafts === null ? (
+              <div style={{ background: 'var(--white)', border: '1px solid var(--border)', borderRadius: 8, padding: '24px' }}>
+                <div className="skeleton-h" />
+                <div className="skeleton-line med" />
+                <div className="skeleton-line short" />
+              </div>
+            ) : !hasDrafts ? (
+              <div className="activity-list">
+                <div className="activity-empty">
+                  <div className="activity-empty-icon">◻</div>
+                  <h4>No activity yet</h4>
+                  <p>Generate your first proposal to see it here.</p>
+                </div>
+              </div>
+            ) : (
+              <div className="activity-list">
+                {recentDrafts.map(d => (
+                  <div key={d.id} className="activity-item" onClick={() => onSelectTab('drafts')}>
+                    <div className={`activity-type-dot dot-${d.tool_name || 'proposal'}`} />
+                    <div className="activity-info">
+                      <div className="activity-title">{d.title || 'Untitled'}</div>
+                      <div className="activity-meta">{formatDate(d.created_at)}</div>
+                    </div>
+                    <span className={`activity-badge badge-${d.tool_name || 'proposal'}`}>
+                      {TOOL_LABELS[d.tool_name] || d.tool_name || 'Draft'}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       );
@@ -2934,8 +4063,6 @@
     // ---------------------------------------------------------------------------
     // AdminPage
     // ---------------------------------------------------------------------------
-    const TOOL_DISPLAY = { proposal:'Proposal', followup:'Follow-Up', review:'Review Request', referral:'Referral' };
-
     function AffiliateDetailModal({ affiliateEmail, token, onClose }) {
       const [commissions, setCommissions] = useState(null);
       const [loading, setLoading] = useState(true);
@@ -3164,7 +4291,7 @@
               <div className="admin-tools-row" style={{marginBottom:32}}>
                 {Object.entries(stats.generations_by_tool).map(([tool, count]) => (
                   <div key={tool} className="admin-tool-stat">
-                    <div className="admin-tool-name">{TOOL_DISPLAY[tool] || tool}</div>
+                    <div className="admin-tool-name">{TOOL_LABELS[tool] || tool}</div>
                     <div className="admin-tool-count">{count}</div>
                   </div>
                 ))}
@@ -3199,9 +4326,27 @@
                     </td>
                     <td><span className="admin-username">{u.username}</span></td>
                     <td>
-                      <span className={`plan-badge ${getPlanBadgeClass(u.plan, u.is_admin)}`}>
-                        {u.is_admin ? 'Admin' : (u.plan || 'free').charAt(0).toUpperCase() + (u.plan || 'free').slice(1)}
-                      </span>
+                      {u.is_admin ? (
+                        <span className={`plan-badge ${getPlanBadgeClass(u.plan, u.is_admin)}`}>Admin</span>
+                      ) : (
+                        <select
+                          value={u.plan || 'free'}
+                          style={{ fontSize:'12px', padding:'3px 6px', borderRadius:'3px', border:'1px solid var(--border)', cursor:'pointer', background:'var(--white)', color:'var(--charcoal)' }}
+                          onChange={async e => {
+                            const newPlan = e.target.value;
+                            const res = await API.call(`/api/admin/users/${u.id}`, 'PATCH', { plan: newPlan }, token);
+                            if (res.ok) {
+                              setUsers(prev => prev.map(x => x.id === u.id ? { ...x, plan: newPlan } : x));
+                            } else {
+                              alert(res.data?.error || 'Failed to update plan');
+                            }
+                          }}
+                        >
+                          <option value="free">Free</option>
+                          <option value="starter">Starter</option>
+                          <option value="pro">Pro</option>
+                        </select>
+                      )}
                     </td>
                     <td><span className="admin-gens">{u.total_generations || 0}</span></td>
                     <td><span className="admin-gens">{u.generations_this_month || 0}</span></td>
@@ -3480,6 +4625,7 @@
     // ---------------------------------------------------------------------------
     function DefaultsPage({ token, user, onNavigate }) {
       const isPaying = user.is_admin || user.plan === 'starter' || user.plan === 'pro';
+      const toast = useToast();
 
       const [loading, setLoading] = useState(true);
 
@@ -3531,7 +4677,13 @@
         setSavingCompany(true);
         const { ok } = await API.call('/api/defaults', 'POST', companyForm, token);
         setSavingCompany(false);
-        if (ok) { setSavedCompany(true); setTimeout(() => setSavedCompany(false), 2500); }
+        if (ok) {
+          setSavedCompany(true);
+          setTimeout(() => setSavedCompany(false), 2500);
+          toast('Profile saved!', 'success');
+        } else {
+          toast('Failed to save. Please try again.', 'error');
+        }
       }
 
       async function handleSaveProposal(e) {
@@ -3543,7 +4695,13 @@
           common_materials: cleanMats,
         }, token);
         setSavingProposal(false);
-        if (ok) { setSavedProposal(true); setTimeout(() => setSavedProposal(false), 2500); }
+        if (ok) {
+          setSavedProposal(true);
+          setTimeout(() => setSavedProposal(false), 2500);
+          toast('Proposal defaults saved!', 'success');
+        } else {
+          toast('Failed to save. Please try again.', 'error');
+        }
       }
 
       function addMaterial() {
@@ -3603,11 +4761,9 @@
               <div className="defaults-upgrade-icon">◻</div>
               <div className="defaults-upgrade-title">Available on Paid Plans</div>
               <div className="defaults-upgrade-desc">
-                Saved defaults let you store your company name, contact info, warranty terms, and common materials so you never have to type them again. Available on Starter and Pro plans.
+                Saved defaults let you store your company name, contact info, warranty terms, and common materials so you never have to type them again. This is included on the Pro plan.
               </div>
               <div className="defaults-upgrade-actions">
-                <button onClick={() => initiateCheckout('starter', token)}
-                  className="btn btn-outline-red btn-sm">Starter — $49/mo</button>
                 <button onClick={() => initiateCheckout('pro', token)}
                   className="btn btn-primary btn-sm">Pro — $79/mo</button>
               </div>
@@ -3784,7 +4940,9 @@
       const [selected, setSelected] = useState(null);
       const [loading, setLoading] = useState(true);
       const [deleting, setDeleting] = useState(null);
-      const [copied, setCopied] = useState(false);
+      const [searchQuery, setSearchQuery] = useState('');
+      const [filterType, setFilterType] = useState('all');
+      const toast = useToast();
 
       useEffect(() => {
         API.call('/api/drafts', 'GET', null, token).then(({ ok, data }) => {
@@ -3796,12 +4954,13 @@
 
       async function handleDelete(e, id) {
         e.stopPropagation();
-        if (!window.confirm('Delete this draft?')) return;
+        if (!window.confirm('Are you sure you want to delete this draft? This cannot be undone.')) return;
         setDeleting(id);
         await API.call(`/api/drafts/${id}`, 'DELETE', null, token);
         setDrafts(d => d.filter(x => x.id !== id));
         if (selected && selected.id === id) setSelected(null);
         setDeleting(null);
+        toast('Draft deleted', 'success');
       }
 
       async function handleOpen(draft) {
@@ -3812,72 +4971,126 @@
       function handleCopy() {
         if (!selected) return;
         navigator.clipboard.writeText(selected.result).then(() => {
-          setCopied(true);
-          setTimeout(() => setCopied(false), 2000);
+          toast('Copied to clipboard!', 'success');
+        }).catch(() => {
+          toast('Failed to copy. Please select and copy manually.', 'error');
         });
       }
 
+      const filteredDrafts = (drafts || []).filter(d => {
+        const matchType = filterType === 'all' || d.tool_name === filterType;
+        const matchSearch = !searchQuery || (d.title || '').toLowerCase().includes(searchQuery.toLowerCase());
+        return matchType && matchSearch;
+      });
+
       if (loading) {
         return (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '40px 0', color: 'var(--slate)' }}>
-            <Spinner dark /><span>Loading drafts...</span>
+          <div>
+            <div className="page-title">Saved Drafts</div>
+            <div style={{ marginTop: 24 }}>
+              {[1,2,3].map(i => (
+                <div key={i} className="skeleton-card" style={{ marginBottom: 10 }}>
+                  <div className="skeleton-h" style={{ width: '40%' }} />
+                  <div className="skeleton-line med" />
+                </div>
+              ))}
+            </div>
           </div>
         );
       }
 
       if (selected) {
+        const draftResultId = 'draft-result-' + selected.id;
         return (
-          <div>
-            <button className="draft-viewer-back" onClick={() => setSelected(null)}>
-              ← Back to Saved Drafts
+          <div className="page-fade-in">
+            <button className="breadcrumb" onClick={() => setSelected(null)} style={{ marginBottom: 20 }}>
+              <span style={{ color: 'var(--roof-red)' }}>←</span>
+              <span style={{ color: 'var(--roof-red)', cursor: 'pointer' }}>Saved Drafts</span>
+              <span className="breadcrumb-sep">›</span>
+              <span className="breadcrumb-current">{selected.title}</span>
             </button>
             <div className="draft-viewer-meta">
-              <span className="draft-tool-badge">{TOOL_LABELS[selected.tool_name] || selected.tool_name}</span>
+              <span className={`activity-badge badge-${selected.tool_name || 'proposal'}`}>{TOOL_LABELS[selected.tool_name] || selected.tool_name}</span>
               <span className="draft-date">{formatDate(selected.created_at)}</span>
             </div>
-            <div className="page-title" style={{ fontSize: '26px', marginBottom: 20 }}>{selected.title}</div>
+            <div className="page-title" style={{ fontSize: '24px', marginBottom: 20, marginTop: 10 }}>{selected.title}</div>
             <div className="result-card">
               <div className="result-header">
                 <div className="result-title">Saved Draft</div>
-                <button
-                  className={`btn btn-sm btn-outline-red${copied ? ' copy-btn-success' : ''}`}
-                  onClick={handleCopy}
-                >
-                  {copied ? '✓ Copied!' : 'Copy to Clipboard'}
-                </button>
+                <div style={{ display:'flex', gap:8, flexWrap:'wrap', justifyContent:'flex-end' }}>
+                  <button className="btn btn-sm btn-ghost"
+                    onClick={() => downloadPDF(draftResultId, `RoofDraft_${selected.title || 'Draft'}.pdf`)}>
+                    Download PDF
+                  </button>
+                  <button className="btn btn-sm btn-outline-red" onClick={handleCopy}>
+                    Copy to Clipboard
+                  </button>
+                </div>
               </div>
-              <div className="result-text">{selected.result}</div>
+              <div id={draftResultId} className="result-content" dangerouslySetInnerHTML={{ __html: renderMarkdown(selected.result) }} />
             </div>
           </div>
         );
       }
 
+      const filterOptions = [
+        { value: 'all', label: 'All' },
+        { value: 'proposal', label: 'Proposals' },
+        { value: 'followup', label: 'Follow-Ups' },
+        { value: 'review', label: 'Reviews' },
+        { value: 'referral', label: 'Referrals' },
+      ];
+
       return (
-        <div>
+        <div className="page-fade-in">
           <div className="page-title">Saved Drafts</div>
-          <div className="page-subtitle">All your generated content, saved automatically. Click any draft to view and copy.</div>
-          {drafts.length === 0 ? (
+          <div className="page-subtitle">All your generated content, saved automatically.</div>
+
+          <div className="drafts-toolbar">
+            <div className="drafts-search">
+              <span className="drafts-search-icon">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              </span>
+              <input type="text" placeholder="Search drafts..." value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)} />
+            </div>
+            <div className="drafts-filter-btns">
+              {filterOptions.map(opt => (
+                <button key={opt.value}
+                  className={`filter-btn${filterType === opt.value ? ' active' : ''}`}
+                  onClick={() => setFilterType(opt.value)}>
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {filteredDrafts.length === 0 ? (
             <div className="drafts-empty">
               <div className="drafts-empty-icon">◻</div>
-              <h3>No saved drafts yet</h3>
-              <p>Every proposal, follow-up, review request, and referral you generate is automatically saved here.</p>
+              <h3>{drafts && drafts.length > 0 ? 'No drafts match your filter.' : 'No saved drafts yet'}</h3>
+              <p>{drafts && drafts.length > 0 ? 'Try a different search or filter.' : 'Every proposal, follow-up, review request, and referral you generate is automatically saved here.'}</p>
             </div>
           ) : (
-            <div className="drafts-list">
-              {drafts.map(d => (
-                <div key={d.id} className="draft-item" onClick={() => handleOpen(d)}>
-                  <span className="draft-tool-badge">{TOOL_LABELS[d.tool_name] || d.tool_name}</span>
-                  <div className="draft-info">
-                    <div className="draft-title">{d.title}</div>
-                    <div className="draft-date">{formatDate(d.created_at)}</div>
+            <div>
+              {filteredDrafts.map(d => (
+                <div key={d.id} className="draft-card" onClick={() => handleOpen(d)}>
+                  <div className={`draft-type-stripe stripe-${d.tool_name || 'proposal'}`} />
+                  <div className="draft-card-body">
+                    <div className="draft-card-title">{d.title}</div>
+                    <div className="draft-card-meta">
+                      <span className={`activity-badge badge-${d.tool_name || 'proposal'}`}>{TOOL_LABELS[d.tool_name] || d.tool_name}</span>
+                      <span>{formatDate(d.created_at)}</span>
+                    </div>
                   </div>
-                  <button
-                    className="draft-delete-btn"
-                    disabled={deleting === d.id}
-                    onClick={e => handleDelete(e, d.id)}
-                  >
-                    {deleting === d.id ? '...' : 'Delete'}
-                  </button>
+                  <div className="draft-card-actions" onClick={e => e.stopPropagation()}>
+                    <button className="draft-card-btn" onClick={() => handleOpen(d)}>View</button>
+                    <button className="draft-card-btn delete"
+                      disabled={deleting === d.id}
+                      onClick={e => handleDelete(e, d.id)}>
+                      {deleting === d.id ? '...' : 'Delete'}
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -3891,6 +5104,7 @@
     // ---------------------------------------------------------------------------
     function FoldersPage({ token, user, onUpgradeNeeded }) {
       const isPro = user.is_admin || user.plan === 'pro';
+      const toast = useToast();
 
       // Upgrade wall for non-pro
       if (!isPro) {
@@ -3931,7 +5145,6 @@
       const [viewingDraft, setViewingDraft] = useState(null);
       const [movingDraftId, setMovingDraftId] = useState(null);
       const [moveFolderVal, setMoveFolderVal] = useState('');
-      const [copied, setCopied] = useState(false);
 
       useEffect(() => {
         loadFolders();
@@ -3970,10 +5183,11 @@
       }
 
       async function handleDeleteFolder(fId) {
-        if (!window.confirm('Delete this folder? Drafts inside will become unfiled.')) return;
+        if (!window.confirm('Are you sure you want to delete this folder? Drafts inside will become unfiled.')) return;
         await API.call(`/api/folders/${fId}`, 'DELETE', null, token);
         setFolders(f => f.filter(x => x.id !== fId));
         if (selectedFolder === fId) { setSelectedFolder('all'); loadDrafts('all'); }
+        toast('Folder deleted', 'success');
       }
 
       async function handleRenameFolder(fId) {
@@ -3990,9 +5204,10 @@
 
       async function handleDeleteDraft(e, dId) {
         e.stopPropagation();
-        if (!window.confirm('Delete this draft?')) return;
+        if (!window.confirm('Are you sure you want to delete this draft? This cannot be undone.')) return;
         await API.call(`/api/drafts/${dId}`, 'DELETE', null, token);
         setDrafts(d => d.filter(x => x.id !== dId));
+        toast('Draft deleted', 'success');
       }
 
       async function handleMoveDraft(dId) {
@@ -4141,17 +5356,22 @@
                 </div>
                 <div className="modal-title" style={{ fontSize:'20px', marginBottom:14 }}>{viewingDraft.title}</div>
                 <div style={{ flex:1, overflowY:'auto', borderTop:'1px solid var(--border)', paddingTop:16 }}>
-                  <div className="result-text">{viewingDraft.result}</div>
+                  <div id={`folder-draft-${viewingDraft.id}`} className="result-content" dangerouslySetInnerHTML={{ __html: renderMarkdown(viewingDraft.result) }} />
                 </div>
-                <div style={{ paddingTop:14, borderTop:'1px solid var(--border)', marginTop:14 }}>
+                <div style={{ paddingTop:14, borderTop:'1px solid var(--border)', marginTop:14, display:'flex', gap:8 }}>
                   <button
-                    className={`btn btn-sm btn-outline-red${copied ? ' copy-btn-success' : ''} btn-full`}
+                    className="btn btn-sm btn-ghost"
+                    onClick={() => downloadPDF(`folder-draft-${viewingDraft.id}`, `RoofDraft_${viewingDraft.title || 'Draft'}.pdf`)}>
+                    Download PDF
+                  </button>
+                  <button
+                    className="btn btn-sm btn-outline-red btn-full"
                     onClick={() => {
                       navigator.clipboard.writeText(viewingDraft.result).then(() => {
-                        setCopied(true); setTimeout(() => setCopied(false), 2000);
+                        toast('Copied to clipboard!', 'success');
                       });
                     }}>
-                    {copied ? '✓ Copied!' : 'Copy to Clipboard'}
+                    Copy to Clipboard
                   </button>
                 </div>
               </div>
@@ -4167,7 +5387,7 @@
     function FeatureComparisonModal({ user, token, onClose }) {
       const plan = user.is_admin ? 'pro' : (user.plan || 'free');
       const FEATURES = [
-        ['Monthly proposals', '5/mo', 'Unlimited', 'Unlimited'],
+        ['Free access', '1 included', 'Legacy', 'N/A'],
         ['Proposal Generator', true, true, true],
         ['Follow-Up Email', false, false, true],
         ['Review Request', false, false, true],
@@ -4192,8 +5412,8 @@
               <thead>
                 <tr>
                   <th style={{ textAlign:'left', padding:'9px 0', borderBottom:'2px solid var(--border)', color:'var(--slate)', fontSize:'12px', textTransform:'uppercase', letterSpacing:'0.06em' }}>Feature</th>
-                  {['Free','Starter','Pro'].map(p => (
-                    <th key={p} style={{ textAlign:'center', padding:'9px 8px', borderBottom:'2px solid var(--border)', fontSize:'12px', textTransform:'uppercase', letterSpacing:'0.06em', color: p.toLowerCase() === plan || (user.is_admin && p === 'Pro') ? 'var(--roof-red)' : 'var(--slate)' }}>{p}</th>
+                  {[['free', 'Free'], ['starter', 'Legacy Starter'], ['pro', 'Pro']].map(([key, label]) => (
+                    <th key={key} style={{ textAlign:'center', padding:'9px 8px', borderBottom:'2px solid var(--border)', fontSize:'12px', textTransform:'uppercase', letterSpacing:'0.06em', color: key === plan || (user.is_admin && key === 'pro') ? 'var(--roof-red)' : 'var(--slate)' }}>{label}</th>
                   ))}
                 </tr>
               </thead>
@@ -4227,21 +5447,32 @@
     // ---------------------------------------------------------------------------
     function Sidebar({ user, activeTab, onSelectTab, onLogout, onShowFeatures, mobileOpen, onMobileClose }) {
       const isFree = user.plan === 'free' && !user.is_admin;
-      const genCount = user.generations_this_month || 0;
-      const pct = isFree ? Math.min(100, (genCount / FREE_LIMIT) * 100) : 0;
+      const freeUsed = user.total_generations || 0;
+      const pct = isFree ? Math.min(100, (freeUsed / FREE_LIMIT) * 100) : 0;
 
       const isPaying = user.is_admin || user.plan === 'starter' || user.plan === 'pro';
       const isPro = user.is_admin || user.plan === 'pro';
+      const NAV_ICONS = {
+        home:     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>,
+        proposal: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>,
+        followup: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>,
+        review:   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg>,
+        referral: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>,
+        drafts:   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="21,8 21,21 3,21 3,8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>,
+        folders:  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>,
+        defaults: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>,
+        admin:    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>,
+      };
       const navItems = [
-        { key: 'home',     label: 'Dashboard',          icon: '▦', always: true },
-        { key: 'proposal', label: 'Proposal Generator', icon: '◻', always: true },
-        { key: 'followup', label: 'Follow-Up Email',    icon: '✉', always: false },
-        { key: 'review',   label: 'Review Request',     icon: '★', always: false },
-        { key: 'referral', label: 'Referral Message',   icon: '↗', always: false },
-        ...(isPaying ? [{ key: 'drafts', label: 'Saved Drafts', icon: '⊟', always: true }] : []),
-        { key: 'folders',  label: 'Job Folders',        icon: '◈', always: isPro, proOnly: !isPro },
-        { key: 'defaults', label: 'My Defaults',        icon: '⚙', always: true },
-        ...(user.is_admin ? [{ key: 'admin', label: 'Admin', icon: '▤', always: true }] : []),
+        { key: 'home',     label: 'Dashboard',          always: true },
+        { key: 'proposal', label: 'Proposal Generator', always: true },
+        { key: 'followup', label: 'Follow-Up Email',    always: false },
+        { key: 'review',   label: 'Review Request',     always: false },
+        { key: 'referral', label: 'Referral Message',   always: false },
+        ...(isPaying ? [{ key: 'drafts', label: 'Saved Drafts', always: true }] : []),
+        { key: 'folders',  label: 'Job Folders',        always: isPro, proOnly: !isPro },
+        { key: 'defaults', label: 'My Defaults',        always: true },
+        ...(user.is_admin ? [{ key: 'admin', label: 'Admin', always: true }] : []),
       ];
 
       return (
@@ -4262,7 +5493,7 @@
                   onClick={() => accessible && onSelectTab(item.key)}
                   style={!accessible ? { opacity: 0.45, cursor: 'default' } : {}}
                 >
-                  <span className="nav-icon">{item.icon}</span>
+                  <span className="nav-icon">{NAV_ICONS[item.key]}</span>
                   {item.label}
                   {(!accessible || item.proOnly) && <span style={{ marginLeft: 'auto', fontSize: '10px', fontWeight: 700, color: 'var(--slate-light)', letterSpacing: '0.06em' }}>PRO</span>}
                 </button>
@@ -4271,10 +5502,15 @@
           </nav>
           <div className="sidebar-bottom">
             <div className="user-info">
-              <div className="user-name">{user.username}</div>
-              <span className={`plan-badge ${getPlanBadgeClass(user.plan, user.is_admin)}`}>
-                {user.is_admin ? 'Admin' : (user.plan || 'free').charAt(0).toUpperCase() + (user.plan || 'free').slice(1)}
-              </span>
+              <div className="user-info-row">
+                <div className="user-avatar">{(user.username || 'U').slice(0,2).toUpperCase()}</div>
+                <div className="user-info-text">
+                  <div className="user-name">{user.username}</div>
+                  <span className={`plan-badge ${getPlanBadgeClass(user.plan, user.is_admin)}`}>
+                    {user.is_admin ? 'Admin' : (user.plan || 'free').charAt(0).toUpperCase() + (user.plan || 'free').slice(1)}
+                  </span>
+                </div>
+              </div>
               {onShowFeatures && (
                 <button className="features-link" onClick={onShowFeatures}>
                   What's included on my plan?
@@ -4283,7 +5519,7 @@
             </div>
             {isFree && (
               <div className="gen-counter">
-                <div className="gen-counter-label">{genCount} of {FREE_LIMIT} free generations used</div>
+                <div className="gen-counter-label">{freeUsed} of {FREE_LIMIT} free proposals used</div>
                 <div className="progress-bar">
                   <div className="progress-fill" style={{ width: `${pct}%` }} />
                 </div>
@@ -4334,9 +5570,20 @@
           />
           <main className="main-content">
             {activeTab !== 'home' && (
-              <button className="back-to-dash" onClick={() => handleSelectTab('home')}>
-                <span className="back-to-dash-arrow">←</span> Back to Dashboard
-              </button>
+              <div className="breadcrumb">
+                <button onClick={() => handleSelectTab('home')}>Dashboard</button>
+                <span className="breadcrumb-sep">›</span>
+                <span className="breadcrumb-current">
+                  {activeTab === 'proposal' ? 'Proposal Generator' :
+                   activeTab === 'followup' ? 'Follow-Up Email' :
+                   activeTab === 'review' ? 'Review Request' :
+                   activeTab === 'referral' ? 'Referral Message' :
+                   activeTab === 'drafts' ? 'Saved Drafts' :
+                   activeTab === 'folders' ? 'Job Folders' :
+                   activeTab === 'defaults' ? 'My Defaults' :
+                   activeTab === 'admin' ? 'Admin' : activeTab}
+                </span>
+              </div>
             )}
             {activeTab === 'home'     && <DashboardHome user={user} token={token} onSelectTab={setActiveTab} />}
             {activeTab === 'proposal' && <ProposalTool {...toolProps} />}
@@ -4404,6 +5651,29 @@
               <p>Email owen.murillo2533@gmail.com to request data deletion or with any privacy questions.</p>
             </div>
           </div>
+        </div>
+      );
+    }
+
+    // ---------------------------------------------------------------------------
+    // FAQ Accordion
+    // ---------------------------------------------------------------------------
+    function FaqAccordion({ faqs }) {
+      const [open, setOpen] = useState(null);
+      return (
+        <div className="faq-accordion">
+          {faqs.map((item, i) => (
+            <div key={i} className="faq-accordion-item">
+              <button
+                className={`faq-accordion-q${open === i ? ' open' : ''}`}
+                onClick={() => setOpen(open === i ? null : i)}
+              >
+                {item.q}
+                <span className={`faq-accordion-arrow${open === i ? ' open' : ''}`}>▼</span>
+              </button>
+              {open === i && <div className="faq-accordion-a">{item.a}</div>}
+            </div>
+          ))}
         </div>
       );
     }
@@ -4589,21 +5859,57 @@
             </div>
           </section>
 
+          {/* How It Works */}
+          <section className="how-section">
+            <div className="how-inner">
+              <div className="section-eyebrow">Simple Process</div>
+              <h2 className="section-title">Three steps to a winning proposal</h2>
+              <div className="how-steps">
+                <div className="how-step">
+                  <div className="how-step-num">1</div>
+                  <div className="how-step-icon">📋</div>
+                  <div className="how-step-title">Enter Job Details</div>
+                  <div className="how-step-desc">Fill in the customer name, address, scope of work, materials, and pricing. Takes about 2 minutes.</div>
+                </div>
+                <div className="how-step">
+                  <div className="how-step-num">2</div>
+                  <div className="how-step-icon">⚡</div>
+                  <div className="how-step-title">AI Writes Your Proposal</div>
+                  <div className="how-step-desc">RoofDraft's AI generates a complete, professional proposal letter in under 60 seconds — ready to send.</div>
+                </div>
+                <div className="how-step">
+                  <div className="how-step-num">3</div>
+                  <div className="how-step-icon">🤝</div>
+                  <div className="how-step-title">Send & Win the Job</div>
+                  <div className="how-step-desc">Copy the proposal, send it to your customer, and close the job. That's it — no revisions, no templates.</div>
+                </div>
+              </div>
+            </div>
+          </section>
+
           {/* Tools section */}
           <section id="tools" className="tools-section" style={{ background:'var(--light-gray)' }}>
             <div className="tools-section-inner">
               <div className="section-eyebrow">What's Inside</div>
               <h2 className="section-title">Four tools built for roofing contractors</h2>
               <div className="landing-tools-grid">
-                {tools.map(t => (
-                  <div key={t.name} className="landing-tool-card">
-                    <div className="landing-tool-card-top">
-                      <div className="landing-tool-card-accent" />
+                {tools.map((t, i) => {
+                  const iconKeys = ['proposal', 'followup', 'review', 'referral'];
+                  const IconComp = TOOL_ICON_MAP[iconKeys[i]] || IconFileText;
+                  return (
+                    <div key={t.name} className="landing-tool-card" style={{ display:'flex', flexDirection:'column', gap:10 }}>
+                      <div className="landing-tool-card-icon">
+                        <IconComp size={34} />
+                      </div>
                       <div className="landing-tool-card-name">{t.name}</div>
+                      <div className="landing-tool-card-desc">{t.desc}</div>
+                      <button className="btn btn-outline-red btn-sm" onClick={onShowRegister}
+                        style={{ marginTop: 'auto', alignSelf: 'flex-start', fontSize: '13px' }}>
+                        Try Free →
+                      </button>
                     </div>
-                    <div className="landing-tool-card-desc">{t.desc}</div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           </section>
@@ -4685,7 +5991,7 @@
               </div>
 
               <div className="pricing-note" style={{ marginTop:28 }}>
-                All plans include a 7-day free trial. No contracts. Cancel any time.
+                No contracts. No setup fees. Cancel any time.
               </div>
 
               {/* Comparison table */}
@@ -4722,14 +6028,7 @@
             <div className="faq-inner">
               <div className="section-eyebrow">FAQ</div>
               <h2 className="section-title">Common questions</h2>
-              <div className="faq-grid">
-                {faqs.map(item => (
-                  <div key={item.q} className="faq-item">
-                    <div className="faq-q">{item.q}</div>
-                    <div className="faq-a">{item.a}</div>
-                  </div>
-                ))}
-              </div>
+              <FaqAccordion faqs={faqs} />
             </div>
           </section>
 
@@ -4804,14 +6103,33 @@
           </section>
 
           {/* Footer */}
-          <footer className="landing-footer">
-            <div className="footer-logo">Roof<span>Draft</span></div>
-            <div className="footer-tagline">Built for roofers.</div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '18px', flexWrap: 'wrap', justifyContent: 'center' }}>
-              <div className="footer-copy">© 2025 RoofDraft. Built for roofers.</div>
-              <button onClick={() => setLegalModal('terms')} style={{ background:'none', border:'none', color:'#888', fontSize:'13px', cursor:'pointer', padding:0, textDecoration:'underline' }}>Terms</button>
-              <button onClick={() => setLegalModal('privacy')} style={{ background:'none', border:'none', color:'#888', fontSize:'13px', cursor:'pointer', padding:0, textDecoration:'underline' }}>Privacy</button>
-              <a href="#contact" style={{ color:'#888', fontSize:'13px' }}>Contact</a>
+          <footer className="landing-footer-v2">
+            <div className="footer-v2-inner">
+              <div className="footer-v2-top">
+                <div className="footer-v2-brand">
+                  <div className="footer-logo">Roof<span>Draft</span></div>
+                  <p>Professional AI-powered tools built specifically for roofing contractors. Generate proposals, follow-ups, and review requests in under 60 seconds.</p>
+                  <p style={{ marginTop: 12, color: 'rgba(255,255,255,0.35)', fontStyle: 'italic', fontSize: 13 }}>Made for roofers, by people who understand the trades.</p>
+                </div>
+                <div className="footer-v2-col">
+                  <h4>Product</h4>
+                  <a href="#tools">Features</a>
+                  <a href="#pricing">Pricing</a>
+                  <a href="#faq">FAQ</a>
+                  <button onClick={onShowRegister}>Start Free Trial</button>
+                </div>
+                <div className="footer-v2-col">
+                  <h4>Company</h4>
+                  <a href="#contact">Contact Us</a>
+                  <a href="mailto:owen.murillo2533@gmail.com">Support Email</a>
+                  <button onClick={() => setLegalModal('terms')}>Terms of Service</button>
+                  <button onClick={() => setLegalModal('privacy')}>Privacy Policy</button>
+                </div>
+              </div>
+              <div className="footer-v2-bottom">
+                <div className="footer-v2-copy">© 2026 RoofDraft. All rights reserved.</div>
+                <div className="footer-v2-tagline">Made for roofers, by people who understand the trades.</div>
+              </div>
             </div>
           </footer>
 
@@ -4832,6 +6150,13 @@
       const [checkoutBanner, setCheckoutBanner] = useState(null); // 'success' | 'cancelled' | null
 
       useEffect(() => {
+        function handleOpenAuth(event) {
+          const nextMode = event && event.detail && event.detail.mode ? event.detail.mode : 'register';
+          setModal(nextMode === 'login' ? 'login' : 'register');
+        }
+
+        window.addEventListener('roofdraft:auth-open', handleOpenAuth);
+
         // Check for Stripe redirect params
         const params = new URLSearchParams(window.location.search);
         const checkout = params.get('checkout');
@@ -4844,18 +6169,34 @@
         }
 
         const stored = localStorage.getItem('rd_token');
-        if (!stored) { setLoading(false); return; }
-        API.call('/api/auth/me', 'GET', null, stored).then(({ ok, data }) => {
-          if (ok) { setUser(data); setToken(stored); }
-          else { localStorage.removeItem('rd_token'); }
+        if (!stored) {
+          if (window.RoofDraftMarketing) window.RoofDraftMarketing.showShell();
           setLoading(false);
-        }).catch(() => setLoading(false));
+          return () => window.removeEventListener('roofdraft:auth-open', handleOpenAuth);
+        }
+        API.call('/api/auth/me', 'GET', null, stored).then(({ ok, data }) => {
+          if (ok) {
+            setUser(data);
+            setToken(stored);
+            if (window.RoofDraftMarketing) window.RoofDraftMarketing.hideShell();
+          } else {
+            localStorage.removeItem('rd_token');
+            if (window.RoofDraftMarketing) window.RoofDraftMarketing.showShell();
+          }
+          setLoading(false);
+        }).catch(() => {
+          if (window.RoofDraftMarketing) window.RoofDraftMarketing.showShell();
+          setLoading(false);
+        });
+        return () => window.removeEventListener('roofdraft:auth-open', handleOpenAuth);
       }, []);
 
       function handleAuthSuccess(userData, newToken) {
         setUser(userData);
         setToken(newToken);
         setModal(null);
+        if (window.RoofDraftMarketing) window.RoofDraftMarketing.hideShell();
+        window.scrollTo(0, 0);
       }
 
       function handleLogout() {
@@ -4863,6 +6204,8 @@
         localStorage.removeItem('rd_token');
         setUser(null);
         setToken(null);
+        if (window.RoofDraftMarketing) window.RoofDraftMarketing.showShell();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       }
 
       if (loading) {
@@ -4902,9 +6245,7 @@
           )}
           {user ? (
             <Dashboard user={user} token={token} onLogout={handleLogout} onUserUpdate={setUser} />
-          ) : (
-            <LandingPage onShowLogin={() => setModal('login')} onShowRegister={() => setModal('register')} />
-          )}
+          ) : null}
 
           {modal === 'login' && (
             <LoginModal onClose={() => setModal(null)} onSuccess={handleAuthSuccess} onSwitchToRegister={() => setModal('register')} />
@@ -4919,7 +6260,9 @@
     const rootEl = document.getElementById('root');
     ReactDOM.createRoot(rootEl).render(
       <ErrorBoundary>
-        <App />
+        <ToastProvider>
+          <App />
+        </ToastProvider>
       </ErrorBoundary>
     );
   </script>

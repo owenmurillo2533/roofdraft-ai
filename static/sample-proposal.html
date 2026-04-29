@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RoofDraft Sample Proposal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #1f1a17;
+      --subtle: #6b6560;
+      --border: #dfd8cf;
+      --paper: #fffdfb;
+      --accent: #c0392b;
+      --accent-dark: #942d21;
+      --background: #f5f1ec;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Source Sans 3", sans-serif;
+      background: linear-gradient(180deg, #f8f5f1 0%, #efe8df 100%);
+      color: var(--ink);
+      padding: 40px 24px;
+    }
+
+    .page {
+      max-width: 860px;
+      margin: 0 auto;
+      background: var(--paper);
+      border: 1px solid var(--border);
+      box-shadow: 0 24px 60px rgba(31, 26, 23, 0.12);
+    }
+
+    .masthead {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 24px;
+      padding: 36px 40px 28px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .brand-mark {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .brand-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background: var(--accent);
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "Oswald", sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
+    .brand-title {
+      font-family: "Oswald", sans-serif;
+      font-size: 28px;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      line-height: 1;
+    }
+
+    .brand-title span { color: var(--accent); }
+
+    .proposal-kicker {
+      display: inline-block;
+      padding: 6px 10px;
+      border: 1px solid rgba(192, 57, 43, 0.2);
+      background: rgba(192, 57, 43, 0.07);
+      color: var(--accent-dark);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    h1 {
+      font-family: "Oswald", sans-serif;
+      font-size: 40px;
+      line-height: 0.98;
+      margin: 0 0 10px;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+
+    .intro {
+      font-size: 17px;
+      line-height: 1.55;
+      max-width: 500px;
+      color: #3f3834;
+      margin: 0;
+    }
+
+    .summary-card {
+      border: 1px solid var(--border);
+      background: #faf7f2;
+      padding: 18px 20px;
+      align-self: start;
+    }
+
+    .summary-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--subtle);
+      margin-bottom: 12px;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(223, 216, 207, 0.9);
+      font-size: 15px;
+    }
+
+    .summary-row:last-child { border-bottom: none; padding-bottom: 0; }
+
+    .summary-row strong {
+      font-family: "Oswald", sans-serif;
+      font-size: 24px;
+      color: var(--accent);
+      letter-spacing: 0.02em;
+    }
+
+    .content {
+      padding: 34px 40px 42px;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-bottom: 28px;
+    }
+
+    .detail-card {
+      border: 1px solid var(--border);
+      padding: 18px 20px;
+    }
+
+    .detail-heading,
+    .section-heading {
+      font-family: "Oswald", sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-size: 16px;
+      margin: 0 0 12px;
+    }
+
+    .label {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--subtle);
+      margin-bottom: 4px;
+    }
+
+    .value {
+      font-size: 16px;
+      margin-bottom: 14px;
+      line-height: 1.45;
+    }
+
+    .value:last-child { margin-bottom: 0; }
+
+    p {
+      font-size: 16px;
+      line-height: 1.72;
+      margin: 0 0 16px;
+      color: #342f2c;
+    }
+
+    .scope-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin: 14px 0 28px;
+    }
+
+    .scope-box {
+      border: 1px solid var(--border);
+      background: #fcfaf7;
+      padding: 18px 18px 16px;
+    }
+
+    ul {
+      margin: 0;
+      padding-left: 18px;
+      line-height: 1.7;
+    }
+
+    li { margin-bottom: 6px; }
+
+    .price-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin: 14px 0 26px;
+    }
+
+    .price-box {
+      border: 1px solid var(--border);
+      padding: 16px 18px;
+      background: #fff;
+    }
+
+    .price-box .amount {
+      font-family: "Oswald", sans-serif;
+      font-size: 32px;
+      color: var(--accent);
+      line-height: 1;
+      margin-top: 4px;
+    }
+
+    .note {
+      border-left: 4px solid var(--accent);
+      background: rgba(192, 57, 43, 0.06);
+      padding: 16px 18px;
+      margin: 26px 0 30px;
+      font-size: 15px;
+      line-height: 1.65;
+    }
+
+    .signature {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      margin-top: 34px;
+    }
+
+    .line {
+      border-top: 1px solid var(--ink);
+      padding-top: 8px;
+      font-size: 14px;
+      color: var(--subtle);
+    }
+
+    @media print {
+      body { padding: 0; background: #fff; }
+      .page { box-shadow: none; border: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="masthead">
+      <div>
+        <div class="brand-mark">
+          <div class="brand-icon">RD</div>
+          <div class="brand-title">Roof<span>Draft</span></div>
+        </div>
+        <div class="proposal-kicker">Sample Proposal Generated by RoofDraft</div>
+        <h1>Roof Replacement Proposal</h1>
+        <p class="intro">
+          Prepared for a residential homeowner who needs a clean, professional document they can review and sign without extra back-and-forth.
+        </p>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">Proposal Summary</div>
+        <div class="summary-row"><span>Prepared for</span><strong>Sarah Mitchell</strong></div>
+        <div class="summary-row"><span>Property</span><span>1428 Willow Creek Dr, Houston, TX</span></div>
+        <div class="summary-row"><span>Roof type</span><span>Architectural shingle</span></div>
+        <div class="summary-row"><span>Start window</span><span>Within 7 business days of approval</span></div>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="two-col">
+        <div class="detail-card">
+          <div class="detail-heading">Prepared By</div>
+          <div class="label">Company</div>
+          <div class="value">Summit Ridge Roofing</div>
+          <div class="label">Contractor</div>
+          <div class="value">Michael Alvarez</div>
+          <div class="label">Contact</div>
+          <div class="value">(713) 555-0149<br />mike@summitridgeroofing.com</div>
+        </div>
+        <div class="detail-card">
+          <div class="detail-heading">Project Scope</div>
+          <div class="label">Measured area</div>
+          <div class="value">3,100 sq ft</div>
+          <div class="label">Pitch</div>
+          <div class="value">7/12</div>
+          <div class="label">Estimated duration</div>
+          <div class="value">2 to 3 business days</div>
+        </div>
+      </div>
+
+      <div class="section-heading">Scope of Work</div>
+      <p>
+        RoofDraft generated this sample to show how a finished proposal can read when the job details are entered clearly. The crew will remove the existing roof system down to the decking, inspect the substrate, replace compromised decking as needed, install updated underlayment and flashing, and complete a full shingle installation with ridge ventilation and a final site cleanup.
+      </p>
+      <p>
+        The goal is not to sound flashy. It is to make the homeowner feel that the job is organized, the contractor is professional, and the process is already under control before the first shingle is delivered.
+      </p>
+
+      <div class="scope-grid">
+        <div class="scope-box">
+          <div class="detail-heading">Materials Included</div>
+          <ul>
+            <li>GAF Timberline HDZ architectural shingles</li>
+            <li>Synthetic underlayment</li>
+            <li>Ice and water shield in vulnerable areas</li>
+            <li>New drip edge, flashing, and ridge cap</li>
+            <li>Magnetic cleanup and haul-off</li>
+          </ul>
+        </div>
+        <div class="scope-box">
+          <div class="detail-heading">Project Standards</div>
+          <ul>
+            <li>Property protection around landscaping and driveways</li>
+            <li>Daily debris management during install</li>
+            <li>Manufacturer-aligned installation practices</li>
+            <li>Final walkthrough with the homeowner</li>
+            <li>Warranty terms documented in writing</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="section-heading">Investment</div>
+      <div class="price-grid">
+        <div class="price-box">
+          <div class="label">Total project</div>
+          <div class="amount">$18,950</div>
+        </div>
+        <div class="price-box">
+          <div class="label">Deposit</div>
+          <div class="amount">$6,500</div>
+        </div>
+        <div class="price-box">
+          <div class="label">Balance due</div>
+          <div class="amount">$12,450</div>
+        </div>
+      </div>
+
+      <p>
+        Payment terms: 34 percent deposit to secure scheduling and materials, with the remaining balance due upon substantial completion and homeowner walkthrough.
+      </p>
+      <p>
+        Labor warranty: 5 years. Manufacturer materials warranty: 30 years, subject to manufacturer terms and registration requirements.
+      </p>
+
+      <div class="note">
+        This proposal is valid for 30 days from the issue date. RoofDraft is built to help contractors produce documents at this level of polish quickly, consistently, and without sounding like a generic AI template.
+      </div>
+
+      <p>
+        Thank you for the opportunity to quote your roofing project. If you have questions about product options, schedule, or warranty coverage, we can walk through them before final approval so there are no surprises once work begins.
+      </p>
+
+      <div class="signature">
+        <div class="line">Customer Signature</div>
+        <div class="line">Date</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
