@@ -1,5 +1,6 @@
 flask
 flask-cors
+flask-limiter
 anthropic
 python-dotenv
 psycopg2-binary

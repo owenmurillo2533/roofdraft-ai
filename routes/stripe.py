@@ -1,128 +1,152 @@
 """
-RoofDraft — Stripe Routes
-Handles checkout session creation and webhook processing.
+RoofDraftAI Stripe routes.
 """
-import os
+
 import json
-from flask import Blueprint, request, jsonify
-from database.db import require_auth, USE_POSTGRES, pg_run, get_db
+import os
+import traceback
 
-stripe_bp = Blueprint('stripe', __name__)
+from flask import Blueprint, jsonify, request
 
-DOMAIN = os.environ.get('YOUR_DOMAIN', 'https://roofdraftai.com')
-ENABLE_LEGACY_STARTER_CHECKOUT = os.environ.get('ENABLE_LEGACY_STARTER_CHECKOUT', 'false').lower() == 'true'
+from database.db import (
+    get_user_by_stripe_customer_id,
+    record_subscription_event,
+    require_auth,
+    update_user_subscription,
+)
+from extensions import limiter
 
-
-def _get_stripe():
-    try:
-        import stripe as _stripe
-    except ImportError:
-        print('[Stripe] stripe package not installed')
-        return None
-    key = os.environ.get('STRIPE_SECRET_KEY', '')
-    if not key:
-        return None
-    _stripe.api_key = key
-    return _stripe
+stripe_bp = Blueprint("stripe", __name__)
 
 
-def _plan_prices():
-    prices = {
-        'pro': os.environ.get('STRIPE_PRO_PRICE_ID', ''),
-    }
-    if ENABLE_LEGACY_STARTER_CHECKOUT:
-        prices['starter'] = os.environ.get('STRIPE_STARTER_PRICE_ID', '')
-    return prices
+def get_stripe_client():
+    import stripe
+
+    secret_key = os.environ.get("STRIPE_SECRET_KEY", "")
+    if not secret_key:
+        raise RuntimeError("Stripe is not configured")
+    stripe.api_key = secret_key
+    return stripe
 
 
-@stripe_bp.route('/api/stripe/create-checkout-session', methods=['POST'])
+@stripe_bp.route("/api/stripe/create-checkout-session", methods=["POST"])
+@limiter.limit("20 per hour")
 def create_checkout_session():
-    user = require_auth()
-    if not user:
-        return jsonify({'error': 'Unauthorized'}), 401
-
-    s = _get_stripe()
-    if not s:
-        return jsonify({'error': 'Payments not configured'}), 503
-
-    data = request.get_json() or {}
-    plan = (data.get('plan') or '').strip().lower()
-
-    prices = _plan_prices()
-    if plan not in prices:
-        if ENABLE_LEGACY_STARTER_CHECKOUT:
-            return jsonify({'error': 'Invalid plan. Must be starter or pro.'}), 400
-        return jsonify({'error': 'Invalid plan. Only Pro checkout is available.'}), 400
-
-    price_id = prices[plan]
-    if not price_id:
-        return jsonify({'error': f'{plan.capitalize()} plan price not configured on server'}), 503
-
-    domain = os.environ.get('YOUR_DOMAIN', 'https://roofdraftai.com')
-
     try:
-        session = s.checkout.Session.create(
-            payment_method_types=['card'],
-            line_items=[{'price': price_id, 'quantity': 1}],
-            mode='subscription',
-            success_url=f'{domain}/?checkout=success&plan={plan}',
-            cancel_url=f'{domain}/?checkout=cancelled',
-            customer_email=user['email'],
-            client_reference_id=str(user['id']),
-            metadata={'user_id': str(user['id']), 'plan': plan},
+        user = require_auth()
+        if not user:
+            return jsonify({"error": "Unauthorized"}), 401
+
+        stripe = get_stripe_client()
+        data = request.get_json() or {}
+        plan = (data.get("plan") or "pro").strip().lower() or "pro"
+        price_id_map = {
+            "starter": os.environ.get("STRIPE_STARTER_PRICE_ID", ""),
+            "pro": os.environ.get("STRIPE_PRO_PRICE_ID", ""),
+        }
+        price_id = price_id_map.get(plan) or price_id_map.get("pro")
+        if not price_id:
+            return jsonify({"error": "Could not create checkout session. Please try again."}), 500
+
+        domain = os.environ.get("YOUR_DOMAIN", "https://roofdraftai.com").rstrip("/")
+        session = stripe.checkout.Session.create(
+            mode="subscription",
+            line_items=[{"price": price_id, "quantity": 1}],
+            customer_email=user["email"],
+            allow_promotion_codes=True,
+            metadata={"user_id": str(user["id"]), "plan": plan},
+            subscription_data={"trial_period_days": 7},
+            success_url=f"{domain}/dashboard?upgrade=success&plan={plan}",
+            cancel_url=f"{domain}/?upgrade=cancelled",
         )
-        return jsonify({'url': session.url})
-    except Exception as e:
-        print(f'[Stripe] create-checkout-session error: {e}')
-        import traceback; traceback.print_exc()
-        return jsonify({'error': 'Failed to create checkout session — please try again'}), 500
+        return jsonify({"checkout_url": session.url})
+    except Exception:
+        traceback.print_exc()
+        return jsonify({"error": "Could not create checkout session. Please try again."}), 500
 
 
-@stripe_bp.route('/api/stripe/webhook', methods=['POST'])
-def webhook():
-    s = _get_stripe()
-    if not s:
-        return jsonify({'error': 'Stripe not configured'}), 503
-
-    payload        = request.get_data()
-    sig_header     = request.headers.get('Stripe-Signature', '')
-    webhook_secret = os.environ.get('STRIPE_WEBHOOK_SECRET', '')
-
-    if not webhook_secret:
-        print('[Stripe] STRIPE_WEBHOOK_SECRET not set — rejecting webhook')
-        return jsonify({'error': 'Webhook not configured'}), 503
-
+@stripe_bp.route("/api/stripe/webhook", methods=["POST"])
+def stripe_webhook():
     try:
-        event = s.Webhook.construct_event(payload, sig_header, webhook_secret)
-    except Exception as e:
-        print(f'[Stripe] Webhook signature error: {e}')
-        return jsonify({'error': 'Invalid signature'}), 400
+        stripe = get_stripe_client()
+        payload = request.get_data()
+        signature = request.headers.get("Stripe-Signature", "")
+        webhook_secret = os.environ.get("STRIPE_WEBHOOK_SECRET", "")
 
-    event_type = event.get('type', '')
-    print(f'[Stripe] Webhook received: {event_type}')
-
-    if event_type == 'checkout.session.completed':
-        session  = event['data']['object']
-        user_id  = session.get('client_reference_id')
-        metadata = session.get('metadata') or {}
-        plan     = metadata.get('plan', 'pro')
-        if plan not in ('starter', 'pro'):
-            plan = 'pro'
-
-        if user_id:
+        if webhook_secret:
             try:
-                if USE_POSTGRES:
-                    pg_run('UPDATE users SET plan=$1 WHERE id=$2', [plan, int(user_id)])
-                else:
-                    conn = get_db()
-                    conn.execute('UPDATE users SET plan=? WHERE id=?', (plan, int(user_id)))
-                    conn.commit()
-                    conn.close()
-                print(f'[Stripe] Upgraded user {user_id} to plan: {plan}')
-            except Exception as e:
-                print(f'[Stripe] Failed to update plan for user {user_id}: {e}')
-                import traceback; traceback.print_exc()
+                event = stripe.Webhook.construct_event(payload, signature, webhook_secret)
+            except Exception:
+                return jsonify({"error": "Invalid signature"}), 400
         else:
-            print('[Stripe] checkout.session.completed missing client_reference_id')
+            event = json.loads(payload.decode("utf-8"))
 
-    return jsonify({'received': True})
+        event_type = event.get("type", "")
+        event_id = event.get("id")
+        data_object = (event.get("data") or {}).get("object") or {}
+
+        if event_type == "checkout.session.completed":
+            metadata = data_object.get("metadata") or {}
+            user_id = metadata.get("user_id")
+            plan = (metadata.get("plan") or "pro").strip().lower() or "pro"
+            customer_id = data_object.get("customer")
+            subscription_id = data_object.get("subscription")
+            if user_id:
+                update_user_subscription(
+                    int(user_id),
+                    plan=plan,
+                    stripe_customer_id=customer_id,
+                    subscription_id=subscription_id,
+                    subscription_status="active",
+                )
+                record_subscription_event(int(user_id), event_type, plan, event_id)
+
+        elif event_type == "customer.subscription.deleted":
+            customer_id = data_object.get("customer")
+            user = get_user_by_stripe_customer_id(customer_id)
+            if user:
+                update_user_subscription(
+                    user["id"],
+                    plan="free",
+                    subscription_id=data_object.get("id"),
+                    subscription_status="cancelled",
+                )
+                record_subscription_event(user["id"], event_type, "free", event_id)
+
+        elif event_type == "customer.subscription.updated":
+            customer_id = data_object.get("customer")
+            user = get_user_by_stripe_customer_id(customer_id)
+            if user:
+                status = data_object.get("status")
+                update_user_subscription(
+                    user["id"],
+                    subscription_id=data_object.get("id"),
+                    subscription_status=status,
+                )
+                record_subscription_event(user["id"], event_type, user.get("plan"), event_id)
+
+        return jsonify({"received": True})
+    except Exception:
+        traceback.print_exc()
+        return jsonify({"received": True})
+
+
+@stripe_bp.route("/api/stripe/create-portal-session", methods=["POST"])
+def create_portal_session():
+    try:
+        user = require_auth()
+        if not user:
+            return jsonify({"error": "Unauthorized"}), 401
+        if not user.get("stripe_customer_id"):
+            return jsonify({"error": "No active subscription found"}), 400
+
+        stripe = get_stripe_client()
+        domain = os.environ.get("YOUR_DOMAIN", "https://roofdraftai.com").rstrip("/")
+        session = stripe.billing_portal.Session.create(
+            customer=user["stripe_customer_id"],
+            return_url=f"{domain}/dashboard",
+        )
+        return jsonify({"portal_url": session.url})
+    except Exception:
+        traceback.print_exc()
+        return jsonify({"error": "Could not open billing portal. Please contact support."}), 500

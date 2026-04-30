@@ -15,6 +15,18 @@
     });
   }
 
+  function bindUpgradeButtons() {
+    document.querySelectorAll("[data-upgrade-plan]").forEach(function (button) {
+      if (button.dataset.boundUpgrade === "1") return;
+      button.dataset.boundUpgrade = "1";
+      button.addEventListener("click", function (event) {
+        event.preventDefault();
+        var plan = button.getAttribute("data-upgrade-plan") || "pro";
+        window.dispatchEvent(new CustomEvent("roofdraft:upgrade-request", { detail: { plan: plan } }));
+      });
+    });
+  }
+
   function bindFaqItems() {
     document.querySelectorAll(".static-faq-question").forEach(function (button) {
       if (button.dataset.boundFaq === "1") return;
@@ -28,6 +40,62 @@
         });
         item.classList.toggle("open", !isOpen);
         button.setAttribute("aria-expanded", String(!isOpen));
+      });
+    });
+  }
+
+  function bindContactForm() {
+    var form = document.querySelector("[data-contact-form]");
+    if (!form || form.dataset.boundContact === "1") return;
+    form.dataset.boundContact = "1";
+
+    var successBox = document.querySelector("[data-contact-success]");
+    var errorBox = document.querySelector("[data-contact-error]");
+    var submitButton = document.querySelector("[data-contact-submit]");
+    var submitText = document.querySelector("[data-contact-submit-text]");
+
+    function setState(isLoading) {
+      if (submitButton) submitButton.disabled = !!isLoading;
+      if (submitText) submitText.textContent = isLoading ? "Sending..." : "Send Message";
+      if (submitButton) submitButton.setAttribute("aria-busy", isLoading ? "true" : "false");
+    }
+
+    form.addEventListener("submit", function (event) {
+      event.preventDefault();
+      if (!form.reportValidity()) return;
+
+      var payload = {
+        name: (form.elements.name && form.elements.name.value || "").trim(),
+        email: (form.elements.email && form.elements.email.value || "").trim(),
+        message: (form.elements.message && form.elements.message.value || "").trim()
+      };
+
+      if (successBox) successBox.hidden = true;
+      if (errorBox) errorBox.hidden = true;
+      setState(true);
+
+      fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      }).then(function (response) {
+        return response.json().catch(function () { return {}; }).then(function (data) {
+          return { ok: response.ok, data: data };
+        });
+      }).then(function (result) {
+        if (result.ok) {
+          form.reset();
+          if (successBox) successBox.hidden = false;
+          if (errorBox) errorBox.hidden = true;
+        } else {
+          if (successBox) successBox.hidden = true;
+          if (errorBox) errorBox.hidden = false;
+        }
+      }).catch(function () {
+        if (successBox) successBox.hidden = true;
+        if (errorBox) errorBox.hidden = false;
+      }).finally(function () {
+        setState(false);
       });
     });
   }
@@ -62,87 +130,12 @@
     });
   }
 
-  function bindScrollButtons() {
-    document.querySelectorAll("[data-pro-access-target]").forEach(function (button) {
-      if (button.dataset.boundScroll === "1") return;
-      button.dataset.boundScroll = "1";
-      button.addEventListener("click", function () {
-        var targetId = button.getAttribute("data-pro-access-target");
-        var target = targetId ? document.getElementById(targetId) : null;
-        if (target) {
-          target.scrollIntoView({ behavior: "smooth", block: "start" });
-          var nameInput = target.querySelector("input[name='name']");
-          if (nameInput) {
-            window.setTimeout(function () { nameInput.focus(); }, 350);
-          }
-        }
-      });
-    });
-  }
-
-  function buildProAccessMessage(form) {
-    var company = form.elements.company ? form.elements.company.value.trim() : "";
-    var phone = form.elements.phone ? form.elements.phone.value.trim() : "";
-    var message = form.elements.message ? form.elements.message.value.trim() : "";
-    var lines = ["[PRO ACCESS REQUEST]"];
-    if (company) lines.push("Company: " + company);
-    if (phone) lines.push("Phone: " + phone);
-    lines.push("Requested from public pricing section before Stripe launch.");
-    if (message) lines.push("", message);
-    return lines.join("\n");
-  }
-
-  function bindProAccessForm() {
-    var form = document.getElementById("pro-access-form");
-    if (!form || form.dataset.boundForm === "1") return;
-    form.dataset.boundForm = "1";
-
-    var success = document.getElementById("pro-access-success");
-    var error = document.getElementById("pro-access-error");
-    var submit = document.getElementById("pro-access-submit");
-
-    form.addEventListener("submit", async function (event) {
-      event.preventDefault();
-      if (success) success.hidden = true;
-      if (error) error.hidden = true;
-      if (submit) {
-        submit.disabled = true;
-        submit.textContent = "Sending...";
-      }
-
-      var payload = {
-        name: form.elements.name ? form.elements.name.value.trim() : "",
-        email: form.elements.email ? form.elements.email.value.trim() : "",
-        message: buildProAccessMessage(form)
-      };
-
-      try {
-        var response = await fetch("/api/contact", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
-        });
-
-        if (!response.ok) throw new Error("Pro access request failed");
-        form.reset();
-        if (success) success.hidden = false;
-      } catch (err) {
-        if (error) error.hidden = false;
-      } finally {
-        if (submit) {
-          submit.disabled = false;
-          submit.textContent = "Request Pro Access";
-        }
-      }
-    });
-  }
-
   function initMarketing() {
     bindAuthButtons();
+    bindUpgradeButtons();
     bindFaqItems();
     bindMobileMenu();
-    bindScrollButtons();
-    bindProAccessForm();
+    bindContactForm();
   }
 
   window.RoofDraftMarketing = {

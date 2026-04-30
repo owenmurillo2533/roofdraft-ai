@@ -1,57 +1,76 @@
-﻿"""
-RoofDraftAI - User Defaults Routes
-Saved company profile and proposal defaults for paying customers.
 """
-from flask import Blueprint, request, jsonify
-from database.db import require_auth, get_defaults, save_defaults
+RoofDraftAI user defaults routes.
+Starter and Pro plans only.
+"""
 
-defaults_bp = Blueprint('defaults', __name__)
+import traceback
 
-PAYING_PLANS = {'starter', 'pro'}
+from flask import Blueprint, jsonify, request
+
+from database.db import get_defaults, require_auth, save_defaults
+
+defaults_bp = Blueprint("defaults", __name__)
+
+PAYING_PLANS = {"starter", "pro"}
+ALLOWED_FIELDS = {
+    "company_name",
+    "contractor_name",
+    "contractor_phone",
+    "contractor_email",
+    "company_website",
+    "service_area",
+    "company_address",
+    "license_number",
+    "warranty_labor",
+    "warranty_materials",
+    "default_warranty_notes",
+    "payment_terms",
+    "default_financing_note",
+    "default_cleanup_language",
+    "default_proposal_tone",
+    "default_weather_delay_note",
+    "completion_days",
+    "review_link",
+    "common_materials",
+}
 
 
 def is_paying(user):
-    return bool(user.get('is_admin')) or user.get('plan', 'free') in PAYING_PLANS
+    return bool(user.get("is_admin")) or user.get("plan", "free") in PAYING_PLANS
 
 
-@defaults_bp.route('/api/defaults', methods=['GET'])
+@defaults_bp.route("/api/defaults", methods=["GET"])
 def get_user_defaults():
-    user = require_auth()
-    if not user:
-        return jsonify({"error": "Unauthorized"}), 401
-    data = get_defaults(user['id'])
-    return jsonify({"defaults": data})
+    try:
+        user = require_auth()
+        if not user:
+            return jsonify({"error": "Unauthorized"}), 401
+        return jsonify({"defaults": get_defaults(user["id"]) or {}})
+    except Exception:
+        traceback.print_exc()
+        return jsonify({"error": "Something went wrong. Please try again."}), 500
 
 
-@defaults_bp.route('/api/defaults', methods=['POST'])
+@defaults_bp.route("/api/defaults", methods=["POST"])
 def save_user_defaults():
-    user = require_auth()
-    if not user:
-        return jsonify({"error": "Unauthorized"}), 401
-    if not is_paying(user):
-        return jsonify({"error": "Saved defaults require a Starter or Pro plan"}), 403
+    try:
+        user = require_auth()
+        if not user:
+            return jsonify({"error": "Unauthorized"}), 401
+        if not is_paying(user):
+            return jsonify({"error": "Saved defaults require a Starter or Pro plan"}), 403
 
-    new_data = request.get_json() or {}
+        payload = request.get_json() or {}
+        filtered = {key: value for key, value in payload.items() if key in ALLOWED_FIELDS}
+        if "common_materials" in filtered:
+            materials = filtered["common_materials"]
+            if not isinstance(materials, list):
+                filtered["common_materials"] = []
+            else:
+                filtered["common_materials"] = [str(item).strip()[:500] for item in materials[:5] if str(item).strip()]
 
-    # Only allow known fields â€” no arbitrary data storage
-    allowed = {
-        'company_name', 'contractor_name', 'contractor_phone',
-        'contractor_email', 'license_number', 'warranty_labor',
-        'warranty_materials', 'payment_terms', 'completion_days',
-        'common_materials', 'company_website', 'company_address',
-        'service_area', 'default_financing_note', 'default_cleanup_language',
-        'default_proposal_tone', 'default_weather_delay_note',
-        'default_warranty_notes', 'review_link',
-    }
-    filtered = {k: v for k, v in new_data.items() if k in allowed}
-
-    # Validate common_materials is a list of strings, max 5
-    if 'common_materials' in filtered:
-        mats = filtered['common_materials']
-        if not isinstance(mats, list):
-            filtered['common_materials'] = []
-        else:
-            filtered['common_materials'] = [str(m)[:500] for m in mats[:5]]
-
-    saved = save_defaults(user['id'], filtered)
-    return jsonify({"defaults": saved})
+        saved = save_defaults(user["id"], filtered)
+        return jsonify({"defaults": saved})
+    except Exception:
+        traceback.print_exc()
+        return jsonify({"error": "Something went wrong. Please try again."}), 500

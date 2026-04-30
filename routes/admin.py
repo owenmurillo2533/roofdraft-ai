@@ -1,423 +1,376 @@
 """
-RoofDraft — Admin Routes
-Only accessible by users with is_admin = TRUE.
+RoofDraftAI admin routes.
 """
+
+import traceback
+
 from flask import Blueprint, jsonify, request
-from database.db import require_auth, USE_POSTGRES, pg_run, get_db, row_to_dict, get_contact_messages
 
-admin_bp = Blueprint('admin', __name__)
+from database.db import USE_POSTGRES, get_contact_messages, get_db, pg_run, require_auth, row_to_dict
 
-PLAN_PRICE = {'starter': 49, 'pro': 79}
+admin_bp = Blueprint("admin", __name__)
+
+PLAN_PRICE = {"starter": 49, "pro": 79}
+ALLOWED_PLANS = {"free", "starter", "pro"}
 
 
 def require_admin():
     user = require_auth()
     if not user:
         return None, (jsonify({"error": "Unauthorized"}), 401)
-    if not bool(user.get('is_admin')):
+    if not bool(user.get("is_admin")):
         return None, (jsonify({"error": "Forbidden"}), 403)
     return user, None
 
 
-@admin_bp.route('/api/admin/stats', methods=['GET'])
-def admin_stats():
-    _, err = require_admin()
-    if err:
-        return err
-
+def fetch_admin_stats_payload():
     if USE_POSTGRES:
-        # Users by plan
-        plan_rows = pg_run(
-            "SELECT plan, COUNT(*) AS cnt FROM users GROUP BY plan"
+        overview = {
+            "total_users": pg_run("SELECT COUNT(*) AS cnt FROM users")[0]["cnt"],
+            "active_users_this_month": pg_run(
+                "SELECT COUNT(*) AS cnt FROM users WHERE created_at >= date_trunc('month', NOW())"
+            )[0]["cnt"],
+            "total_generations": pg_run("SELECT COUNT(*) AS cnt FROM generation_logs")[0]["cnt"],
+            "generations_today": pg_run("SELECT COUNT(*) AS cnt FROM generation_logs WHERE created_at >= CURRENT_DATE")[0]["cnt"],
+        }
+        plan_counts_rows = pg_run("SELECT plan, COUNT(*) AS cnt FROM users GROUP BY plan")
+        plan_counts = {row["plan"]: row["cnt"] for row in plan_counts_rows}
+        overview["estimated_mrr"] = (plan_counts.get("starter", 0) * 49) + (plan_counts.get("pro", 0) * 79)
+
+        users = pg_run(
+            """
+            SELECT u.id, u.username, u.email, u.plan, u.is_active, u.is_admin, u.created_at,
+                   u.generations_this_month, COUNT(gl.id) AS total_generations
+            FROM users u
+            LEFT JOIN generation_logs gl ON gl.user_id = u.id
+            GROUP BY u.id
+            ORDER BY u.created_at DESC
+            """
         )
-        plan_counts = {r['plan']: r['cnt'] for r in plan_rows}
+        for user in users:
+            if user.get("created_at") and not isinstance(user["created_at"], str):
+                user["created_at"] = user["created_at"].isoformat()
 
-        # Total users
-        total_rows = pg_run("SELECT COUNT(*) AS cnt FROM users")
-        total_users = total_rows[0]['cnt'] if total_rows else 0
-
-        # New users this month
-        new_rows = pg_run(
-            "SELECT COUNT(*) AS cnt FROM users "
-            "WHERE DATE_TRUNC('month', created_at) = DATE_TRUNC('month', NOW())"
+        tool_usage_rows = pg_run(
+            "SELECT tool_name, COUNT(*) AS count FROM generation_logs GROUP BY tool_name ORDER BY count DESC"
         )
-        new_this_month = new_rows[0]['cnt'] if new_rows else 0
+        tool_usage = {row["tool_name"]: row["count"] for row in tool_usage_rows}
 
-        # Total all-time generations
-        gen_rows = pg_run("SELECT COUNT(*) AS cnt FROM generation_logs")
-        total_gens = gen_rows[0]['cnt'] if gen_rows else 0
-
-        # Generations this month
-        gen_month_rows = pg_run(
-            "SELECT COUNT(*) AS cnt FROM generation_logs "
-            "WHERE DATE_TRUNC('month', created_at) = DATE_TRUNC('month', NOW())"
+        recent_activity = pg_run(
+            """
+            SELECT gl.id, gl.tool_name, gl.created_at, u.username
+            FROM generation_logs gl
+            JOIN users u ON u.id = gl.user_id
+            ORDER BY gl.created_at DESC
+            LIMIT 20
+            """
         )
-        gens_this_month = gen_month_rows[0]['cnt'] if gen_month_rows else 0
+        for item in recent_activity:
+            if item.get("created_at") and not isinstance(item["created_at"], str):
+                item["created_at"] = item["created_at"].isoformat()
 
-        # Generations by tool (all time)
-        tool_rows = pg_run(
-            "SELECT tool_name, COUNT(*) AS cnt FROM generation_logs GROUP BY tool_name ORDER BY cnt DESC"
+        promo_codes = pg_run(
+            """
+            SELECT id, code, code_type, uses, is_active, affiliate_email, commission_percent, created_at
+            FROM promo_codes
+            ORDER BY created_at DESC
+            """
         )
-        gens_by_tool = {r['tool_name']: r['cnt'] for r in tool_rows}
-
+        for promo in promo_codes:
+            if promo.get("created_at") and not isinstance(promo["created_at"], str):
+                promo["created_at"] = promo["created_at"].isoformat()
     else:
         conn = get_db()
-        plan_rows = conn.execute("SELECT plan, COUNT(*) AS cnt FROM users GROUP BY plan").fetchall()
-        plan_counts = {row_to_dict(r)['plan']: row_to_dict(r)['cnt'] for r in plan_rows}
+        overview = {
+            "total_users": row_to_dict(conn.execute("SELECT COUNT(*) AS cnt FROM users").fetchone())["cnt"],
+            "active_users_this_month": row_to_dict(
+                conn.execute("SELECT COUNT(*) AS cnt FROM users WHERE strftime('%Y-%m', created_at)=strftime('%Y-%m','now')").fetchone()
+            )["cnt"],
+            "total_generations": row_to_dict(conn.execute("SELECT COUNT(*) AS cnt FROM generation_logs").fetchone())["cnt"],
+            "generations_today": row_to_dict(
+                conn.execute("SELECT COUNT(*) AS cnt FROM generation_logs WHERE date(created_at)=date('now')").fetchone()
+            )["cnt"],
+        }
+        plan_counts_rows = conn.execute("SELECT plan, COUNT(*) AS cnt FROM users GROUP BY plan").fetchall()
+        plan_counts = {row_to_dict(row)["plan"]: row_to_dict(row)["cnt"] for row in plan_counts_rows}
+        overview["estimated_mrr"] = (plan_counts.get("starter", 0) * 49) + (plan_counts.get("pro", 0) * 79)
 
-        total_users = conn.execute("SELECT COUNT(*) AS cnt FROM users").fetchone()
-        total_users = row_to_dict(total_users)['cnt'] if total_users else 0
-
-        new_this_month = conn.execute(
-            "SELECT COUNT(*) AS cnt FROM users WHERE strftime('%Y-%m', created_at) = strftime('%Y-%m', 'now')"
-        ).fetchone()
-        new_this_month = row_to_dict(new_this_month)['cnt'] if new_this_month else 0
-
-        total_gens = conn.execute("SELECT COUNT(*) AS cnt FROM generation_logs").fetchone()
-        total_gens = row_to_dict(total_gens)['cnt'] if total_gens else 0
-
-        gens_this_month = conn.execute(
-            "SELECT COUNT(*) AS cnt FROM generation_logs WHERE strftime('%Y-%m', created_at) = strftime('%Y-%m', 'now')"
-        ).fetchone()
-        gens_this_month = row_to_dict(gens_this_month)['cnt'] if gens_this_month else 0
-
-        tool_rows = conn.execute(
-            "SELECT tool_name, COUNT(*) AS cnt FROM generation_logs GROUP BY tool_name ORDER BY cnt DESC"
-        ).fetchall()
-        gens_by_tool = {row_to_dict(r)['tool_name']: row_to_dict(r)['cnt'] for r in tool_rows}
-
-        conn.close()
-
-    # Estimated MRR
-    mrr = sum(
-        PLAN_PRICE.get(plan, 0) * count
-        for plan, count in plan_counts.items()
-    )
-
-    return jsonify({
-        "total_users": total_users,
-        "new_this_month": new_this_month,
-        "plan_counts": plan_counts,
-        "total_generations": total_gens,
-        "generations_this_month": gens_this_month,
-        "generations_by_tool": gens_by_tool,
-        "estimated_mrr": mrr,
-    })
-
-
-@admin_bp.route('/api/admin/users', methods=['GET'])
-def admin_users():
-    _, err = require_admin()
-    if err:
-        return err
-
-    if USE_POSTGRES:
-        rows = pg_run(
-            """SELECT u.id, u.email, u.username, u.plan, u.is_admin,
-                      u.generations_this_month, u.is_active, u.created_at,
-                      COUNT(gl.id) AS total_generations
-               FROM users u
-               LEFT JOIN generation_logs gl ON gl.user_id = u.id
-               GROUP BY u.id
-               ORDER BY u.created_at DESC"""
-        )
-        users = []
-        for r in rows:
-            r = dict(r)
-            if r.get('created_at') and not isinstance(r['created_at'], str):
-                r['created_at'] = r['created_at'].isoformat()
-            users.append(r)
-    else:
-        conn = get_db()
-        rows = conn.execute(
-            """SELECT u.id, u.email, u.username, u.plan, u.is_admin,
-                      u.generations_this_month, u.is_active, u.created_at,
-                      COUNT(gl.id) AS total_generations
-               FROM users u
-               LEFT JOIN generation_logs gl ON gl.user_id = u.id
-               GROUP BY u.id
-               ORDER BY u.created_at DESC"""
-        ).fetchall()
-        users = [row_to_dict(r) for r in rows]
-        conn.close()
-
-    return jsonify({"users": users})
-
-
-@admin_bp.route('/api/admin/contacts', methods=['GET'])
-def admin_contacts():
-    _, err = require_admin()
-    if err:
-        return err
-    messages = get_contact_messages()
-    return jsonify({"messages": messages})
-
-
-# ---------------------------------------------------------------------------
-# Promo Code Management
-# ---------------------------------------------------------------------------
-
-@admin_bp.route('/api/admin/promo-codes', methods=['GET'])
-def list_promo_codes():
-    _, err = require_admin()
-    if err:
-        return err
-
-    try:
-        if USE_POSTGRES:
-            rows = pg_run(
-                "SELECT id, code, code_type, is_active, uses, created_at, "
-                "affiliate_email, commission_percent, notes "
-                "FROM promo_codes ORDER BY created_at DESC"
-            )
-            codes = []
-            for r in rows:
-                r = dict(r)
-                if r.get('created_at') and not isinstance(r['created_at'], str):
-                    r['created_at'] = r['created_at'].isoformat()
-                codes.append(r)
-        else:
-            conn = get_db()
-            rows = conn.execute(
-                "SELECT id, code, code_type, is_active, uses, created_at, "
-                "affiliate_email, commission_percent, notes "
-                "FROM promo_codes ORDER BY created_at DESC"
+        users = [
+            row_to_dict(row)
+            for row in conn.execute(
+                """
+                SELECT u.id, u.username, u.email, u.plan, u.is_active, u.is_admin, u.created_at,
+                       u.generations_this_month, COUNT(gl.id) AS total_generations
+                FROM users u
+                LEFT JOIN generation_logs gl ON gl.user_id = u.id
+                GROUP BY u.id
+                ORDER BY u.created_at DESC
+                """
             ).fetchall()
-            codes = [row_to_dict(r) for r in rows]
-            conn.close()
-        return jsonify({"codes": codes})
-    except Exception as e:
-        print(f"[Admin] list promo codes error: {e}")
-        return jsonify({"error": "Failed to load promo codes"}), 500
+        ]
+        tool_usage_rows = conn.execute(
+            "SELECT tool_name, COUNT(*) AS count FROM generation_logs GROUP BY tool_name ORDER BY count DESC"
+        ).fetchall()
+        tool_usage = {row_to_dict(row)["tool_name"]: row_to_dict(row)["count"] for row in tool_usage_rows}
+        recent_activity = [
+            row_to_dict(row)
+            for row in conn.execute(
+                """
+                SELECT gl.id, gl.tool_name, gl.created_at, u.username
+                FROM generation_logs gl
+                JOIN users u ON u.id = gl.user_id
+                ORDER BY gl.created_at DESC
+                LIMIT 20
+                """
+            ).fetchall()
+        ]
+        promo_codes = [
+            row_to_dict(row)
+            for row in conn.execute(
+                """
+                SELECT id, code, code_type, uses, is_active, affiliate_email, commission_percent, created_at
+                FROM promo_codes
+                ORDER BY created_at DESC
+                """
+            ).fetchall()
+        ]
+        conn.close()
+
+    return {
+        "overview": overview,
+        "plan_counts": plan_counts,
+        "users": users,
+        "tool_usage": tool_usage,
+        "recent_activity": recent_activity,
+        "promo_codes": promo_codes,
+        "contact_messages": get_contact_messages(),
+    }
 
 
-@admin_bp.route('/api/admin/promo-codes/create', methods=['POST'])
-def create_promo_code():
-    _, err = require_admin()
-    if err:
-        return err
-
-    data = request.get_json() or {}
-    code = (data.get('code') or '').strip().upper()
-    code_type = (data.get('code_type') or '').strip()
-    affiliate_email = (data.get('affiliate_email') or '').strip().lower() or None
-    commission_percent = data.get('commission_percent')
-    notes = (data.get('notes') or '').strip() or None
-
-    if not code:
-        return jsonify({"error": "Code name is required"}), 400
-    if code_type not in ('free_pro', 'affiliate'):
-        return jsonify({"error": "code_type must be 'free_pro' or 'affiliate'"}), 400
-    if code_type == 'affiliate':
-        if not affiliate_email:
-            return jsonify({"error": "Affiliate email is required for affiliate codes"}), 400
-        if commission_percent is None:
-            return jsonify({"error": "Commission percent is required for affiliate codes"}), 400
-        try:
-            commission_percent = int(commission_percent)
-            if not (1 <= commission_percent <= 100):
-                raise ValueError()
-        except (ValueError, TypeError):
-            return jsonify({"error": "Commission percent must be a whole number between 1 and 100"}), 400
-
+@admin_bp.route("/api/admin/stats", methods=["GET"])
+def admin_stats():
     try:
+        _, error_response = require_admin()
+        if error_response:
+            return error_response
+        return jsonify(fetch_admin_stats_payload())
+    except Exception:
+        traceback.print_exc()
+        return jsonify({"error": "Something went wrong. Please try again."}), 500
+
+
+@admin_bp.route("/api/admin/users", methods=["GET"])
+def admin_users():
+    try:
+        _, error_response = require_admin()
+        if error_response:
+            return error_response
+        return jsonify({"users": fetch_admin_stats_payload()["users"]})
+    except Exception:
+        traceback.print_exc()
+        return jsonify({"error": "Something went wrong. Please try again."}), 500
+
+
+@admin_bp.route("/api/admin/contacts", methods=["GET"])
+def admin_contacts():
+    try:
+        _, error_response = require_admin()
+        if error_response:
+            return error_response
+        return jsonify({"messages": get_contact_messages()})
+    except Exception:
+        traceback.print_exc()
+        return jsonify({"error": "Something went wrong. Please try again."}), 500
+
+
+@admin_bp.route("/api/admin/promo-codes", methods=["GET"])
+def list_promo_codes():
+    try:
+        _, error_response = require_admin()
+        if error_response:
+            return error_response
+        return jsonify({"codes": fetch_admin_stats_payload()["promo_codes"]})
+    except Exception:
+        traceback.print_exc()
+        return jsonify({"error": "Something went wrong. Please try again."}), 500
+
+
+@admin_bp.route("/api/admin/users/<int:user_id>/plan", methods=["PATCH"])
+def update_user_plan(user_id):
+    try:
+        _, error_response = require_admin()
+        if error_response:
+            return error_response
+        data = request.get_json() or {}
+        plan = (data.get("plan") or "").strip().lower()
+        if plan not in ALLOWED_PLANS:
+            return jsonify({"error": "Plan must be free, starter, or pro"}), 400
         if USE_POSTGRES:
-            # Check for duplicate
-            existing = pg_run("SELECT id FROM promo_codes WHERE code=$1", [code])
-            if existing:
-                return jsonify({"error": f"Code '{code}' already exists"}), 409
             rows = pg_run(
-                "INSERT INTO promo_codes (code, code_type, is_active, uses, affiliate_email, commission_percent, notes) "
-                "VALUES ($1, $2, TRUE, 0, $3, $4, $5) RETURNING id, code, code_type, is_active, uses, created_at, "
-                "affiliate_email, commission_percent, notes",
-                [code, code_type, affiliate_email, commission_percent, notes]
+                "UPDATE users SET plan=$1 WHERE id=$2 RETURNING id, username, email, plan, is_active, is_admin, generations_this_month, created_at",
+                [plan, user_id],
             )
-            new_code = dict(rows[0]) if rows else {}
-            if new_code.get('created_at') and not isinstance(new_code['created_at'], str):
-                new_code['created_at'] = new_code['created_at'].isoformat()
+            user = rows[0] if rows else None
         else:
             conn = get_db()
-            existing = conn.execute("SELECT id FROM promo_codes WHERE code=?", (code,)).fetchone()
-            if existing:
-                conn.close()
-                return jsonify({"error": f"Code '{code}' already exists"}), 409
+            conn.execute("UPDATE users SET plan=? WHERE id=?", (plan, user_id))
+            conn.commit()
+            row = conn.execute(
+                "SELECT id, username, email, plan, is_active, is_admin, generations_this_month, created_at FROM users WHERE id=?",
+                (user_id,),
+            ).fetchone()
+            conn.close()
+            user = row_to_dict(row)
+        return jsonify({"user": user})
+    except Exception:
+        traceback.print_exc()
+        return jsonify({"error": "Something went wrong. Please try again."}), 500
+
+
+@admin_bp.route("/api/admin/users/<int:user_id>/toggle-active", methods=["PATCH"])
+def toggle_user_active(user_id):
+    try:
+        _, error_response = require_admin()
+        if error_response:
+            return error_response
+        if USE_POSTGRES:
+            rows = pg_run(
+                """
+                UPDATE users
+                SET is_active = NOT COALESCE(is_active, TRUE)
+                WHERE id = $1
+                RETURNING id, username, email, plan, is_active, is_admin, generations_this_month, created_at
+                """,
+                [user_id],
+            )
+            user = rows[0] if rows else None
+        else:
+            conn = get_db()
+            existing = conn.execute("SELECT is_active FROM users WHERE id=?", (user_id,)).fetchone()
+            next_value = 0 if row_to_dict(existing).get("is_active") else 1
+            conn.execute("UPDATE users SET is_active=? WHERE id=?", (next_value, user_id))
+            conn.commit()
+            row = conn.execute(
+                "SELECT id, username, email, plan, is_active, is_admin, generations_this_month, created_at FROM users WHERE id=?",
+                (user_id,),
+            ).fetchone()
+            conn.close()
+            user = row_to_dict(row)
+        return jsonify({"user": user})
+    except Exception:
+        traceback.print_exc()
+        return jsonify({"error": "Something went wrong. Please try again."}), 500
+
+
+@admin_bp.route("/api/admin/promo-codes/create", methods=["POST"])
+def create_promo_code():
+    try:
+        _, error_response = require_admin()
+        if error_response:
+            return error_response
+        data = request.get_json() or {}
+        code = (data.get("code") or "").strip().upper()
+        code_type = (data.get("code_type") or "").strip().lower()
+        affiliate_email = (data.get("affiliate_email") or "").strip().lower() or None
+        commission_percent = data.get("commission_percent")
+
+        if not code:
+            return jsonify({"error": "Code name is required"}), 400
+        if code_type not in {"free_pro", "affiliate"}:
+            return jsonify({"error": "code_type must be free_pro or affiliate"}), 400
+        if code_type == "affiliate":
+            if not affiliate_email:
+                return jsonify({"error": "Affiliate email is required for affiliate codes"}), 400
+            try:
+                commission_percent = int(commission_percent)
+            except (TypeError, ValueError):
+                return jsonify({"error": "Commission percent is required for affiliate codes"}), 400
+
+        if USE_POSTGRES:
+            rows = pg_run(
+                """
+                INSERT INTO promo_codes (code, code_type, affiliate_email, commission_percent)
+                VALUES ($1, $2, $3, $4)
+                RETURNING id, code, code_type, uses, is_active, affiliate_email, commission_percent, created_at
+                """,
+                [code, code_type, affiliate_email, commission_percent],
+            )
+            promo_code = rows[0] if rows else None
+        else:
+            conn = get_db()
             cur = conn.cursor()
             cur.execute(
-                "INSERT INTO promo_codes (code, code_type, is_active, uses, affiliate_email, commission_percent, notes) "
-                "VALUES (?, ?, 1, 0, ?, ?, ?)",
-                (code, code_type, affiliate_email, commission_percent, notes)
+                "INSERT INTO promo_codes (code, code_type, affiliate_email, commission_percent) VALUES (?, ?, ?, ?)",
+                (code, code_type, affiliate_email, commission_percent),
             )
             conn.commit()
             row = conn.execute(
-                "SELECT id, code, code_type, is_active, uses, created_at, affiliate_email, commission_percent, notes "
-                "FROM promo_codes WHERE id=?", (cur.lastrowid,)
+                """
+                SELECT id, code, code_type, uses, is_active, affiliate_email, commission_percent, created_at
+                FROM promo_codes WHERE id=?
+                """,
+                (cur.lastrowid,),
             ).fetchone()
             conn.close()
-            new_code = row_to_dict(row) or {}
-
-        return jsonify({"code": new_code, "message": "Code created successfully."}), 201
-
-    except Exception as e:
-        print(f"[Admin] create promo code error: {e}")
-        import traceback; traceback.print_exc()
-        return jsonify({"error": "Failed to create promo code"}), 500
+            promo_code = row_to_dict(row)
+        return jsonify({"code": promo_code}), 201
+    except Exception:
+        traceback.print_exc()
+        return jsonify({"error": "Something went wrong. Please try again."}), 500
 
 
-@admin_bp.route('/api/admin/promo-codes/<int:code_id>', methods=['DELETE'])
-def delete_promo_code(code_id):
-    _, err = require_admin()
-    if err:
-        return err
-
+@admin_bp.route("/api/admin/promo-codes/<int:promo_code_id>/toggle", methods=["PATCH"])
+def toggle_promo_code(promo_code_id):
     try:
+        _, error_response = require_admin()
+        if error_response:
+            return error_response
         if USE_POSTGRES:
-            pg_run("DELETE FROM promo_codes WHERE id=$1", [code_id])
+            rows = pg_run(
+                """
+                UPDATE promo_codes
+                SET is_active = NOT COALESCE(is_active, TRUE)
+                WHERE id = $1
+                RETURNING id, code, code_type, uses, is_active, affiliate_email, commission_percent, created_at
+                """,
+                [promo_code_id],
+            )
+            promo_code = rows[0] if rows else None
         else:
             conn = get_db()
-            conn.execute("DELETE FROM promo_codes WHERE id=?", (code_id,))
+            existing = conn.execute("SELECT is_active FROM promo_codes WHERE id=?", (promo_code_id,)).fetchone()
+            next_value = 0 if row_to_dict(existing).get("is_active") else 1
+            conn.execute("UPDATE promo_codes SET is_active=? WHERE id=?", (next_value, promo_code_id))
+            conn.commit()
+            row = conn.execute(
+                """
+                SELECT id, code, code_type, uses, is_active, affiliate_email, commission_percent, created_at
+                FROM promo_codes WHERE id=?
+                """,
+                (promo_code_id,),
+            ).fetchone()
+            conn.close()
+            promo_code = row_to_dict(row)
+        return jsonify({"code": promo_code})
+    except Exception:
+        traceback.print_exc()
+        return jsonify({"error": "Something went wrong. Please try again."}), 500
+
+
+@admin_bp.route("/api/admin/promo-codes/<int:promo_code_id>", methods=["DELETE"])
+def delete_promo_code(promo_code_id):
+    try:
+        _, error_response = require_admin()
+        if error_response:
+            return error_response
+        if USE_POSTGRES:
+            pg_run("DELETE FROM promo_codes WHERE id=$1", [promo_code_id])
+        else:
+            conn = get_db()
+            conn.execute("DELETE FROM promo_codes WHERE id=?", (promo_code_id,))
             conn.commit()
             conn.close()
         return jsonify({"success": True})
-    except Exception as e:
-        print(f"[Admin] delete promo code error: {e}")
-        return jsonify({"error": "Failed to delete promo code"}), 500
-
-
-@admin_bp.route('/api/admin/promo-codes/<int:code_id>/toggle', methods=['PATCH'])
-def toggle_promo_code(code_id):
-    _, err = require_admin()
-    if err:
-        return err
-
-    try:
-        if USE_POSTGRES:
-            rows = pg_run(
-                "UPDATE promo_codes SET is_active = NOT is_active WHERE id=$1 "
-                "RETURNING id, code, is_active",
-                [code_id]
-            )
-            result = rows[0] if rows else {}
-        else:
-            conn = get_db()
-            row = conn.execute("SELECT is_active FROM promo_codes WHERE id=?", (code_id,)).fetchone()
-            if not row:
-                conn.close()
-                return jsonify({"error": "Code not found"}), 404
-            current = row_to_dict(row)['is_active']
-            new_val = 0 if current else 1
-            conn.execute("UPDATE promo_codes SET is_active=? WHERE id=?", (new_val, code_id))
-            conn.commit()
-            row = conn.execute("SELECT id, code, is_active FROM promo_codes WHERE id=?", (code_id,)).fetchone()
-            conn.close()
-            result = row_to_dict(row) or {}
-        return jsonify({"code": result})
-    except Exception as e:
-        print(f"[Admin] toggle promo code error: {e}")
-        return jsonify({"error": "Failed to toggle promo code"}), 500
-
-
-@admin_bp.route('/api/admin/affiliates', methods=['GET'])
-def list_affiliates():
-    _, err = require_admin()
-    if err:
-        return err
-
-    try:
-        if USE_POSTGRES:
-            rows = pg_run(
-                """SELECT p.id, p.code, p.affiliate_email, p.commission_percent, p.uses,
-                          COUNT(ac.id) AS total_referred,
-                          COUNT(CASE WHEN ac.status='pending' THEN 1 END) AS pending_count
-                   FROM promo_codes p
-                   LEFT JOIN affiliate_commissions ac ON ac.promo_code = p.code
-                   WHERE p.code_type = 'affiliate'
-                   GROUP BY p.id, p.code, p.affiliate_email, p.commission_percent, p.uses
-                   ORDER BY p.created_at DESC"""
-            )
-            affiliates = [dict(r) for r in rows]
-        else:
-            conn = get_db()
-            rows = conn.execute(
-                """SELECT p.id, p.code, p.affiliate_email, p.commission_percent, p.uses,
-                          COUNT(ac.id) AS total_referred,
-                          COUNT(CASE WHEN ac.status='pending' THEN 1 END) AS pending_count
-                   FROM promo_codes p
-                   LEFT JOIN affiliate_commissions ac ON ac.promo_code = p.code
-                   WHERE p.code_type = 'affiliate'
-                   GROUP BY p.id, p.code, p.affiliate_email, p.commission_percent, p.uses
-                   ORDER BY p.created_at DESC"""
-            ).fetchall()
-            affiliates = [row_to_dict(r) for r in rows]
-            conn.close()
-        return jsonify({"affiliates": affiliates})
-    except Exception as e:
-        print(f"[Admin] list affiliates error: {e}")
-        return jsonify({"error": "Failed to load affiliates"}), 500
-
-
-@admin_bp.route('/api/admin/affiliates/<affiliate_email>/commissions', methods=['GET'])
-def affiliate_commissions(affiliate_email):
-    _, err = require_admin()
-    if err:
-        return err
-
-    try:
-        if USE_POSTGRES:
-            rows = pg_run(
-                """SELECT ac.id, ac.referred_user_email, ac.promo_code, ac.commission_percent,
-                          ac.status, ac.created_at, u.plan AS user_plan
-                   FROM affiliate_commissions ac
-                   LEFT JOIN users u ON u.id = ac.referred_user_id
-                   WHERE ac.affiliate_email=$1
-                   ORDER BY ac.created_at DESC""",
-                [affiliate_email]
-            )
-            commissions = []
-            for r in rows:
-                r = dict(r)
-                if r.get('created_at') and not isinstance(r['created_at'], str):
-                    r['created_at'] = r['created_at'].isoformat()
-                commissions.append(r)
-        else:
-            conn = get_db()
-            rows = conn.execute(
-                """SELECT ac.id, ac.referred_user_email, ac.promo_code, ac.commission_percent,
-                          ac.status, ac.created_at, u.plan AS user_plan
-                   FROM affiliate_commissions ac
-                   LEFT JOIN users u ON u.id = ac.referred_user_id
-                   WHERE ac.affiliate_email=?
-                   ORDER BY ac.created_at DESC""",
-                (affiliate_email,)
-            ).fetchall()
-            commissions = [row_to_dict(r) for r in rows]
-            conn.close()
-        return jsonify({"commissions": commissions})
-    except Exception as e:
-        print(f"[Admin] affiliate commissions error: {e}")
-        return jsonify({"error": "Failed to load commissions"}), 500
-
-
-@admin_bp.route('/api/admin/commissions/<int:commission_id>/mark-paid', methods=['PATCH'])
-def mark_commission_paid(commission_id):
-    _, err = require_admin()
-    if err:
-        return err
-
-    try:
-        if USE_POSTGRES:
-            pg_run(
-                "UPDATE affiliate_commissions SET status='paid' WHERE id=$1",
-                [commission_id]
-            )
-        else:
-            conn = get_db()
-            conn.execute(
-                "UPDATE affiliate_commissions SET status='paid' WHERE id=?",
-                (commission_id,)
-            )
-            conn.commit()
-            conn.close()
-        return jsonify({"success": True})
-    except Exception as e:
-        print(f"[Admin] mark paid error: {e}")
-        return jsonify({"error": "Failed to mark commission as paid"}), 500
+    except Exception:
+        traceback.print_exc()
+        return jsonify({"error": "Something went wrong. Please try again."}), 500
