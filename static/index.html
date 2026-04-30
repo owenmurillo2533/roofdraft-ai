@@ -2457,7 +2457,12 @@
     .hero-proof-stat-label,
     .hero-proof-badge,
     .hero-proof-stat-num { color: #fff; }
-    .hero-headline { font-size: clamp(44px, 7vw, 74px); line-height: 0.98; max-width: 640px; }
+    .hero-headline {
+      font-size: clamp(44px, 7vw, 74px);
+      line-height: 1.05;
+      max-width: 640px;
+      text-wrap: balance;
+    }
     .hero-headline span { color: #ffb5aa; }
     .hero-sub { color: rgba(255,255,255,0.82); max-width: 620px; }
     .landing-trust-note { color: rgba(255,255,255,0.7); }
@@ -2499,6 +2504,13 @@
     .marketing-roi-section {
       background: linear-gradient(180deg, #111c2d 0%, #17263c 100%);
       color: rgba(255,255,255,0.86);
+    }
+    .section-title,
+    .marketing-persona-card h3,
+    .landing-tool-card h3,
+    .faq-question,
+    .marketing-final-cta-shell h2 {
+      text-wrap: balance;
     }
     .marketing-roi-section .section-title,
     .marketing-final-cta-shell .section-title,
@@ -2900,6 +2912,32 @@
       .landing-nav-links,
       .landing-nav-actions { display: none; }
       .marketing-mobile-toggle { display: inline-flex; }
+    }
+    @media (max-width: 640px) {
+      .hero {
+        padding-top: 28px;
+        padding-bottom: 56px;
+      }
+      .hero-headline {
+        font-size: clamp(34px, 10.5vw, 42px);
+        line-height: 1.08;
+        max-width: none;
+        letter-spacing: -0.015em;
+      }
+      .hero-sub {
+        font-size: 16px;
+        line-height: 1.6;
+      }
+      .section-title {
+        font-size: clamp(24px, 7.5vw, 32px);
+        line-height: 1.16;
+      }
+      .pricing-amount {
+        line-height: 1.08;
+      }
+      .faq-heading {
+        line-height: 1.12;
+      }
     }
 
     /* ---- Final pre-Stripe app polish ---- */
