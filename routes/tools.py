@@ -13,7 +13,7 @@ tools_bp = Blueprint('tools', __name__)
 
 client = Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
 MODEL = "claude-sonnet-4-6"
-MAX_TOKENS = 2000
+MAX_TOKENS = 2600
 
 
 TOOL_ACCESS = {
@@ -82,6 +82,39 @@ def clean_list(values):
     return [str(item).strip() for item in values if str(item).strip()]
 
 
+def clean_dict(value):
+    return value if isinstance(value, dict) else {}
+
+
+def present(text):
+    return bool(str(text).strip()) if text is not None else False
+
+
+def present_list(values):
+    return bool(values)
+
+
+def has_roof_visual_content(roof_visual):
+    return any(
+        [
+            roof_visual.get("hasImage"),
+            present(roof_visual.get("visualType")),
+            present_list(roof_visual.get("labels", [])),
+            present(roof_visual.get("customLabel")),
+            present(roof_visual.get("estimatedRoofArea")),
+            present(roof_visual.get("estimatedSquares")),
+            present(roof_visual.get("pitchNote")),
+            present(roof_visual.get("rakeNote")),
+            present(roof_visual.get("gutterLengthNote")),
+            present(roof_visual.get("wasteFactorNote")),
+            present(roof_visual.get("measurementSource")),
+            present(roof_visual.get("customMeasurementSource")),
+            present(roof_visual.get("measurementNotes")),
+            present(roof_visual.get("summaryNotes")),
+        ]
+    )
+
+
 @tools_bp.route("/api/tools/proposal", methods=["POST"])
 def proposal():
     user, err = auth_and_check("proposal")
@@ -135,9 +168,53 @@ def proposal():
     tone = value(data, "tone", "proposal_tone", default="Professional")
     output_version = value(data, "output_version", default="full_proposal")
 
+    roof_visual = clean_dict(data.get("roof_visual"))
+    roof_visual_enabled = bool(roof_visual.get("enabled"))
+    roof_visual_has_image = bool(roof_visual.get("hasImage") or roof_visual.get("imageName"))
+    roof_visual_type = value(roof_visual, "visualType")
+    roof_visual_labels = clean_list(roof_visual.get("labels"))
+    roof_visual_custom_label = value(roof_visual, "customLabel")
+    if "Other" in roof_visual_labels:
+        roof_visual_labels = [label for label in roof_visual_labels if label != "Other"]
+        if roof_visual_custom_label:
+            roof_visual_labels.append(roof_visual_custom_label)
+        else:
+            roof_visual_labels.append("Other")
+
+    roof_visual_estimated_area = value(roof_visual, "estimatedRoofArea")
+    roof_visual_estimated_squares = value(roof_visual, "estimatedSquares")
+    roof_visual_pitch_note = value(roof_visual, "pitchNote")
+    roof_visual_rake_note = value(roof_visual, "rakeNote")
+    roof_visual_gutter_note = value(roof_visual, "gutterLengthNote")
+    roof_visual_waste_factor = value(roof_visual, "wasteFactorNote")
+    roof_visual_measurement_source = value(roof_visual, "measurementSource")
+    if roof_visual_measurement_source == "Other":
+        roof_visual_measurement_source = value(roof_visual, "customMeasurementSource", default="Other")
+    roof_visual_measurement_notes = value(roof_visual, "measurementNotes")
+    roof_visual_summary_notes = value(roof_visual, "summaryNotes")
+    roof_visual_explanation_style = value(
+        roof_visual,
+        "explanationStyle",
+        default="Simple homeowner explanation",
+    )
+    roof_visual_included = roof_visual_enabled and has_roof_visual_content(roof_visual)
+
     today_str = date.today().strftime("%B %d, %Y")
     full_address = build_full_address(customer_address, customer_city, customer_state, customer_zip)
     scope_block = "\n".join(f"- {item}" for item in scope_items) if scope_items else "- Use the additional scope notes only."
+    roof_visual_labels_block = "\n".join(f"- {item}" for item in roof_visual_labels) if roof_visual_labels else "- None provided."
+    roof_visual_measurement_block = "\n".join(
+        [
+            f"- Estimated Roof Area: {roof_visual_estimated_area or 'Not provided'}",
+            f"- Estimated Squares: {roof_visual_estimated_squares or 'Not provided'}",
+            f"- Pitch Note: {roof_visual_pitch_note or 'Not provided'}",
+            f"- Rake Note: {roof_visual_rake_note or 'Not provided'}",
+            f"- Gutter Length Note: {roof_visual_gutter_note or 'Not provided'}",
+            f"- Waste Factor Note: {roof_visual_waste_factor or 'Not provided'}",
+            f"- Measurement Source: {roof_visual_measurement_source or 'Not provided'}",
+            f"- Additional Measurement Notes: {roof_visual_measurement_notes or 'Not provided'}",
+        ]
+    )
 
     user_prompt = f"""Write polished roofing sales copy using only the information provided. Do not invent measurements, pricing, warranties, timelines, licensing, financing, or legal claims that were not supplied.
 
@@ -160,6 +237,19 @@ If OUTPUT VERSION is "customer_email":
   Subject Line:
   Email:
 - The email should sound ready to send and mention the proposal naturally.
+
+If contractor-guided roof visual information is provided:
+- Add a section titled "Roof Visual Overview".
+- Treat all visual labels, measurement notes, and scope markers as contractor-provided notes.
+- Never say the software detected, measured, outlined, verified, or confirmed anything automatically.
+- If an image is attached, refer to it as a contractor-provided roof visual included for proposal clarity.
+- Include the visual type when provided.
+- Include a "Contractor-Provided Visual Notes" subsection when labels or summary notes are provided.
+- Include a "Measurement Context" subsection when any roof area, squares, pitch, rake, gutter, waste factor, measurement source, or measurement note is provided.
+- Use the selected explanation style to write a homeowner-friendly explanation paragraph.
+- If Measurement Source is "Visual estimate only", make it clear the measurements should be verified before ordering materials or acceptance.
+- Include this exact disclaimer at the end of the section: "Visual notes are provided for clarity only. Final measurements, pitch, material quantities, local requirements, warranty terms, and pricing should be verified by the contractor before sending or acceptance."
+- Do not include the Roof Visual Overview section at all if no visual information is provided.
 
 INPUTS
 Customer Name: {customer_name}
@@ -203,13 +293,28 @@ Weather Delay Note: {weather_delay_note}
 Workmanship Warranty: {warranty_labor}
 Manufacturer Warranty: {warranty_materials}
 Warranty Notes: {warranty_notes}
-Cleanup Language: {cleanup_language}"""
+Cleanup Language: {cleanup_language}
+
+ROOF VISUAL OVERVIEW PROVIDED: {"Yes" if roof_visual_included else "No"}
+Roof Visual Enabled In Proposal: {"Yes" if roof_visual_enabled else "No"}
+Roof Visual Image Attached In Proposal Preview: {"Yes" if roof_visual_has_image else "No"}
+Roof Visual Type: {roof_visual_type or "Not provided"}
+Roof Visual Explanation Style: {roof_visual_explanation_style}
+
+Contractor-Provided Visual Labels:
+{roof_visual_labels_block}
+
+Measurement Context:
+{roof_visual_measurement_block}
+
+Visual Summary Notes:
+{roof_visual_summary_notes or "Not provided"}"""
 
     try:
         message = client.messages.create(
             model=MODEL,
             max_tokens=MAX_TOKENS,
-            system="You are a professional proposal writer for roofing contractors. Write clear, homeowner-ready documents that feel polished and practical. Never invent missing facts, guarantees, or legal language.",
+            system="You are a professional proposal writer for roofing contractors. Write clear, homeowner-ready documents that feel polished and practical. Never invent missing facts, guarantees, legal language, automatic measurements, or visual detections. If roof visual information is provided, treat it as contractor-guided proposal clarity only.",
             messages=[{"role": "user", "content": user_prompt}],
         )
         result = message.content[0].text

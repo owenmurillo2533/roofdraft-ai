@@ -159,6 +159,85 @@
       color: #3f454f;
       line-height: 1.65;
     }
+    .visual-overview {
+      display: grid;
+      grid-template-columns: 1.05fr 1fr;
+      gap: 20px;
+      margin: 12px 0 28px;
+    }
+    .visual-box,
+    .visual-details {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: #fff;
+      padding: 20px;
+    }
+    .visual-placeholder {
+      min-height: 260px;
+      border-radius: 14px;
+      border: 1px solid #d8e2ee;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      gap: 10px;
+      padding: 24px;
+      background:
+        linear-gradient(135deg, rgba(17, 28, 45, 0.08), rgba(192, 57, 43, 0.08)),
+        repeating-linear-gradient(135deg, rgba(255,255,255,0.32), rgba(255,255,255,0.32) 12px, rgba(255,255,255,0.12) 12px, rgba(255,255,255,0.12) 24px);
+    }
+    .visual-placeholder strong {
+      font-family: "Oswald", sans-serif;
+      font-size: 28px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--ink);
+    }
+    .visual-placeholder span {
+      max-width: 300px;
+      color: #445063;
+      line-height: 1.6;
+      font-size: 15px;
+    }
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: #edf3f9;
+      color: #22364e;
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+    .mini-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .mini-card {
+      border: 1px solid #e4ebf3;
+      border-radius: 12px;
+      background: #f8fafc;
+      padding: 12px 13px;
+    }
+    .mini-card .label {
+      margin-bottom: 6px;
+    }
+    .small-note {
+      font-size: 13px;
+      line-height: 1.65;
+      color: #6b4a29;
+      margin-top: 14px;
+    }
     .line {
       border-top: 1px solid var(--ink);
       padding-top: 8px;
@@ -172,7 +251,9 @@
       .summary-grid,
       .two-col,
       .price-grid,
-      .signature { grid-template-columns: 1fr; }
+      .signature,
+      .visual-overview,
+      .mini-grid { grid-template-columns: 1fr; }
       .topbar { flex-direction: column; align-items: flex-start; }
     }
   </style>
@@ -259,6 +340,52 @@
 
       <div class="section-heading">Optional Upgrades</div>
       <p>Optional upgrades, ventilation adjustments, or decking repairs outside the included allowance can be reviewed with the contractor before final approval if they apply to the job.</p>
+
+      <div class="section-heading">Roof Visual Overview</div>
+      <div class="visual-overview">
+        <div class="visual-box">
+          <div class="label">Visual type</div>
+          <div class="value">Satellite view</div>
+          <div class="visual-placeholder">
+            <strong>Roof Visual Placeholder</strong>
+            <span>This fictional sample shows how a contractor-guided roof image or satellite screenshot can appear inside a proposal for clarity.</span>
+          </div>
+        </div>
+        <div class="visual-details">
+          <div class="label">Contractor-provided visual notes</div>
+          <div class="chip-row">
+            <span class="chip">Full roof replacement area</span>
+            <span class="chip">Front and rear roof planes</span>
+            <span class="chip">Ridge ventilation area</span>
+            <span class="chip">Rake edge details</span>
+            <span class="chip">Pipe boot replacement</span>
+            <span class="chip">Flashing review</span>
+            <span class="chip">Gutter line review</span>
+            <span class="chip">Cleanup and magnet sweep area</span>
+          </div>
+          <div class="label">Measurement context</div>
+          <div class="mini-grid">
+            <div class="mini-card">
+              <div class="label">Estimated roof size</div>
+              <div class="value">Approximately 28 squares</div>
+            </div>
+            <div class="mini-card">
+              <div class="label">Pitch note</div>
+              <div class="value">Main roof pitch to be verified before material ordering</div>
+            </div>
+            <div class="mini-card">
+              <div class="label">Measurement source</div>
+              <div class="value">Contractor estimate</div>
+            </div>
+            <div class="mini-card">
+              <div class="label">Waste factor</div>
+              <div class="value">To be confirmed by contractor</div>
+            </div>
+          </div>
+          <p>This visual overview is included to help clarify the roof areas connected to the proposed replacement. The visual notes highlight the main roof sections, ridge ventilation area, rake edge details, pipe boot replacement points, flashing review areas, gutter line review, and cleanup area. These notes are intended to make the proposal easier to understand and should be verified by the contractor before final acceptance.</p>
+          <div class="small-note">This is a fictional sample proposal for demonstration purposes only. Visual notes and measurements are examples and must be verified by the contractor.</div>
+        </div>
+      </div>
 
       <div class="section-heading">Warranty And Cleanup</div>
       <p>Workmanship warranty details to be confirmed by contractor. Manufacturer warranty details depend on selected materials and final registration requirements. Cleanup, debris haul-away, and a magnet sweep for nails are included as part of the planned closeout process.</p>

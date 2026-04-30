@@ -3093,6 +3093,341 @@
       color: var(--slate);
       margin-top: 12px;
     }
+    .optional-badge {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 8px 12px;
+      background: #fff6f3;
+      border: 1px solid #f0d3cb;
+      color: var(--roof-red);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .roof-visual-toggle {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px 16px;
+      margin-bottom: 16px;
+      border: 1px solid #dbe5f0;
+      border-radius: 10px;
+      background: #f8fafc;
+      cursor: pointer;
+    }
+    .roof-visual-toggle input {
+      margin-top: 4px;
+      accent-color: var(--roof-red);
+      flex-shrink: 0;
+    }
+    .roof-visual-toggle-copy strong {
+      display: block;
+      font-size: 15px;
+      color: var(--near-black);
+      margin-bottom: 4px;
+    }
+    .roof-visual-toggle-copy span {
+      display: block;
+      font-size: 13px;
+      line-height: 1.55;
+      color: var(--slate);
+    }
+    .roof-visual-upload-shell input[type="file"] {
+      padding: 10px 12px;
+      background: #fff;
+    }
+    .roof-visual-upload-meta {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-top: 14px;
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #fffdfb;
+    }
+    .roof-visual-preview-thumb {
+      width: 108px;
+      height: 88px;
+      object-fit: cover;
+      border-radius: 10px;
+      border: 1px solid #d9e2ec;
+      background: #f3f6fb;
+      flex-shrink: 0;
+    }
+    .roof-visual-label-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .roof-visual-label-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 11px 12px;
+      background: var(--white);
+      cursor: pointer;
+      min-height: 50px;
+    }
+    .roof-visual-label-item input {
+      accent-color: var(--roof-red);
+      flex-shrink: 0;
+    }
+    .roof-visual-label-item span {
+      font-size: 13px;
+      line-height: 1.45;
+      color: var(--near-black);
+    }
+    .proposal-visual-card {
+      margin-top: 18px;
+      border: 1px solid #d8e2ee;
+      border-radius: 14px;
+      background: linear-gradient(180deg, #ffffff 0%, #f9fbfd 100%);
+      box-shadow: 0 10px 24px rgba(17, 28, 45, 0.06);
+      overflow: hidden;
+    }
+    .proposal-visual-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 18px 20px 0;
+    }
+    .proposal-visual-title {
+      font-family: 'Oswald', sans-serif;
+      font-size: 24px;
+      line-height: 1.05;
+      color: var(--near-black);
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+    .proposal-visual-subtitle {
+      font-size: 13px;
+      color: var(--slate);
+      margin-top: 5px;
+      line-height: 1.5;
+    }
+    .proposal-visual-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: #eef4fb;
+      color: #27415e;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .proposal-visual-grid {
+      display: grid;
+      grid-template-columns: 1.05fr 1fr;
+      gap: 18px;
+      padding: 18px 20px 20px;
+    }
+    .proposal-visual-media {
+      min-height: 250px;
+    }
+    .proposal-visual-image,
+    .proposal-visual-placeholder {
+      width: 100%;
+      height: 100%;
+      min-height: 250px;
+      border-radius: 12px;
+      border: 1px solid #d8e2ee;
+      background: #f4f7fb;
+    }
+    .proposal-visual-image {
+      object-fit: cover;
+      display: block;
+    }
+    .proposal-visual-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 24px;
+      text-align: center;
+      background:
+        linear-gradient(135deg, rgba(192,57,43,0.08), rgba(17,28,45,0.08)),
+        repeating-linear-gradient(135deg, rgba(255,255,255,0.35), rgba(255,255,255,0.35) 12px, rgba(255,255,255,0.12) 12px, rgba(255,255,255,0.12) 24px);
+    }
+    .proposal-visual-placeholder strong {
+      font-family: 'Oswald', sans-serif;
+      font-size: 24px;
+      color: var(--near-black);
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+    .proposal-visual-placeholder span {
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--slate);
+      max-width: 320px;
+    }
+    .proposal-visual-body {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .proposal-visual-block {
+      border: 1px solid #e4ebf3;
+      border-radius: 12px;
+      padding: 14px 15px;
+      background: #fff;
+    }
+    .proposal-visual-block-label {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--slate-light);
+      margin-bottom: 10px;
+    }
+    .proposal-visual-chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .proposal-visual-chip {
+      display: inline-flex;
+      align-items: center;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: #eff4fa;
+      color: #22364e;
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+    .proposal-visual-metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .proposal-visual-metric {
+      border-radius: 10px;
+      background: #f8fafc;
+      padding: 11px 12px;
+      border: 1px solid #e6edf5;
+    }
+    .proposal-visual-metric span {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--slate-light);
+      margin-bottom: 6px;
+    }
+    .proposal-visual-metric strong {
+      display: block;
+      font-size: 14px;
+      line-height: 1.45;
+      color: var(--near-black);
+    }
+    .proposal-visual-copy {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.65;
+      color: #31465d;
+    }
+    .proposal-visual-session-note,
+    .proposal-visual-disclaimer,
+    .marketing-visual-disclaimer {
+      font-size: 12px;
+      line-height: 1.55;
+    }
+    .proposal-visual-session-note {
+      margin: 0 20px 0;
+      padding: 0 0 12px;
+      color: #516579;
+    }
+    .proposal-visual-disclaimer {
+      margin: 0;
+      padding: 0 20px 18px;
+      color: #7b4b1f;
+    }
+    .marketing-visual-overview-shell {
+      margin-top: 28px;
+      display: grid;
+      grid-template-columns: 1.05fr 1fr;
+      gap: 18px;
+      align-items: stretch;
+    }
+    .marketing-visual-overview-card {
+      border: 1px solid #d8e2ee;
+      border-radius: 18px;
+      background: #fff;
+      box-shadow: 0 10px 24px rgba(17, 28, 45, 0.06);
+      padding: 20px;
+    }
+    .marketing-visual-media-box {
+      min-height: 230px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 24px;
+      border-radius: 14px;
+      border: 1px solid #d8e2ee;
+      background:
+        linear-gradient(135deg, rgba(17,28,45,0.08), rgba(192,57,43,0.08)),
+        repeating-linear-gradient(135deg, rgba(255,255,255,0.32), rgba(255,255,255,0.32) 12px, rgba(255,255,255,0.12) 12px, rgba(255,255,255,0.12) 24px);
+    }
+    .marketing-visual-media-box strong {
+      display: block;
+      font-family: 'Oswald', sans-serif;
+      font-size: 26px;
+      color: var(--near-black);
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .marketing-visual-media-box span {
+      display: block;
+      color: var(--slate);
+      font-size: 14px;
+      line-height: 1.6;
+      max-width: 280px;
+      margin: 0 auto;
+    }
+    .marketing-visual-labels {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 14px 0 18px;
+    }
+    .marketing-visual-detail-list {
+      display: grid;
+      gap: 10px;
+      margin: 14px 0 18px;
+    }
+    .marketing-visual-detail-item {
+      border-radius: 10px;
+      border: 1px solid #e4ebf3;
+      background: #f8fafc;
+      padding: 12px 14px;
+    }
+    .marketing-visual-detail-item strong {
+      display: block;
+      font-size: 12px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--slate-light);
+      margin-bottom: 4px;
+    }
+    .marketing-visual-disclaimer {
+      color: #7b4b1f;
+      margin-top: 10px;
+    }
     @media (max-width: 1100px) {
       .tool-section-grid-4,
       .quick-actions-grid { grid-template-columns: repeat(2, 1fr); }
@@ -3106,10 +3441,27 @@
       .quick-actions-grid {
         grid-template-columns: 1fr;
       }
+      .roof-visual-label-grid,
+      .proposal-visual-grid,
+      .proposal-visual-metrics-grid,
+      .marketing-visual-overview-shell {
+        grid-template-columns: 1fr;
+      }
       .tool-section-header,
-      .editable-output-header {
+      .editable-output-header,
+      .proposal-visual-header,
+      .roof-visual-upload-meta {
         flex-direction: column;
         align-items: flex-start;
+      }
+      .proposal-visual-image,
+      .proposal-visual-placeholder,
+      .marketing-visual-media-box {
+        min-height: 210px;
+      }
+      .roof-visual-preview-thumb {
+        width: 100%;
+        height: 180px;
       }
     }
   </style>
@@ -3151,7 +3503,7 @@
           <div class="hero-kicker">Lightweight proposal and customer-message software for roofers</div>
           <h1 class="hero-headline">Turn roof inspection notes into a polished proposal before you leave the driveway.</h1>
           <p class="hero-sub">
-            RoofDraftAI helps roofing contractors generate professional proposals, follow-up emails, review requests, and referral messages without learning a full CRM.
+            RoofDraftAI helps roofing contractors generate professional proposals, follow-up emails, review requests, referral messages, and optional roof visual overviews without learning a full CRM.
           </p>
           <div class="hero-actions">
             <button class="btn btn-primary" data-auth-target="register" type="button" style="padding: 14px 32px; font-size: 17px; font-family: 'Oswald', sans-serif; letter-spacing: 0.04em; text-transform: uppercase;">
@@ -3163,6 +3515,7 @@
           </div>
           <p class="landing-trust-note">1 free proposal included. No card required.</p>
           <div class="marketing-status-line">
+            <span>Now with contractor-guided roof visuals.</span>
             <span>Built for roofing contractors, owner-operators, and small roofing teams.</span>
           </div>
         </div>
@@ -3203,6 +3556,14 @@
               <ul>
                 <li>Architectural asphalt shingles and synthetic underlayment</li>
                 <li>Workmanship warranty details confirmed by contractor</li>
+              </ul>
+            </div>
+            <div class="doc-section">
+              <h3>Roof visual overview</h3>
+              <ul>
+                <li>Satellite view attached for proposal clarity</li>
+                <li>Notes call out ridge ventilation, rake edge, gutters, pipe boots, and cleanup area</li>
+                <li>Measurement context stays contractor-provided and easy for the homeowner to review</li>
               </ul>
             </div>
             <div class="doc-summary">
@@ -3290,7 +3651,7 @@
           <div class="how-step">
             <div class="how-step-num">2</div>
             <div class="how-step-title">Generate a polished proposal</div>
-            <div class="how-step-desc">RoofDraftAI turns your notes into a structured homeowner-ready proposal with clear sections and next-step language.</div>
+            <div class="how-step-desc">RoofDraftAI turns your notes into a structured homeowner-ready proposal with clear sections, next-step language, and an optional roof visual overview.</div>
           </div>
           <div class="how-step">
             <div class="how-step-num">3</div>
@@ -3354,6 +3715,49 @@
             <div class="landing-tool-card-name">Sample Proposal Preview</div>
             <div class="landing-tool-card-desc">Review a fictional proposal example so you can judge the format and quality before using your free generation.</div>
           </div>
+          <div class="landing-tool-card" style="display: flex; flex-direction: column; gap: 10px;">
+            <div class="landing-tool-card-name">Roof Visual Overview</div>
+            <div class="landing-tool-card-desc">Add a satellite screenshot, drone photo, inspection image, or roof visual to your proposal so homeowners can better understand the roof areas, damage points, gutters, rakes, ridges, and scope notes you are discussing.</div>
+            <ul style="padding-left: 18px; margin: 4px 0 0; color: var(--slate); line-height: 1.6;">
+              <li>Pair your written proposal with a clear roof visual</li>
+              <li>Manually note roof sections, damage areas, gutters, rakes, ridges, and cleanup areas</li>
+              <li>Help homeowners understand what is included before they approve</li>
+              <li>Make proposals feel more professional and easier to review</li>
+            </ul>
+          </div>
+        </div>
+        <div class="marketing-visual-overview-shell">
+          <div class="marketing-visual-overview-card">
+            <div class="marketing-card-kicker">Roof image or satellite screenshot</div>
+            <div class="marketing-visual-media-box">
+              <div>
+                <strong>Roof Visual Placeholder</strong>
+                <span>Use a contractor-provided satellite screenshot, drone image, roof inspection photo, or damage photo to help the homeowner see the scope you are describing.</span>
+              </div>
+            </div>
+          </div>
+          <div class="marketing-visual-overview-card">
+            <div class="marketing-card-kicker">Selected notes and labels</div>
+            <div class="marketing-visual-labels">
+              <span class="proposal-visual-chip">Full roof replacement area</span>
+              <span class="proposal-visual-chip">Ridge</span>
+              <span class="proposal-visual-chip">Rake edge</span>
+              <span class="proposal-visual-chip">Pipe boots</span>
+              <span class="proposal-visual-chip">Gutters</span>
+              <span class="proposal-visual-chip">Cleanup area</span>
+            </div>
+            <div class="marketing-visual-detail-list">
+              <div class="marketing-visual-detail-item">
+                <strong>Measurement context</strong>
+                Approximately 28 squares. Main pitch to be verified before ordering.
+              </div>
+              <div class="marketing-visual-detail-item">
+                <strong>Proposal placement</strong>
+                Included in the proposal as Roof Visual Overview so the written scope connects to the roof areas discussed during inspection.
+              </div>
+            </div>
+            <div class="marketing-visual-disclaimer">Visual notes are contractor-guided and should be verified before sending.</div>
+          </div>
         </div>
       </div>
     </section>
@@ -3376,6 +3780,7 @@
               <tr><td>Saved company defaults</td><td>No built-in contractor profile</td><td>Reusable company defaults and proposal inputs</td></tr>
               <tr><td>Job-specific proposal flow</td><td>Flexible but inconsistent</td><td>Structured around roofing jobs and homeowner-ready output</td></tr>
               <tr><td>Follow-up, review, and referral tools</td><td>Possible with custom prompts</td><td>Included in the same contractor workflow</td></tr>
+              <tr><td>Contractor-guided roof visual overview</td><td>No built-in workflow</td><td>Included in the proposal flow when you want visual scope clarity</td></tr>
               <tr><td>Consistent homeowner formatting</td><td>Varies by prompt quality</td><td>Designed to stay organized and readable</td></tr>
               <tr><td>Field use</td><td>More prompt writing required</td><td>Fewer steps when you are moving between inspections</td></tr>
             </tbody>
@@ -3435,6 +3840,7 @@
             <ul class="marketing-sample-list">
               <li>Proposal title, homeowner details, property address, and date</li>
               <li>Project summary, scope of work, materials, timeline, and cleanup</li>
+              <li>Roof Visual Overview with contractor-provided labels, visual notes, and measurement context</li>
               <li>Warranty language, investment summary, payment terms placeholder, and next steps</li>
               <li>Clear fictional-demo disclaimer so nothing is mistaken for final contract language</li>
             </ul>
@@ -3459,8 +3865,9 @@
             <div class="pricing-period">1 proposal with no card required</div>
             <hr class="pricing-divider" />
             <ul class="pricing-features-v2">
-              <li><span class="pf-check">✓</span><span>1 proposal generation included</span></li>
-              <li><span class="pf-check">✓</span><span>See the actual output before paying</span></li>
+              <li><span class="pf-check">&#10003;</span><span>1 proposal generation included</span></li>
+              <li><span class="pf-check">&#10003;</span><span>Optional Roof Visual Overview in that proposal</span></li>
+              <li><span class="pf-check">&#10003;</span><span>See the actual output before paying</span></li>
               <li><span class="pf-x">&times;</span><span class="pf-x-text">No follow-up, review, or referral tools</span></li>
               <li><span class="pf-x">&times;</span><span class="pf-x-text">No saved defaults or job folders</span></li>
             </ul>
@@ -3474,11 +3881,12 @@
             <div class="pricing-period">per month</div>
             <hr class="pricing-divider" />
             <ul class="pricing-features-v2">
-              <li><span class="pf-check">✓</span><span>Unlimited proposal generation</span></li>
-              <li><span class="pf-check">✓</span><span>All 4 roofing sales tools</span></li>
-              <li><span class="pf-check">✓</span><span>Saved company defaults</span></li>
-              <li><span class="pf-check">✓</span><span>Saved drafts and job folders</span></li>
-              <li><span class="pf-check">✓</span><span>Priority support</span></li>
+              <li><span class="pf-check">&#10003;</span><span>Unlimited proposal generation</span></li>
+              <li><span class="pf-check">&#10003;</span><span>Contractor-guided roof visual overviews and measurement context</span></li>
+              <li><span class="pf-check">&#10003;</span><span>All 4 roofing sales tools</span></li>
+              <li><span class="pf-check">&#10003;</span><span>Saved company defaults</span></li>
+              <li><span class="pf-check">&#10003;</span><span>Saved drafts and job folders</span></li>
+              <li><span class="pf-check">&#10003;</span><span>Priority support</span></li>
             </ul>
             <!-- TODO: Connect this Pro CTA to Stripe Checkout after Stripe integration is ready. -->
             <button class="btn btn-primary btn-full" data-pro-access-target="pro-access" type="button" style="font-family: 'Oswald', sans-serif; letter-spacing: 0.03em; text-transform: uppercase;">Request Pro Access</button>
@@ -3529,45 +3937,62 @@
         <h2 class="section-title">Clear answers before you try it.</h2>
         <div class="static-faq-list">
           <div class="static-faq-item open">
-            <button class="static-faq-question" type="button" aria-expanded="true">Is RoofDraftAI a full CRM?<span class="static-faq-arrow">â–¼</span></button>
+            <button class="static-faq-question" type="button" aria-expanded="true">Is RoofDraftAI a full CRM?<span class="static-faq-arrow">&#9662;</span></button>
             <div class="static-faq-answer">No. RoofDraftAI is intentionally lightweight. It helps roofing contractors create professional proposals and customer messages without adopting a full CRM.</div>
           </div>
           <div class="static-faq-item">
-            <button class="static-faq-question" type="button" aria-expanded="false">Does RoofDraftAI replace my estimating process?<span class="static-faq-arrow">â–¼</span></button>
+            <button class="static-faq-question" type="button" aria-expanded="false">Does RoofDraftAI replace my estimating process?<span class="static-faq-arrow">&#9662;</span></button>
             <div class="static-faq-answer">No. Contractors are responsible for verifying measurements, pricing, materials, local requirements, and final terms. RoofDraftAI helps turn your job details into polished customer-facing language.</div>
           </div>
           <div class="static-faq-item">
-            <button class="static-faq-question" type="button" aria-expanded="false">Why not just use ChatGPT?<span class="static-faq-arrow">â–¼</span></button>
-            <div class="static-faq-answer">ChatGPT is flexible, but RoofDraftAI is built around a roofing-specific workflow with structured proposal fields, reusable company defaults, and tools for follow-up, review requests, and referrals.</div>
+            <button class="static-faq-question" type="button" aria-expanded="false">Why not just use ChatGPT?<span class="static-faq-arrow">&#9662;</span></button>
+            <div class="static-faq-answer">ChatGPT is flexible, but RoofDraftAI is built around a roofing-specific workflow with structured proposal fields, reusable company defaults, and tools for follow-up, review requests, referrals, and roof visual overviews.</div>
           </div>
           <div class="static-faq-item">
-            <button class="static-faq-question" type="button" aria-expanded="false">Can I try it without a credit card?<span class="static-faq-arrow">â–¼</span></button>
+            <button class="static-faq-question" type="button" aria-expanded="false">Can I try it without a credit card?<span class="static-faq-arrow">&#9662;</span></button>
             <div class="static-faq-answer">Yes. You can generate one free proposal with no card required.</div>
           </div>
           <div class="static-faq-item">
-            <button class="static-faq-question" type="button" aria-expanded="false">What does the Pro plan include?<span class="static-faq-arrow">â–¼</span></button>
-            <div class="static-faq-answer">The Pro plan is designed to include unlimited proposals, follow-up emails, review requests, referral messages, saved company defaults, and professional proposal formatting.</div>
+            <button class="static-faq-question" type="button" aria-expanded="false">What does the Pro plan include?<span class="static-faq-arrow">&#9662;</span></button>
+            <div class="static-faq-answer">The Pro plan is designed to include unlimited proposals, follow-up emails, review requests, referral messages, saved company defaults, roof visual overviews, and professional proposal formatting.</div>
           </div>
           <div class="static-faq-item">
-            <button class="static-faq-question" type="button" aria-expanded="false">Is Stripe payment active yet?<span class="static-faq-arrow">â–¼</span></button>
+            <button class="static-faq-question" type="button" aria-expanded="false">Is Stripe payment active yet?<span class="static-faq-arrow">&#9662;</span></button>
             <div class="static-faq-answer">Not yet. Payment integration is the final launch step. Until then, the site allows free proposal testing and early access requests.</div>
           </div>
           <div class="static-faq-item">
-            <button class="static-faq-question" type="button" aria-expanded="false">Can I use RoofDraftAI from my phone?<span class="static-faq-arrow">â–¼</span></button>
+            <button class="static-faq-question" type="button" aria-expanded="false">Can I use RoofDraftAI from my phone?<span class="static-faq-arrow">&#9662;</span></button>
             <div class="static-faq-answer">Yes. The app is mobile-friendly so contractors can use it in the field.</div>
           </div>
           <div class="static-faq-item">
-            <button class="static-faq-question" type="button" aria-expanded="false">Does RoofDraftAI guarantee I will win more jobs?<span class="static-faq-arrow">â–¼</span></button>
+            <button class="static-faq-question" type="button" aria-expanded="false">Does RoofDraftAI automatically measure the roof from satellite images?<span class="static-faq-arrow">&#9662;</span></button>
+            <div class="static-faq-answer">No. Roof Visual Overview is contractor-guided. You can upload a satellite screenshot, drone photo, or roof image and add visual notes, labels, and measurement context, but final measurements must be verified by the contractor.</div>
+          </div>
+          <div class="static-faq-item">
+            <button class="static-faq-question" type="button" aria-expanded="false">Can I include pitch, rake, area, and gutter notes?<span class="static-faq-arrow">&#9662;</span></button>
+            <div class="static-faq-answer">Yes. You can add pitch notes, rake notes, estimated roof area, gutter length notes, and the measurement source. These are contractor-provided notes and should be verified before sending.</div>
+          </div>
+          <div class="static-faq-item">
+            <button class="static-faq-question" type="button" aria-expanded="false">Can I use an EagleView, Roofr, Hover, insurance, or drone report?<span class="static-faq-arrow">&#9662;</span></button>
+            <div class="static-faq-answer">You may reference those as the measurement source if you have that information, but RoofDraftAI does not replace or automatically integrate with those services unless a real integration is separately built.</div>
+          </div>
+          <div class="static-faq-item">
+            <button class="static-faq-question" type="button" aria-expanded="false">Will homeowners see the roof visual in the proposal?<span class="static-faq-arrow">&#9662;</span></button>
+            <div class="static-faq-answer">Yes, if you add visual information, the proposal can include a Roof Visual Overview section with the image or visual notes, selected labels, measurement context, and a homeowner-friendly explanation.</div>
+          </div>
+          <div class="static-faq-item">
+            <button class="static-faq-question" type="button" aria-expanded="false">Does RoofDraftAI guarantee I will win more jobs?<span class="static-faq-arrow">&#9662;</span></button>
             <div class="static-faq-answer">No software can guarantee sales. RoofDraftAI helps you respond faster, look more professional, and follow up more consistently.</div>
           </div>
           <div class="static-faq-item">
-            <button class="static-faq-question" type="button" aria-expanded="false">Can I edit the generated proposal?<span class="static-faq-arrow">â–¼</span></button>
+            <button class="static-faq-question" type="button" aria-expanded="false">Can I edit the generated proposal?<span class="static-faq-arrow">&#9662;</span></button>
             <div class="static-faq-answer">Yes. You can review and edit generated content before using it.</div>
           </div>
           <div class="static-faq-item">
-            <button class="static-faq-question" type="button" aria-expanded="false">Is the sample proposal real?<span class="static-faq-arrow">â–¼</span></button>
+            <button class="static-faq-question" type="button" aria-expanded="false">Is the sample proposal real?<span class="static-faq-arrow">&#9662;</span></button>
             <div class="static-faq-answer">No. It is a fictional demo to show the type of output RoofDraftAI can create.</div>
           </div>
+        </div>
         </div>
       </div>
     </section>
@@ -3619,7 +4044,7 @@
           </div>
         </div>
         <div class="footer-v2-bottom">
-          <div class="footer-v2-copy">© 2026 RoofDraftAI. All rights reserved.</div>
+          <div class="footer-v2-copy">&copy; 2026 RoofDraftAI. All rights reserved.</div>
           <div class="footer-v2-tagline">RoofDraftAI.com</div>
         </div>
       </div>
@@ -4156,10 +4581,81 @@
       );
     }
 
+    function RoofVisualOverviewCard({ roofVisual, sessionOnly = false }) {
+      if (!roofVisualHasContent(roofVisual)) return null;
+      const labels = roofVisualDisplayLabels(roofVisual);
+      const measurementRows = roofVisualMeasurementRows(roofVisual);
+      const explanation = roofVisualExplanationPreview(roofVisual);
+      const visualType = (roofVisual.visualType || '').trim();
+
+      return (
+        <div className="proposal-visual-card">
+          <div className="proposal-visual-header">
+            <div>
+              <div className="proposal-visual-title">Roof Visual Overview</div>
+              <div className="proposal-visual-subtitle">Contractor-guided visual notes included for proposal clarity.</div>
+            </div>
+            {visualType && <div className="proposal-visual-badge">Visual type: {visualType}</div>}
+          </div>
+          <div className="proposal-visual-grid">
+            <div className="proposal-visual-media">
+              {roofVisual.imagePreviewUrl || roofVisual.imageUrl ? (
+                <img
+                  className="proposal-visual-image"
+                  src={roofVisual.imagePreviewUrl || roofVisual.imageUrl}
+                  alt="Uploaded roof visual preview for proposal."
+                />
+              ) : (
+                <div className="proposal-visual-placeholder">
+                  <strong>Roof Visual Notes</strong>
+                  <span>No image attached. Contractor-provided visual notes are still included below.</span>
+                </div>
+              )}
+            </div>
+            <div className="proposal-visual-body">
+              {labels.length > 0 && (
+                <div className="proposal-visual-block">
+                  <div className="proposal-visual-block-label">Contractor-provided scope labels</div>
+                  <div className="proposal-visual-chip-row">
+                    {labels.map(label => <span key={label} className="proposal-visual-chip">{label}</span>)}
+                  </div>
+                </div>
+              )}
+              {measurementRows.length > 0 && (
+                <div className="proposal-visual-block">
+                  <div className="proposal-visual-block-label">Measurement Context</div>
+                  <div className="proposal-visual-metrics-grid">
+                    {measurementRows.map(([label, value]) => (
+                      <div key={label} className="proposal-visual-metric">
+                        <span>{label}</span>
+                        <strong>{value}</strong>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {explanation && (
+                <div className="proposal-visual-block">
+                  <div className="proposal-visual-block-label">Homeowner-friendly explanation</div>
+                  <p className="proposal-visual-copy">{explanation}</p>
+                </div>
+              )}
+            </div>
+          </div>
+          {sessionOnly && (
+            <div className="proposal-visual-session-note">
+              Image preview is shown in this browser session only. Saved drafts keep the text version of the visual notes until production storage is connected.
+            </div>
+          )}
+          <div className="proposal-visual-disclaimer">{ROOF_VISUAL_DISCLAIMER}</div>
+        </div>
+      );
+    }
+
     // ---------------------------------------------------------------------------
     // Result Card
     // ---------------------------------------------------------------------------
-    function ResultCard({ result, draftSaved, token, user, toolName, onUpgradeNeeded }) {
+    function ResultCard({ result, draftSaved, token, user, toolName, onUpgradeNeeded, proposalVisual = null }) {
       const safeUser = user || {};
       const isPro = safeUser.is_admin || safeUser.plan === 'pro';
       const toast = useToast();
@@ -4193,8 +4689,8 @@
           <div className="result-header">
             <div>
               <div className="result-title">Your Result</div>
-              {draftSaved && <div className="draft-saved-indicator">✓ Auto-saved to Drafts</div>}
-              {savedToFolder && <div className="draft-saved-indicator">✓ Saved to {savedToFolder}</div>}
+              {draftSaved && <div className="draft-saved-indicator"><span aria-hidden="true">&#10003;</span> Auto-saved to Drafts</div>}
+              {savedToFolder && <div className="draft-saved-indicator"><span aria-hidden="true">&#10003;</span> Saved to {savedToFolder}</div>}
             </div>
             <div style={{ display:'flex', gap:8, flexWrap:'wrap', justifyContent:'flex-end' }}>
               {isPro && !savedToFolder && (
@@ -4219,7 +4715,12 @@
               </button>
             </div>
           </div>
-          <div id={resultId} className="result-content" dangerouslySetInnerHTML={{ __html: renderMarkdown(editableText) }} />
+          <div id={resultId}>
+            {toolName === 'proposal' && proposalVisual && (
+              <RoofVisualOverviewCard roofVisual={proposalVisual} sessionOnly={proposalVisual.sessionOnly} />
+            )}
+            <div className="result-content" dangerouslySetInnerHTML={{ __html: renderMarkdown(editableText) }} />
+          </div>
           {editMode && (
             <div className="editable-output-wrap">
               <div className="editable-output-header">
@@ -4234,6 +4735,9 @@
               />
               <div className="editable-preview-card">
                 <span className="editable-preview-label">Formatting Preview</span>
+                {toolName === 'proposal' && proposalVisual && (
+                  <RoofVisualOverviewCard roofVisual={proposalVisual} sessionOnly={proposalVisual.sessionOnly} />
+                )}
                 <div className="result-content" dangerouslySetInnerHTML={{ __html: renderMarkdown(editableText) }} />
               </div>
             </div>
@@ -4348,8 +4852,8 @@
           <div className="result-header">
             <div>
               <div className="result-title">Your Results</div>
-              {draftSaved && <div className="draft-saved-indicator">✓ Auto-saved to Drafts</div>}
-              {savedToFolder && <div className="draft-saved-indicator">✓ Saved to {savedToFolder}</div>}
+              {draftSaved && <div className="draft-saved-indicator"><span aria-hidden="true">&#10003;</span> Auto-saved to Drafts</div>}
+              {savedToFolder && <div className="draft-saved-indicator"><span aria-hidden="true">&#10003;</span> Saved to {savedToFolder}</div>}
             </div>
             <div style={{ display:'flex', gap:8, flexWrap:'wrap', justifyContent:'flex-end' }}>
               {isPro && !savedToFolder && (
@@ -4486,6 +4990,242 @@
       { value: 'short_summary', label: 'Generate shorter proposal summary' },
       { value: 'customer_email', label: 'Generate customer email version' },
     ];
+    const ROOF_VISUAL_DISCLAIMER = 'Roof visuals and measurement notes are for proposal clarity only. Final measurements, pitch, material quantities, local requirements, warranty terms, and pricing must be verified by the contractor before sending.';
+    const ROOF_VISUAL_FILE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+    const ROOF_VISUAL_MAX_FILE_SIZE = 8 * 1024 * 1024;
+    const ROOF_VISUAL_TYPES = [
+      'Satellite view',
+      'Drone view',
+      'Roof inspection photo',
+      'Before photo',
+      'After concept',
+      'Damage area',
+      'Gutter layout',
+      'Roof section map',
+      'Other',
+    ];
+    const ROOF_VISUAL_LABEL_OPTIONS = [
+      'Full roof replacement area',
+      'Partial repair area',
+      'Ridge',
+      'Valley',
+      'Rake edge',
+      'Eave edge',
+      'Gutters',
+      'Downspouts',
+      'Chimney flashing',
+      'Pipe boots',
+      'Skylight',
+      'Ventilation',
+      'Damaged shingles',
+      'Soft decking area',
+      'Leak source',
+      'Flashing detail',
+      'Cleanup area',
+      'Material staging area',
+      'Access point',
+      'Other',
+    ];
+    const ROOF_VISUAL_MEASUREMENT_SOURCES = [
+      'Contractor estimate',
+      'EagleView report',
+      'Roofr report',
+      'Hover report',
+      'Drone measurement',
+      'Manual measurement',
+      'Insurance scope',
+      'Customer-provided measurement',
+      'Visual estimate only',
+      'Not provided',
+      'Other',
+    ];
+    const ROOF_VISUAL_EXPLANATION_STYLES = [
+      'Simple homeowner explanation',
+      'Detailed scope explanation',
+      'Premium proposal explanation',
+      'Insurance/scope clarification',
+    ];
+
+    function createEmptyRoofVisual() {
+      return {
+        enabled: false,
+        imageUrl: '',
+        imagePreviewUrl: '',
+        imageName: '',
+        visualType: '',
+        labels: [],
+        customLabel: '',
+        estimatedRoofArea: '',
+        estimatedSquares: '',
+        pitchNote: '',
+        rakeNote: '',
+        gutterLengthNote: '',
+        wasteFactorNote: '',
+        measurementSource: '',
+        customMeasurementSource: '',
+        measurementNotes: '',
+        summaryNotes: '',
+        explanationStyle: 'Simple homeowner explanation',
+      };
+    }
+
+    function createEmptyProposalForm() {
+      return {
+        customer_name: '',
+        customer_email: '',
+        customer_phone: '',
+        customer_address: '',
+        customer_city: '',
+        customer_state: '',
+        customer_zip: '',
+        company_name: '',
+        contractor_name: '',
+        contractor_phone: '',
+        contractor_email: '',
+        company_website: '',
+        company_address: '',
+        license_number: '',
+        service_area: '',
+        job_type: 'Full roof replacement',
+        roof_size_squares: '',
+        existing_roof_material: '',
+        proposed_material: '',
+        material_brand: '',
+        roof_pitch: '',
+        number_of_layers: '',
+        decking_notes: '',
+        scope_items: [],
+        scope_notes: '',
+        price_total: '',
+        deposit_required: '',
+        payment_terms: '',
+        financing_note: '',
+        start_date: '',
+        completion_days: '',
+        weather_delay_note: '',
+        warranty_labor: '',
+        warranty_materials: '',
+        warranty_notes: '',
+        cleanup_language: '',
+        tone: 'Professional',
+        output_version: 'full_proposal',
+        roof_visual: createEmptyRoofVisual(),
+      };
+    }
+
+    function roofVisualDisplayLabels(roofVisual) {
+      if (!roofVisual) return [];
+      const labels = Array.isArray(roofVisual.labels) ? roofVisual.labels.filter(Boolean) : [];
+      if (labels.includes('Other')) {
+        const filtered = labels.filter(label => label !== 'Other');
+        if (roofVisual.customLabel && roofVisual.customLabel.trim()) filtered.push(roofVisual.customLabel.trim());
+        return filtered;
+      }
+      return labels;
+    }
+
+    function roofVisualMeasurementSourceLabel(roofVisual) {
+      if (!roofVisual) return '';
+      if (roofVisual.measurementSource === 'Other') return (roofVisual.customMeasurementSource || '').trim();
+      if (roofVisual.measurementSource === 'Not provided') return '';
+      return (roofVisual.measurementSource || '').trim();
+    }
+
+    function roofVisualMeasurementRows(roofVisual) {
+      if (!roofVisual) return [];
+      const rows = [
+        ['Estimated roof area', roofVisual.estimatedRoofArea],
+        ['Estimated squares', roofVisual.estimatedSquares],
+        ['Pitch note', roofVisual.pitchNote],
+        ['Rake note', roofVisual.rakeNote],
+        ['Gutter length note', roofVisual.gutterLengthNote],
+        ['Waste factor note', roofVisual.wasteFactorNote],
+        ['Measurement source', roofVisualMeasurementSourceLabel(roofVisual)],
+        ['Additional measurement notes', roofVisual.measurementNotes],
+      ];
+      return rows.filter(([, value]) => value && String(value).trim());
+    }
+
+    function roofVisualHasContent(roofVisual) {
+      if (!roofVisual) return false;
+      return !!(
+        roofVisual.hasImage ||
+        roofVisual.imagePreviewUrl ||
+        roofVisual.imageUrl ||
+        roofVisual.visualType ||
+        roofVisualDisplayLabels(roofVisual).length ||
+        roofVisual.estimatedRoofArea ||
+        roofVisual.estimatedSquares ||
+        roofVisual.pitchNote ||
+        roofVisual.rakeNote ||
+        roofVisual.gutterLengthNote ||
+        roofVisual.wasteFactorNote ||
+        roofVisualMeasurementSourceLabel(roofVisual) ||
+        roofVisual.measurementNotes ||
+        roofVisual.summaryNotes
+      );
+    }
+
+    function roofVisualExplanationPreview(roofVisual) {
+      if (!roofVisualHasContent(roofVisual)) return '';
+      if (roofVisual.summaryNotes && roofVisual.summaryNotes.trim()) return roofVisual.summaryNotes.trim();
+      switch (roofVisual.explanationStyle) {
+        case 'Detailed scope explanation':
+          return 'The roof visual notes are intended to show the primary areas included in the proposed scope, including roof sections, edge details, ventilation components, flashing points, and cleanup areas. These notes help connect the written proposal to the actual roof areas reviewed during the inspection.';
+        case 'Premium proposal explanation':
+          return 'To make the proposal easier to review, we have included a visual overview of the roof areas connected to this project. The visual notes are designed to provide a clearer understanding of the scope, materials, and roof details included in the proposed work.';
+        case 'Insurance/scope clarification':
+          return 'This visual overview is included to help connect the written scope with the roof areas discussed during inspection. Final quantities, coverage decisions, and pricing should be verified against the contractor estimate, insurance scope, or measurement report before acceptance.';
+        default:
+          return 'This visual is included to help clarify the roof areas and project details discussed in this proposal. The marked items are contractor-provided notes intended to make the scope easier to understand.';
+      }
+    }
+
+    function sanitizeRoofVisualForApi(roofVisual) {
+      if (!roofVisual || !roofVisual.enabled) return null;
+      const labels = roofVisualDisplayLabels(roofVisual);
+      const measurementSource = roofVisualMeasurementSourceLabel(roofVisual);
+      const payload = {
+        enabled: true,
+        hasImage: !!(roofVisual.imagePreviewUrl || roofVisual.imageUrl),
+        imageName: (roofVisual.imageName || '').trim(),
+        visualType: (roofVisual.visualType || '').trim(),
+        labels,
+        customLabel: (roofVisual.customLabel || '').trim(),
+        estimatedRoofArea: (roofVisual.estimatedRoofArea || '').trim(),
+        estimatedSquares: (roofVisual.estimatedSquares || '').trim(),
+        pitchNote: (roofVisual.pitchNote || '').trim(),
+        rakeNote: (roofVisual.rakeNote || '').trim(),
+        gutterLengthNote: (roofVisual.gutterLengthNote || '').trim(),
+        wasteFactorNote: (roofVisual.wasteFactorNote || '').trim(),
+        measurementSource,
+        customMeasurementSource: (roofVisual.customMeasurementSource || '').trim(),
+        measurementNotes: (roofVisual.measurementNotes || '').trim(),
+        summaryNotes: (roofVisual.summaryNotes || '').trim(),
+        explanationStyle: (roofVisual.explanationStyle || 'Simple homeowner explanation').trim(),
+      };
+      return roofVisualHasContent(payload) ? payload : null;
+    }
+
+    function buildRoofVisualPreviewState(roofVisual) {
+      const payload = sanitizeRoofVisualForApi(roofVisual);
+      if (!payload) return null;
+      return {
+        ...payload,
+        imageUrl: roofVisual.imageUrl || '',
+        imagePreviewUrl: roofVisual.imagePreviewUrl || '',
+        sessionOnly: !!roofVisual.imagePreviewUrl && !roofVisual.imageUrl,
+      };
+    }
+
+    function readFileAsDataUrl(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = () => reject(new Error('file_read_failed'));
+        reader.readAsDataURL(file);
+      });
+    }
 
     function ProposalTool({ token, user, onUpgradeNeeded, onNavigate }) {
       const isPaying = user && (user.is_admin || user.plan === 'starter' || user.plan === 'pro');
@@ -4908,55 +5648,16 @@
     function ProposalToolV2({ token, user, onUpgradeNeeded, onNavigate }) {
       const isPaying = user && (user.is_admin || user.plan === 'starter' || user.plan === 'pro');
       const defaults = useSavedDefaults(token);
-      const emptyForm = {
-        customer_name: '',
-        customer_email: '',
-        customer_phone: '',
-        customer_address: '',
-        customer_city: '',
-        customer_state: '',
-        customer_zip: '',
-        company_name: '',
-        contractor_name: '',
-        contractor_phone: '',
-        contractor_email: '',
-        company_website: '',
-        company_address: '',
-        license_number: '',
-        service_area: '',
-        job_type: 'Full roof replacement',
-        roof_size_squares: '',
-        existing_roof_material: '',
-        proposed_material: '',
-        material_brand: '',
-        roof_pitch: '',
-        number_of_layers: '',
-        decking_notes: '',
-        scope_items: [],
-        scope_notes: '',
-        price_total: '',
-        deposit_required: '',
-        payment_terms: '',
-        financing_note: '',
-        start_date: '',
-        completion_days: '',
-        weather_delay_note: '',
-        warranty_labor: '',
-        warranty_materials: '',
-        warranty_notes: '',
-        cleanup_language: '',
-        tone: 'Professional',
-        output_version: 'full_proposal',
-      };
-
-      const [form, setForm] = useState(emptyForm);
-      const [baseForm, setBaseForm] = useState(emptyForm);
+      const [form, setForm] = useState(() => createEmptyProposalForm());
+      const [baseForm, setBaseForm] = useState(() => createEmptyProposalForm());
       const [defaultsApplied, setDefaultsApplied] = useState(false);
       const [defaultsLoaded, setDefaultsLoaded] = useState(false);
       const [result, setResult] = useState('');
       const [draftSaved, setDraftSaved] = useState(false);
+      const [proposalVisualResult, setProposalVisualResult] = useState(null);
       const [loading, setLoading] = useState(false);
       const [error, setError] = useState('');
+      const [roofVisualError, setRoofVisualError] = useState('');
 
       useEffect(() => {
         if (defaults == null || defaultsLoaded) return;
@@ -4981,14 +5682,38 @@
           proposed_material: defaults.common_materials && defaults.common_materials[0] ? defaults.common_materials[0] : '',
         };
         const hasDefaults = Object.values(fill).some(Boolean);
-        const merged = { ...emptyForm, ...fill };
+        const merged = {
+          ...createEmptyProposalForm(),
+          ...fill,
+          scope_items: [],
+          roof_visual: createEmptyRoofVisual(),
+        };
         setBaseForm(merged);
         setForm(merged);
         setDefaultsApplied(hasDefaults);
         setDefaultsLoaded(true);
       }, [defaults, defaultsLoaded]);
 
-      function set(field) { return e => setForm(f => ({ ...f, [field]: e.target.value })); }
+      function set(field) {
+        return e => setForm(f => ({ ...f, [field]: e.target.value }));
+      }
+
+      function updateRoofVisual(field, value) {
+        setRoofVisualError('');
+        setForm(f => ({
+          ...f,
+          roof_visual: {
+            ...f.roof_visual,
+            enabled: true,
+            [field]: value,
+          },
+        }));
+      }
+
+      function setRoofVisual(field) {
+        return e => updateRoofVisual(field, e.target.value);
+      }
+
       function toggleScopeItem(item) {
         setForm(f => {
           const exists = f.scope_items.includes(item);
@@ -4998,18 +5723,104 @@
           };
         });
       }
+
+      function toggleRoofVisualEnabled() {
+        setRoofVisualError('');
+        setForm(f => ({
+          ...f,
+          roof_visual: {
+            ...f.roof_visual,
+            enabled: !f.roof_visual.enabled,
+          },
+        }));
+      }
+
+      function toggleRoofVisualLabel(label) {
+        setRoofVisualError('');
+        setForm(f => {
+          const exists = f.roof_visual.labels.includes(label);
+          return {
+            ...f,
+            roof_visual: {
+              ...f.roof_visual,
+              enabled: true,
+              labels: exists
+                ? f.roof_visual.labels.filter(item => item !== label)
+                : [...f.roof_visual.labels, label],
+              customLabel: label === 'Other' && exists ? '' : f.roof_visual.customLabel,
+            },
+          };
+        });
+      }
+
+      async function handleRoofVisualFileChange(e) {
+        setRoofVisualError('');
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        if (!ROOF_VISUAL_FILE_TYPES.includes(file.type)) {
+          setRoofVisualError('That file type is not supported. Please use JPG, PNG, or WEBP.');
+          e.target.value = '';
+          return;
+        }
+        if (file.size > ROOF_VISUAL_MAX_FILE_SIZE) {
+          setRoofVisualError('Please keep roof visuals under 8 MB.');
+          e.target.value = '';
+          return;
+        }
+        try {
+          // TODO: Connect Roof Visual Overview image uploads to production storage before launch if persistent proposal visuals are required.
+          const preview = await readFileAsDataUrl(file);
+          setForm(f => ({
+            ...f,
+            roof_visual: {
+              ...f.roof_visual,
+              enabled: true,
+              imagePreviewUrl: preview,
+              imageUrl: '',
+              imageName: file.name,
+            },
+          }));
+        } catch {
+          setRoofVisualError('Please upload a valid image file.');
+        } finally {
+          e.target.value = '';
+        }
+      }
+
+      function clearRoofVisualImage() {
+        setRoofVisualError('');
+        setForm(f => ({
+          ...f,
+          roof_visual: {
+            ...f.roof_visual,
+            imagePreviewUrl: '',
+            imageUrl: '',
+            imageName: '',
+          },
+        }));
+      }
+
       function resetForm() {
-        setForm(baseForm);
+        setForm({
+          ...baseForm,
+          scope_items: [...(baseForm.scope_items || [])],
+          roof_visual: { ...(baseForm.roof_visual || createEmptyRoofVisual()) },
+        });
         setResult('');
         setDraftSaved(false);
+        setProposalVisualResult(null);
+        setRoofVisualError('');
         setError('');
       }
 
       async function handleSubmit(e) {
         e.preventDefault();
         setError('');
+        setRoofVisualError('');
         setResult('');
         setDraftSaved(false);
+        setProposalVisualResult(null);
+
         if (!form.customer_name || !form.customer_address || !form.customer_city || !form.customer_state || !form.company_name || !form.contractor_phone || !form.contractor_email || !form.job_type || !form.proposed_material || !form.price_total) {
           setError('Please add the required job details before generating.');
           return;
@@ -5018,14 +5829,32 @@
           setError('Please select at least one scope item or add scope notes before generating.');
           return;
         }
+
+        const roofVisualTouched = form.roof_visual.enabled || roofVisualHasContent(form.roof_visual);
+        if (roofVisualTouched && form.roof_visual.labels.includes('Other') && !(form.roof_visual.customLabel || '').trim()) {
+          setRoofVisualError('Add a custom label or remove "Other" before generating.');
+          return;
+        }
+        if (roofVisualTouched && form.roof_visual.measurementSource === 'Other' && !(form.roof_visual.customMeasurementSource || '').trim()) {
+          setRoofVisualError('Add a custom measurement source or choose one from the list.');
+          return;
+        }
+
+        const roofVisualPayload = sanitizeRoofVisualForApi(form.roof_visual);
+        const payload = {
+          ...form,
+          roof_visual: roofVisualPayload,
+        };
+
         setLoading(true);
         try {
-          const { ok, status, data } = await API.call('/api/tools/proposal', 'POST', form, token);
+          const { ok, status, data } = await API.call('/api/tools/proposal', 'POST', payload, token);
           if (status === 403) { onUpgradeNeeded(); return; }
           if (!ok) { setError(data.error || 'Something went wrong while generating this. Please try again.'); return; }
           if (!data.result) { setError('No proposal was returned. Please try again.'); return; }
           setResult(data.result);
           setDraftSaved(!!data.draft_id);
+          setProposalVisualResult(buildRoofVisualPreviewState(form.roof_visual));
         } catch (err) {
           setError('Connection error - please try again.');
         } finally {
@@ -5033,10 +5862,12 @@
         }
       }
 
+      const roofVisualPreview = buildRoofVisualPreviewState(form.roof_visual);
+
       return (
         <div className="page-fade-in">
           <div className="page-title">Generate Proposal</div>
-          <div className="page-subtitle">Build a homeowner-ready roofing proposal with structure, pricing, scope, timeline, and clear next-step language.</div>
+          <div className="page-subtitle">Build a homeowner-ready roofing proposal with structure, pricing, scope, optional roof visuals, timeline, and clear next-step language.</div>
 
           <div className="content-card">
             {defaultsApplied ? (
@@ -5049,7 +5880,7 @@
               </div>
             ) : (
               <div className="tool-info-banner">
-                Free accounts can generate one proposal now. Saved defaults, folders, and the full message tool set unlock on Pro after Stripe billing is connected.
+                Free accounts can generate one proposal now. Saved defaults, folders, roof visual organization, and the full message tool set unlock on Pro after Stripe billing is connected.
               </div>
             )}
 
@@ -5208,6 +6039,144 @@
               <div className="tool-section-card">
                 <div className="tool-section-header">
                   <div>
+                    <div className="tool-section-title">Roof Visual Overview</div>
+                    <div className="tool-section-copy">Add a satellite screenshot, drone photo, inspection photo, or roof image to help the homeowner understand the scope.</div>
+                  </div>
+                  <span className="optional-badge">Optional but recommended for premium proposals.</span>
+                </div>
+
+                <label className="roof-visual-toggle">
+                  <input type="checkbox" checked={form.roof_visual.enabled} onChange={toggleRoofVisualEnabled} />
+                  <div className="roof-visual-toggle-copy">
+                    <strong>Include Roof Visual Overview in this proposal</strong>
+                    <span>Use this when you want to pair the written scope with a contractor-guided image, labels, and measurement context.</span>
+                  </div>
+                </label>
+
+                <div className="tool-form-grid">
+                  <div className="form-group span-2 roof-visual-upload-shell">
+                    <label className="form-label" htmlFor="roof-visual-upload">Upload Roof Visual</label>
+                    <input
+                      id="roof-visual-upload"
+                      className="form-input"
+                      type="file"
+                      accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                      onChange={handleRoofVisualFileChange}
+                    />
+                    <div className="field-help">Upload a satellite screenshot, drone photo, roof inspection image, damage photo, or visual you want included with the proposal.</div>
+                    <div className="field-inline-note">Image previews are shown in the current browser session only until production storage is connected.</div>
+                    {form.roof_visual.imagePreviewUrl && (
+                      <div className="roof-visual-upload-meta">
+                        <img className="roof-visual-preview-thumb" src={form.roof_visual.imagePreviewUrl} alt="Uploaded roof visual preview for proposal." />
+                        <div>
+                          <strong>{form.roof_visual.imageName || 'Roof visual attached'}</strong>
+                          <div className="field-inline-note">Preview only in this session. Text notes will still carry into the generated proposal output.</div>
+                        </div>
+                        <button className="btn btn-ghost btn-sm" type="button" onClick={clearRoofVisualImage}>Remove image</button>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label">Visual Type <span className="label-optional">(optional)</span></label>
+                    <select className="form-select" value={form.roof_visual.visualType} onChange={setRoofVisual('visualType')}>
+                      <option value="">Not selected</option>
+                      {ROOF_VISUAL_TYPES.map(option => <option key={option} value={option}>{option}</option>)}
+                    </select>
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label">Visual Explanation Style</label>
+                    <select className="form-select" value={form.roof_visual.explanationStyle} onChange={setRoofVisual('explanationStyle')}>
+                      {ROOF_VISUAL_EXPLANATION_STYLES.map(option => <option key={option} value={option}>{option}</option>)}
+                    </select>
+                  </div>
+
+                  <div className="form-group span-2">
+                    <label className="form-label">Visual Labels <span className="label-optional">(optional)</span></label>
+                    <div className="field-help" style={{ marginBottom:'12px' }}>Select the items you want referenced in the proposal. These labels are contractor-provided notes, not automated measurements.</div>
+                    <div className="roof-visual-label-grid">
+                      {ROOF_VISUAL_LABEL_OPTIONS.map(option => (
+                        <label key={option} className="roof-visual-label-item">
+                          <input type="checkbox" checked={form.roof_visual.labels.includes(option)} onChange={() => toggleRoofVisualLabel(option)} />
+                          <span>{option}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  {form.roof_visual.labels.includes('Other') && (
+                    <div className="form-group span-2">
+                      <label className="form-label">Custom Label</label>
+                      <input className="form-input" type="text" value={form.roof_visual.customLabel} onChange={setRoofVisual('customLabel')} placeholder="Example: Front porch transition" />
+                    </div>
+                  )}
+
+                  <div className="form-group">
+                    <label className="form-label">Estimated Roof Area <span className="label-optional">(optional)</span></label>
+                    <input className="form-input" type="text" value={form.roof_visual.estimatedRoofArea} onChange={setRoofVisual('estimatedRoofArea')} placeholder="Approx. 3,200 sq. ft." />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Estimated Squares <span className="label-optional">(optional)</span></label>
+                    <input className="form-input" type="text" value={form.roof_visual.estimatedSquares} onChange={setRoofVisual('estimatedSquares')} placeholder="Approx. 28 squares" />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Pitch Note <span className="label-optional">(optional)</span></label>
+                    <input className="form-input" type="text" value={form.roof_visual.pitchNote} onChange={setRoofVisual('pitchNote')} placeholder="7/12 main pitch, verify before ordering" />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Rake Note <span className="label-optional">(optional)</span></label>
+                    <input className="form-input" type="text" value={form.roof_visual.rakeNote} onChange={setRoofVisual('rakeNote')} placeholder="Rake edge detail to match existing trim color" />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Gutter Length Note <span className="label-optional">(optional)</span></label>
+                    <input className="form-input" type="text" value={form.roof_visual.gutterLengthNote} onChange={setRoofVisual('gutterLengthNote')} placeholder="Gutters to be confirmed during final walkthrough" />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Waste Factor Note <span className="label-optional">(optional)</span></label>
+                    <input className="form-input" type="text" value={form.roof_visual.wasteFactorNote} onChange={setRoofVisual('wasteFactorNote')} placeholder="Waste factor to be confirmed by contractor" />
+                  </div>
+                  <div className="form-group span-2">
+                    <label className="form-label">Measurement Source <span className="label-optional">(optional)</span></label>
+                    <select className="form-select" value={form.roof_visual.measurementSource} onChange={setRoofVisual('measurementSource')}>
+                      <option value="">Not selected</option>
+                      {ROOF_VISUAL_MEASUREMENT_SOURCES.map(option => <option key={option} value={option}>{option}</option>)}
+                    </select>
+                  </div>
+
+                  {form.roof_visual.measurementSource === 'Other' && (
+                    <div className="form-group span-2">
+                      <label className="form-label">Custom Measurement Source</label>
+                      <input className="form-input" type="text" value={form.roof_visual.customMeasurementSource} onChange={setRoofVisual('customMeasurementSource')} placeholder="Example: Third-party inspection notes" />
+                    </div>
+                  )}
+
+                  <div className="form-group span-2">
+                    <label className="form-label">Measurement Notes <span className="label-optional">(optional)</span></label>
+                    <textarea className="form-textarea" rows="3" value={form.roof_visual.measurementNotes} onChange={setRoofVisual('measurementNotes')} placeholder="Add any context you want the homeowner to understand about the measurement notes or source." />
+                  </div>
+
+                  <div className="form-group span-2">
+                    <label className="form-label">Visual Summary Notes <span className="label-optional">(optional)</span></label>
+                    <textarea className="form-textarea" rows="4" value={form.roof_visual.summaryNotes} onChange={setRoofVisual('summaryNotes')} placeholder="Example: The front and rear roof planes are included in the replacement scope. The visual also notes ridge ventilation, pipe boot replacement, rake edge details, gutter review, and cleanup areas." />
+                    <div className="field-inline-note">Write what the homeowner should notice in the visual. RoofDraftAI will turn this into a polished proposal section.</div>
+                  </div>
+                </div>
+
+                {roofVisualError && <div className="form-error" style={{ marginTop:'16px' }}>{roofVisualError}</div>}
+
+                <div className="status-callout" style={{ marginTop:'16px', marginBottom: roofVisualPreview ? '16px' : 0 }}>
+                  {ROOF_VISUAL_DISCLAIMER}
+                </div>
+
+                {roofVisualPreview && (
+                  <RoofVisualOverviewCard roofVisual={roofVisualPreview} sessionOnly={roofVisualPreview.sessionOnly} />
+                )}
+              </div>
+
+              <div className="tool-section-card">
+                <div className="tool-section-header">
+                  <div>
                     <div className="tool-section-title">Pricing, Timeline, And Warranty</div>
                     <div className="tool-section-copy">Keep the pricing and terms practical. RoofDraftAI will organize the language, but you still control the numbers and job specifics.</div>
                   </div>
@@ -5299,9 +6268,17 @@
 
           {result && (
             <>
-              <ResultCard result={result} draftSaved={draftSaved} token={token} user={user} toolName="proposal" onUpgradeNeeded={onUpgradeNeeded} />
+              <ResultCard
+                result={result}
+                draftSaved={draftSaved}
+                token={token}
+                user={user}
+                toolName="proposal"
+                onUpgradeNeeded={onUpgradeNeeded}
+                proposalVisual={proposalVisualResult}
+              />
               <div className="output-disclaimer">
-                Review all pricing, measurements, terms, warranties, and local requirements before sending. RoofDraftAI does not replace contractor judgment, estimating, engineering, insurance, or legal review.
+                Review all pricing, measurements, visual notes, terms, warranties, and local requirements before sending. RoofDraftAI does not replace contractor judgment, estimating, engineering, insurance, or legal review.
               </div>
             </>
           )}
@@ -5718,7 +6695,7 @@
     // Dashboard Home
     // ---------------------------------------------------------------------------
     const TOOLS = [
-      { key: 'proposal', tab: 'proposal', name: 'Proposal Generator', desc: 'Full professional proposal letter in under a minute. Fill out the job details, get a client-ready document.' },
+      { key: 'proposal', tab: 'proposal', name: 'Proposal Generator', desc: 'Build a polished roofing proposal with scope, pricing, and an optional contractor-guided roof visual overview.' },
       { key: 'followup', tab: 'followup', name: 'Follow-Up Email',    desc: '3 email variations for prospects who haven\'t responded. Human tone, soft call to action.' },
       { key: 'review',   tab: 'review',   name: 'Review Request',     desc: 'Text and email versions of a Google review ask  -  personal, not scripted.' },
       { key: 'referral', tab: 'referral', name: 'Referral Message',   desc: 'Text and email to ask happy customers for referrals without being awkward.' },
@@ -5847,7 +6824,7 @@
               <div className="onboarding-items">
                 {onboardingSteps.map(step => (
                   <div key={step.id} className={`onboarding-item${step.done ? ' done' : ''}`}>
-                    <div className={`onboarding-check${step.done ? ' done' : ''}`}>{step.done ? '✓' : ''}</div>
+                    <div className={`onboarding-check${step.done ? ' done' : ''}`}>{step.done ? '\u2713' : ''}</div>
                     {step.done ? <span>{step.label}</span> : <button onClick={step.action}>{step.label}</button>}
                   </div>
                 ))}
@@ -5907,7 +6884,7 @@
             ) : !hasDrafts ? (
               <div className="activity-list">
                 <div className="activity-empty">
-                  <div className="activity-empty-icon">â—»</div>
+                  <div className="activity-empty-icon">&#10148;</div>
                   <h4>No activity yet</h4>
                   <p>Generate your first proposal to see it here.</p>
                 </div>
@@ -5970,7 +6947,8 @@
       const showOnboarding = !dismissed && doneCount < onboardingSteps.length;
       const todayStr = new Date().toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric' });
       const quickActions = [
-        { key:'proposal', title:'Generate Roofing Proposal', copy:'Turn rough job notes into a polished homeowner-ready proposal.', action: () => onSelectTab('proposal'), button:'Open Proposal Tool' },
+        { key:'proposal', title:'Generate Roofing Proposal', copy:'Turn rough job notes into a polished homeowner-ready proposal with optional roof visuals.', action: () => onSelectTab('proposal'), button:'Open Proposal Tool' },
+        { key:'roofvisual', title:'Add Roof Visual to Proposal', copy:'Upload a roof image or satellite screenshot and include contractor-guided visual notes in your proposal.', action: () => onSelectTab('proposal'), button:'Open Proposal Tool' },
         { key:'followup', title:'Create Follow-Up Email', copy:'Build a clear next-step email and text version after inspections or unanswered estimates.', action: () => onSelectTab('followup'), button: canUseTool(user, 'followup') ? 'Open Follow-Up Tool' : 'Request Pro Access', locked: !canUseTool(user, 'followup') },
         { key:'review', title:'Create Review Request', copy:'Ask for the review while the job is still fresh and the homeowner is happy.', action: () => onSelectTab('review'), button: canUseTool(user, 'review') ? 'Open Review Tool' : 'Request Pro Access', locked: !canUseTool(user, 'review') },
         { key:'referral', title:'Create Referral Request', copy:'Turn completed jobs into a simple referral ask you can send right away.', action: () => onSelectTab('referral'), button: canUseTool(user, 'referral') ? 'Open Referral Tool' : 'Request Pro Access', locked: !canUseTool(user, 'referral') },
@@ -6012,7 +6990,7 @@
               <p>
                 {user.is_admin ? 'Admin access is active.' : `Current plan: ${(user.plan || 'free').charAt(0).toUpperCase() + (user.plan || 'free').slice(1)}.`}
                 {' '}
-                {isFree ? `Free includes ${FREE_LIMIT} proposal with no card required.` : 'Pro and promo-based access unlock the full proposal and message workflow.'}
+                {isFree ? `Free includes ${FREE_LIMIT} proposal with no card required.` : 'Pro and promo-based access unlock the full proposal, message workflow, and reusable roof visual notes.'}
               </p>
             </div>
             <div className="billing-note-card">
@@ -6061,7 +7039,7 @@
               <div className="onboarding-items">
                 {onboardingSteps.map(step => (
                   <div key={step.id} className={`onboarding-item${step.done ? ' done' : ''}`}>
-                    <div className={`onboarding-check${step.done ? ' done' : ''}`}>{step.done ? '✓' : ''}</div>
+                    <div className={`onboarding-check${step.done ? ' done' : ''}`}>{step.done ? '\u2713' : ''}</div>
                     {step.done ? <span>{step.label}</span> : <button onClick={step.action}>{step.label}</button>}
                   </div>
                 ))}
@@ -6140,7 +7118,7 @@
             ) : !hasDrafts ? (
               <div className="activity-list">
                 <div className="activity-empty">
-                  <div className="activity-empty-icon">â—»</div>
+                  <div className="activity-empty-icon">&#10148;</div>
                   <h4>No saved outputs yet</h4>
                   <p>Your generated proposals, follow-ups, reviews, and referral drafts will show up here once they are created and saved.</p>
                 </div>
@@ -6951,7 +7929,7 @@
                     style={{ padding:'11px 24px', fontFamily:'Oswald, sans-serif', letterSpacing:'0.03em', textTransform:'uppercase' }}>
                     {savingCompany ? <><Spinner /> Saving...</> : 'Save Profile'}
                   </button>
-                  {savedCompany && <span className="defaults-saved-msg">✓ Saved</span>}
+                  {savedCompany && <span className="defaults-saved-msg">&#10003; Saved</span>}
                 </div>
               </form>
             </div>
@@ -7015,7 +7993,7 @@
                     style={{ padding:'11px 24px', fontFamily:'Oswald, sans-serif', letterSpacing:'0.03em', textTransform:'uppercase' }}>
                     {savingProposal ? <><Spinner /> Saving...</> : 'Save Proposal Defaults'}
                   </button>
-                  {savedProposal && <span className="defaults-saved-msg">✓ Saved</span>}
+                  {savedProposal && <span className="defaults-saved-msg">&#10003; Saved</span>}
                 </div>
               </form>
             </div>
@@ -7343,7 +8321,7 @@
                   style={{ padding:'15px 22px', fontSize:'16px', fontFamily:'Oswald, sans-serif', letterSpacing:'0.04em', textTransform:'uppercase' }}>
                   {saving ? <><Spinner /> Saving Defaults...</> : 'Save Defaults'}
                 </button>
-                {saved && <span className="defaults-saved-msg">Saved</span>}
+                  {savedCompany && <span className="defaults-saved-msg">&#10003; Saved</span>}
               </div>
             </form>
           </div>
@@ -8296,7 +9274,7 @@
                 onClick={() => setOpen(open === i ? null : i)}
               >
                 {item.q}
-                <span className={`faq-accordion-arrow${open === i ? ' open' : ''}`}>â–¼</span>
+                <span className={`faq-accordion-arrow${open === i ? ' open' : ''}`}>&#9662;</span>
               </button>
               {open === i && <div className="faq-accordion-a">{item.a}</div>}
             </div>
@@ -8343,12 +9321,15 @@
       ];
 
       const faqs = [
-        { q: 'What is RoofDraftAI?', a: 'A set of AI-powered tools built specifically for roofing contractors. It generates proposals, follow-up emails, review requests, and referral messages in seconds.' },
+        { q: 'What is RoofDraftAI?', a: 'A lightweight proposal and customer-message workspace built specifically for roofing contractors. It helps turn job details into proposals, follow-up emails, review requests, referral messages, and optional roof visual overviews.' },
         { q: 'Do I need a credit card to start?', a: 'No. You get one free proposal so you can evaluate the output before upgrading.' },
-        { q: 'How long does it take to generate a proposal?', a: 'Under 60 seconds. Fill in the form, click generate, and you\'ll have a complete client-ready proposal.' },
+        { q: 'How long does it take to generate a proposal?', a: 'Under 60 seconds for the written draft. If you add a roof visual, that image and the contractor-provided notes are included in the same proposal workflow.' },
         { q: 'Can I use it on my phone?', a: 'Yes. RoofDraftAI is fully mobile-friendly. Use it from the job site, your truck, or anywhere.' },
-        { q: 'What\'s included in the Pro plan?', a: 'All 4 tools: Proposal Generator, Follow-Up Email, Review Request, and Referral Message. Plus unlimited generations and Job Folders.' },
-        { q: 'Is there a contract or setup fee?', a: 'No contracts, no setup fees, no hidden costs. Cancel any time.' },
+        { q: 'Does RoofDraftAI automatically measure the roof from satellite images?', a: 'No. Roof Visual Overview is contractor-guided. You can upload a satellite screenshot, drone photo, or roof image and add notes, labels, and measurement context, but final measurements must be verified by the contractor.' },
+        { q: 'Can I include pitch, rake, area, and gutter notes?', a: 'Yes. You can add pitch notes, rake notes, estimated roof area, gutter length notes, and the measurement source. These are contractor-provided notes and should be verified before sending.' },
+        { q: 'Can I use an EagleView, Roofr, Hover, insurance, or drone report?', a: 'You may reference those as the measurement source if you already have that information, but RoofDraftAI does not replace or automatically integrate with those services unless a real integration is separately built.' },
+        { q: 'Will homeowners see the roof visual in the proposal?', a: 'Yes. If you add visual information, the proposal can include a Roof Visual Overview section with the image or visual notes, selected labels, measurement context, and a homeowner-friendly explanation.' },
+        { q: 'What\'s included in the Pro plan?', a: 'The Pro plan is designed to include unlimited proposals, roof visual overviews, follow-up emails, review requests, referral messages, saved company defaults, and job folders.' },
       ];
 
       const COMPARE_ROWS = [
@@ -8748,7 +9729,7 @@
                 </div>
               </div>
               <div className="footer-v2-bottom">
-                <div className="footer-v2-copy">© 2026 RoofDraftAI. All rights reserved.</div>
+                <div className="footer-v2-copy">&copy; 2026 RoofDraftAI. All rights reserved.</div>
                 <div className="footer-v2-tagline">Made for roofers, by people who understand the trades.</div>
               </div>
             </div>
