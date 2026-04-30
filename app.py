@@ -7,6 +7,14 @@ import sys
 import json
 from flask import Flask, request, jsonify, send_from_directory
 
+try:
+    from dotenv import load_dotenv
+except ImportError:
+    load_dotenv = None
+
+if load_dotenv:
+    load_dotenv()
+
 app = Flask(__name__, static_folder='static')
 _debug_enabled = os.environ.get('DEBUG', 'false').lower() == 'true'
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY') or (

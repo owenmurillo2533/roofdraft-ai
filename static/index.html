@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -701,6 +701,7 @@
       display: flex; align-items: center; justify-content: space-between;
       padding: 0 60px;
       height: 64px;
+      box-sizing: border-box;
       border-bottom: 1px solid var(--border);
       position: sticky; top: 0; z-index: 100;
       background: var(--white);
@@ -2779,6 +2780,11 @@
       background: rgba(255,255,255,0.06);
       color: #fff;
       cursor: pointer;
+      flex-shrink: 0;
+      margin-right: 12px;
+      font-size: 18px;
+      font-weight: 700;
+      line-height: 1;
     }
     .marketing-mobile-panel {
       display: none;
@@ -3123,7 +3129,7 @@
         <button class="btn btn-primary" data-auth-target="register" type="button" style="padding: 10px 18px; font-size: 14px;">Generate Free Proposal</button>
       </div>
       <button class="marketing-mobile-toggle" type="button" aria-label="Open navigation menu" aria-expanded="false">
-        <span>Menu</span>
+        <span aria-hidden="true">&#9776;</span>
       </button>
       <div class="marketing-mobile-panel" hidden>
         <div class="marketing-mobile-links">
@@ -3455,8 +3461,8 @@
             <ul class="pricing-features-v2">
               <li><span class="pf-check">✓</span><span>1 proposal generation included</span></li>
               <li><span class="pf-check">✓</span><span>See the actual output before paying</span></li>
-              <li><span class="pf-x">âœ•</span><span class="pf-x-text">No follow-up, review, or referral tools</span></li>
-              <li><span class="pf-x">âœ•</span><span class="pf-x-text">No saved defaults or job folders</span></li>
+              <li><span class="pf-x">&times;</span><span class="pf-x-text">No follow-up, review, or referral tools</span></li>
+              <li><span class="pf-x">&times;</span><span class="pf-x-text">No saved defaults or job folders</span></li>
             </ul>
             <button class="btn btn-outline-red btn-full" data-auth-target="register" type="button">Generate My Free Proposal</button>
           </div>
@@ -3825,7 +3831,7 @@
       return (
         <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
           <div className="modal-box">
-            <button className="modal-close" onClick={onClose}>âœ•</button>
+            <button className="modal-close" onClick={onClose}>&times;</button>
             <div className="modal-title">Welcome Back</div>
             <div className="modal-subtitle">Sign in to your RoofDraftAI account</div>
             <form className="modal-form" onSubmit={handleSubmit}>
@@ -3904,7 +3910,7 @@
       return (
         <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
           <div className="modal-box">
-            <button className="modal-close" onClick={onClose}>âœ•</button>
+            <button className="modal-close" onClick={onClose}>&times;</button>
             <div className="modal-title">Try RoofDraftAI Free</div>
             <div className="modal-subtitle">One free proposal included - no card required</div>
             <form className="modal-form" onSubmit={handleSubmit}>
@@ -4005,7 +4011,7 @@
       return (
         <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
           <div className="modal-box" style={{ maxWidth:'560px' }}>
-            <button className="modal-close" onClick={onClose}>âœ•</button>
+            <button className="modal-close" onClick={onClose}>&times;</button>
             <div className="modal-title">Upgrade Your Plan</div>
             <div className="modal-subtitle">Upgrade your plan to unlock more tools and unlimited generations.</div>
             <div className="upgrade-plans-grid">
@@ -4124,7 +4130,7 @@
       return (
         <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
           <div className="modal-box">
-            <button className="modal-close" onClick={onClose}>âœ•</button>
+            <button className="modal-close" onClick={onClose}>&times;</button>
             <div className="modal-title">Save to Folder</div>
             <div className="modal-subtitle">Name this draft and choose where to save it.</div>
             <div className="modal-form">
@@ -6198,7 +6204,7 @@
       return (
         <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
           <div className="modal-box" style={{ maxWidth:'720px', maxHeight:'80vh', overflowY:'auto' }}>
-            <button className="modal-close" onClick={onClose}>âœ•</button>
+            <button className="modal-close" onClick={onClose}>&times;</button>
             <div className="modal-title" style={{ fontSize:'20px' }}>Affiliate Details</div>
             <div style={{ color:'var(--slate)', marginBottom:'16px' }}>{affiliateEmail}</div>
             <div style={{ fontSize:'12px', color:'var(--slate-light)', marginBottom:'16px', padding:'10px', background:'var(--light-gray)', borderRadius:'4px' }}>
@@ -6994,7 +7000,7 @@
                         placeholder={`Preset ${i + 1}  -  e.g. GAF Timberline HDZ, 30yr architectural shingles`}
                       />
                       <button type="button" className="material-remove-btn" onClick={() => removeMaterial(i)}
-                        title="Remove">âœ•</button>
+                        title="Remove">&times;</button>
                     </div>
                   ))}
                   {proposalForm.common_materials.length < 5 && (
@@ -7886,9 +7892,9 @@
                       <span className="folder-row-count">{f.draft_count}</span>
                       <div className="folder-row-actions">
                         <button className="folder-action-btn" title="Rename"
-                          onClick={e => { e.stopPropagation(); setRenamingId(f.id); setRenameVal(f.name); }}>âœŽ</button>
+                          onClick={e => { e.stopPropagation(); setRenamingId(f.id); setRenameVal(f.name); }}>&#9998;</button>
                         <button className="folder-action-btn danger" title="Delete"
-                          onClick={e => { e.stopPropagation(); handleDeleteFolder(f.id); }}>âœ•</button>
+                          onClick={e => { e.stopPropagation(); handleDeleteFolder(f.id); }}>&times;</button>
                       </div>
                     </button>
                   )}
@@ -7934,7 +7940,7 @@
                             <button className="btn btn-sm btn-primary" style={{ padding:'5px 10px', fontSize:'12px' }}
                               onClick={() => handleMoveDraft(d.id)}>Move</button>
                             <button className="btn btn-sm btn-ghost" style={{ padding:'5px 8px', fontSize:'12px' }}
-                              onClick={() => setMovingDraftId(null)}>âœ•</button>
+                              onClick={() => setMovingDraftId(null)}>&times;</button>
                           </div>
                         ) : (
                           <>
@@ -7957,7 +7963,7 @@
           {viewingDraft && (
             <div className="modal-overlay" onClick={e => e.target === e.currentTarget && setViewingDraft(null)}>
               <div className="modal-box" style={{ maxWidth:'680px', maxHeight:'85vh', display:'flex', flexDirection:'column' }}>
-                <button className="modal-close" onClick={() => setViewingDraft(null)}>âœ•</button>
+                <button className="modal-close" onClick={() => setViewingDraft(null)}>&times;</button>
                 <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:12 }}>
                   <span className="draft-tool-badge">{TOOL_LABELS[viewingDraft.tool_name] || viewingDraft.tool_name}</span>
                   <span className="draft-date">{formatDate(viewingDraft.created_at)}</span>
@@ -8013,7 +8019,7 @@
       return (
         <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
           <div className="modal-box" style={{ maxWidth:'560px', maxHeight:'85vh', overflowY:'auto' }}>
-            <button className="modal-close" onClick={onClose}>âœ•</button>
+            <button className="modal-close" onClick={onClose}>&times;</button>
             <div className="modal-title">Plan Features</div>
             <div className="modal-subtitle">You're on the <strong>{planLabel}</strong> plan</div>
             <table style={{ width:'100%', borderCollapse:'collapse', marginTop:16, fontSize:14 }}>
@@ -8090,7 +8096,7 @@
           <div className="sidebar-logo" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div className="sidebar-logo-text">RoofDraft<span>AI</span></div>
             {onMobileClose && (
-              <button onClick={onMobileClose} style={{ background:'none', border:'none', cursor:'pointer', fontSize:'20px', color:'var(--slate-light)', padding:'4px', lineHeight:1 }} aria-label="Close menu">âœ•</button>
+              <button onClick={onMobileClose} style={{ background:'none', border:'none', cursor:'pointer', fontSize:'20px', color:'var(--slate-light)', padding:'4px', lineHeight:1 }} aria-label="Close menu">&times;</button>
             )}
           </div>
           <nav className="sidebar-nav">
@@ -8172,7 +8178,7 @@
           {/* Mobile top bar */}
           <div className="mobile-nav-bar">
             <div className="mobile-nav-logo">RoofDraft<span>AI</span></div>
-            <button className="mobile-nav-btn" onClick={() => setSidebarOpen(true)} aria-label="Open menu">â˜°</button>
+            <button className="mobile-nav-btn" onClick={() => setSidebarOpen(true)} aria-label="Open menu">&#9776;</button>
           </div>
 
           {/* Sidebar overlay (mobile) */}
@@ -8229,7 +8235,7 @@
       return (
         <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
           <div className="modal-box" style={{ maxWidth: '560px', maxHeight: '80vh', overflowY: 'auto' }}>
-            <button className="modal-close" onClick={onClose}>âœ•</button>
+            <button className="modal-close" onClick={onClose}>&times;</button>
             <div className="modal-title" style={{ marginBottom: 20 }}>Terms of Service</div>
             <div style={{ fontSize: '14px', lineHeight: '1.7', color: 'var(--slate)' }}>
               <p style={{ marginBottom: 14 }}><strong style={{ color: 'var(--near-black)' }}>Effective date:</strong> March 2026</p>
@@ -8256,7 +8262,7 @@
       return (
         <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
           <div className="modal-box" style={{ maxWidth: '560px', maxHeight: '80vh', overflowY: 'auto' }}>
-            <button className="modal-close" onClick={onClose}>âœ•</button>
+            <button className="modal-close" onClick={onClose}>&times;</button>
             <div className="modal-title" style={{ marginBottom: 20 }}>Privacy Policy</div>
             <div style={{ fontSize: '14px', lineHeight: '1.7', color: 'var(--slate)' }}>
               <p style={{ marginBottom: 14 }}><strong style={{ color: 'var(--near-black)' }}>Effective date:</strong> March 2026</p>
@@ -8413,7 +8419,7 @@
                 <div className="testimonials-grid-static">
                   {LANDING_TESTIMONIALS.map((t, i) => (
                     <div key={i} className="testimonial-card">
-                      <div className="testimonial-stars">â˜…â˜…â˜…â˜…â˜…</div>
+                      <div className="testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
                       <div className="testimonial-quote">"{t.quote}"</div>
                       <div className="testimonial-author">{t.name}</div>
                       <div className="testimonial-location">{t.location}</div>
@@ -8657,7 +8663,7 @@
               </p>
               <div className="contact-cards">
                 <div className="contact-card">
-                  <div className="contact-card-icon">âœ‰</div>
+                  <div className="contact-card-icon">&#9993;</div>
                   <div className="contact-card-label">Email Us</div>
                   <div className="contact-card-value">
                     <a href="mailto:owen.murillo2533@gmail.com">owen.murillo2533@gmail.com</a>
@@ -8665,7 +8671,7 @@
                   <div className="contact-card-note">We respond within 24 hours</div>
                 </div>
                 <div className="contact-card">
-                  <div className="contact-card-icon">â˜Ž</div>
+                  <div className="contact-card-icon">&#9742;</div>
                   <div className="contact-card-label">Call or Text</div>
                   <div className="contact-card-value">
                     <a href="tel:+19858592855">(985) 859-2855</a>
@@ -8843,7 +8849,7 @@
               boxShadow:'0 2px 8px rgba(0,0,0,0.15)'
             }}>
               <span>Payment successful  -  your plan has been upgraded! Refresh if your plan hasn't updated yet.</span>
-              <button onClick={() => setCheckoutBanner(null)} style={{ background:'none', border:'none', color:'#fff', cursor:'pointer', fontSize:'18px', lineHeight:1, padding:'0 4px' }}>âœ•</button>
+              <button onClick={() => setCheckoutBanner(null)} style={{ background:'none', border:'none', color:'#fff', cursor:'pointer', fontSize:'18px', lineHeight:1, padding:'0 4px' }}>&times;</button>
             </div>
           )}
           {checkoutBanner === 'cancelled' && (
@@ -8855,7 +8861,7 @@
               boxShadow:'0 2px 8px rgba(0,0,0,0.15)'
             }}>
               <span>Checkout cancelled  -  no charge was made.</span>
-              <button onClick={() => setCheckoutBanner(null)} style={{ background:'none', border:'none', color:'#fff', cursor:'pointer', fontSize:'18px', lineHeight:1, padding:'0 4px' }}>âœ•</button>
+              <button onClick={() => setCheckoutBanner(null)} style={{ background:'none', border:'none', color:'#fff', cursor:'pointer', fontSize:'18px', lineHeight:1, padding:'0 4px' }}>&times;</button>
             </div>
           )}
           {user ? (
