@@ -45,6 +45,16 @@
   <!-- Favicon (SVG inline) -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%23C0392B'/><path d='M16 7L4 17h4v8h16v-8h4L16 7z' fill='white'/></svg>" />
 
+  <script>
+    (function () {
+      try {
+        if (window.localStorage && window.localStorage.getItem('roofdraft_token')) {
+          document.documentElement.classList.add('roofdraft-auth-pending');
+        }
+      } catch (error) {}
+    })();
+  </script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet" />
@@ -83,7 +93,28 @@
     html, body { min-height: 100%; }
     #root { position: relative; z-index: 20; }
     #marketing-shell { position: relative; z-index: 1; }
-    body.app-authenticated #marketing-shell { display: none; }
+    html.roofdraft-auth-pending #marketing-shell,
+    html.roofdraft-auth-pending [data-marketing-shell-sibling],
+    body.app-auth-pending #marketing-shell,
+    body.app-auth-pending [data-marketing-shell-sibling],
+    body.app-authenticated #marketing-shell,
+    body.app-authenticated [data-marketing-shell-sibling] { display: none !important; }
+
+    #auth-boot-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      align-items: center;
+      justify-content: center;
+      background: var(--off-white);
+      padding: 24px;
+      text-align: center;
+    }
+    html.roofdraft-auth-pending #auth-boot-overlay,
+    body.app-auth-pending #auth-boot-overlay {
+      display: flex;
+    }
 
     body {
       background: var(--background);
@@ -1479,10 +1510,18 @@
 
     @media (max-width: 960px) {
       .testimonials-grid-static { grid-template-columns: 1fr; }
-    .pricing-grid-v2, .pricing-grid-public { grid-template-columns: 1fr; }
+      .pricing-grid-v2, .pricing-grid-public { grid-template-columns: 1fr; }
       .pricing-card-pro { transform: none; }
       .folders-layout { grid-template-columns: 1fr; }
       .upgrade-plans-grid { grid-template-columns: 1fr; }
+      .proposal-progress-indicator {
+        top: 10px;
+        align-items: flex-start;
+        flex-direction: column;
+      }
+      .proposal-progress-label {
+        text-align: left;
+      }
     }
 
     /* Pricing */
@@ -2377,7 +2416,7 @@
     .draft-card-body { flex: 1; min-width: 0; }
     .draft-card-title { font-size: 14px; font-weight: 600; color: var(--near-black); margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .draft-card-meta { font-size: 12px; color: var(--slate-light); display: flex; align-items: center; gap: 10px; }
-    .draft-card-actions { display: flex; gap: 6px; align-items: center; flex-shrink: 0; }
+    .draft-card-actions { display: flex; gap: 6px; align-items: center; flex-shrink: 0; flex-wrap: wrap; justify-content: flex-end; }
     .draft-card-btn { padding: 5px 12px; font-size: 12px; border-radius: 4px; border: 1px solid var(--border); background: var(--white); color: var(--slate); cursor: pointer; font-family: 'Source Sans 3', sans-serif; font-weight: 600; transition: all 0.15s ease; }
     .draft-card-btn:hover { border-color: var(--roof-red); color: var(--roof-red); }
     .draft-card-btn.delete:hover { border-color: var(--roof-red); background: rgba(192,57,43,0.06); color: var(--roof-red); }
@@ -2436,6 +2475,21 @@
     .sidebar-logo-text span,
     .mobile-nav-logo span {
       color: var(--roof-red-light);
+    }
+    .sidebar .sidebar-logo-text {
+      color: var(--near-black);
+      max-width: none;
+      overflow: visible;
+      white-space: normal;
+    }
+    .sidebar .sidebar-logo-text span {
+      color: var(--roof-red);
+    }
+    .dashboard .mobile-nav-logo {
+      color: var(--near-black);
+    }
+    .dashboard .mobile-nav-logo span {
+      color: var(--roof-red);
     }
     .landing-nav-links a,
     .landing-nav-actions .btn-ghost {
@@ -2947,6 +3001,35 @@
       border-radius: 10px;
       padding: 20px;
       margin-bottom: 18px;
+    }
+    .proposal-progress-indicator {
+      position: sticky;
+      top: 14px;
+      z-index: 6;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 16px;
+      margin-bottom: 18px;
+      border: 1px solid rgba(44, 40, 37, 0.08);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.94);
+      box-shadow: 0 10px 24px rgba(26, 23, 21, 0.07);
+      backdrop-filter: blur(10px);
+    }
+    .proposal-progress-step {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--roof-red);
+    }
+    .proposal-progress-label {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--near-black);
+      text-align: right;
     }
     .tool-section-header {
       display: flex;
@@ -3597,6 +3680,13 @@
   </style>
 </head>
 <body>
+  <div id="auth-boot-overlay" aria-live="polite" aria-label="Opening your RoofDraftAI workspace">
+    <div class="loading-screen-inner">
+      <div class="loading-brand-logo">RoofDraft<span>AI</span></div>
+      <div class="loading-brand-sub">Opening your workspace...</div>
+      <div class="spinner spinner-dark" aria-hidden="true"></div>
+    </div>
+  </div>
   <div id="marketing-shell" class="landing" data-landing-page="true">
     <nav class="landing-nav">
       <a class="landing-logo" href="/">RoofDraft<span>AI</span></a>
@@ -4058,8 +4148,8 @@
             <div class="static-faq-answer">The Pro plan is designed to include unlimited proposals, follow-up emails, review requests, referral messages, saved company defaults, roof visual overviews, and professional proposal formatting.</div>
           </div>
           <div class="static-faq-item">
-            <button class="static-faq-question" type="button" aria-expanded="false">Is Stripe payment active yet?<span class="static-faq-arrow">&#9662;</span></button>
-            <div class="static-faq-answer">Yes. Free accounts can start with one proposal, and Pro upgrades use secure Stripe subscription checkout.</div>
+            <button class="static-faq-question" type="button" aria-expanded="false">How do I subscribe to Pro?<span class="static-faq-arrow">&#9662;</span></button>
+            <div class="static-faq-answer">After signing up for a free account, go to Account &amp; Billing in your dashboard to upgrade. The Pro plan is $79/month and includes unlimited proposals, follow-up emails, review requests, referral messages, saved drafts, job folders, and priority support.</div>
           </div>
           <div class="static-faq-item">
             <button class="static-faq-question" type="button" aria-expanded="false">Can I use RoofDraftAI from my phone?<span class="static-faq-arrow">&#9662;</span></button>
@@ -4070,8 +4160,8 @@
             <div class="static-faq-answer">No. Roof Visual Overview is contractor-guided. You can upload a satellite screenshot, drone photo, or roof image and add visual notes, labels, and measurement context, but final measurements must be verified by the contractor.</div>
           </div>
           <div class="static-faq-item">
-            <button class="static-faq-question" type="button" aria-expanded="false">Can I include pitch, rake, area, and gutter notes?<span class="static-faq-arrow">&#9662;</span></button>
-            <div class="static-faq-answer">Yes. You can add pitch notes, rake notes, estimated roof area, gutter length notes, and the measurement source. These are contractor-provided notes and should be verified before sending.</div>
+            <button class="static-faq-question" type="button" aria-expanded="false">Can I include pitch, rake, squares, and gutter notes?<span class="static-faq-arrow">&#9662;</span></button>
+            <div class="static-faq-answer">Yes. You can add pitch notes, rake notes, estimated squares, gutter length notes, and the measurement source. These are contractor-provided notes and should be verified before sending.</div>
           </div>
           <div class="static-faq-item">
             <button class="static-faq-question" type="button" aria-expanded="false">Can I use an EagleView, Roofr, Hover, insurance, or drone report?<span class="static-faq-arrow">&#9662;</span></button>
@@ -4098,7 +4188,7 @@
       </div>
     </section>
 
-    <section id="contact" class="contact-section">
+    <section id="contact" class="contact-section" data-marketing-shell-sibling>
       <div class="contact-inner">
         <div class="section-eyebrow">Contact</div>
         <h2 class="section-title scroll-reveal">Questions before you get started?</h2>
@@ -4150,7 +4240,7 @@
       </div>
     </section>
 
-    <section class="marketing-final-cta-section">
+    <section class="marketing-final-cta-section" data-marketing-shell-sibling>
       <div class="marketing-chatgpt-shell">
         <div class="marketing-final-cta-shell scroll-reveal">
           <div class="marketing-final-cta-grid">
@@ -4173,7 +4263,7 @@
       </div>
     </section>
 
-    <footer class="landing-footer-v2">
+    <footer class="landing-footer-v2" data-marketing-shell-sibling>
       <div class="footer-v2-inner">
         <div class="footer-v2-top">
           <div class="footer-v2-brand">
@@ -4186,7 +4276,8 @@
             <a href="#sample-proposal">Sample Proposal</a>
             <a href="#pricing">Pricing</a>
             <a href="#faq">FAQ</a>
-            <button data-auth-target="login" type="button">Sign In</button>
+            <button data-auth-target="login" data-footer-auth-state="guest" type="button">Sign In</button>
+            <a href="/dashboard" data-footer-auth-state="auth" hidden>Dashboard</a>
             <button data-auth-target="register" type="button">Generate Free Proposal</button>
           </div>
           <div class="footer-v2-col">
@@ -4756,13 +4847,16 @@
     // ---------------------------------------------------------------------------
     // Save Draft Modal (Pro only)
     // ---------------------------------------------------------------------------
-    function SaveDraftModal({ result, toolName, token, onClose, onSaved }) {
-      const today = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-      const [title, setTitle] = useState(`${TOOL_LABELS[toolName] || toolName}  -  ${today}`);
+    function SaveDraftModal({ result, toolName, token, onClose, onSaved, sourceData }) {
+      const [title, setTitle] = useState(() => buildSuggestedDraftTitle(toolName, sourceData));
       const [folderId, setFolderId] = useState('');
       const [folders, setFolders] = useState([]);
       const [saving, setSaving] = useState(false);
       const [error, setError] = useState('');
+
+      useEffect(() => {
+        setTitle(buildSuggestedDraftTitle(toolName, sourceData));
+      }, [toolName, sourceData]);
 
       useEffect(() => {
         API.call('/api/folders', 'GET', null, token).then(({ ok, data }) => {
@@ -4780,6 +4874,7 @@
             title: title.trim(),
             content: result,
             folder_id: folderId ? parseInt(folderId) : null,
+            source_data: buildDraftSourceData(toolName, sourceData),
           }, token);
           if (ok) {
             const folderName = folderId
@@ -4886,11 +4981,6 @@
               )}
             </div>
           </div>
-          {sessionOnly && (
-            <div className="proposal-visual-session-note">
-              Image preview is shown in this browser session only. Saved drafts keep the text version of the visual notes until production storage is connected.
-            </div>
-          )}
           <div className="proposal-visual-disclaimer">{ROOF_VISUAL_DISCLAIMER}</div>
         </div>
       );
@@ -4899,7 +4989,7 @@
     // ---------------------------------------------------------------------------
     // Result Card
     // ---------------------------------------------------------------------------
-    function ResultCard({ result, draftSaved, token, user, toolName, onUpgradeNeeded, proposalVisual = null }) {
+    function ResultCard({ result, draftSaved, token, user, toolName, onUpgradeNeeded, proposalVisual = null, draftPayload = null }) {
       const safeUser = user || {};
       const isPro = safeUser.is_admin || safeUser.plan === 'pro';
       const toast = useToast();
@@ -5011,6 +5101,7 @@
               result={editableText}
               toolName={toolName}
               token={token}
+              sourceData={draftPayload}
               onClose={() => setShowSaveModal(false)}
               onSaved={name => { setSavedToFolder(name); setShowSaveModal(false); toast(`Saved to ${name}!`, 'success'); }}
             />
@@ -5050,7 +5141,7 @@
     // ---------------------------------------------------------------------------
     // TabbedResultCard  -  for tools that return multiple variants
     // ---------------------------------------------------------------------------
-    function TabbedResultCard({ result, draftSaved, token, user, toolName, onUpgradeNeeded }) {
+    function TabbedResultCard({ result, draftSaved, token, user, toolName, onUpgradeNeeded, draftPayload = null }) {
       const safeUser = user || {};
       const isPro = safeUser.is_admin || safeUser.plan === 'pro';
       const toast = useToast();
@@ -5077,7 +5168,7 @@
       if (!parsedVariants) {
         return (
           <ResultCard result={result} draftSaved={draftSaved} token={token} user={user}
-            toolName={toolName} onUpgradeNeeded={onUpgradeNeeded} />
+            toolName={toolName} onUpgradeNeeded={onUpgradeNeeded} draftPayload={draftPayload} />
         );
       }
 
@@ -5217,6 +5308,7 @@
               result={combinedEditableText}
               toolName={toolName}
               token={token}
+              sourceData={draftPayload}
               onClose={() => setShowSaveModal(false)}
               onSaved={name => { setSavedToFolder(name); setShowSaveModal(false); toast(`Saved to ${name}!`, 'success'); }}
             />
@@ -5344,7 +5436,6 @@
         visualType: '',
         labels: [],
         customLabel: '',
-        estimatedRoofArea: '',
         estimatedSquares: '',
         pitchNote: '',
         rakeNote: '',
@@ -5379,7 +5470,6 @@
         license_number: '',
         service_area: '',
         job_type: 'Full roof replacement',
-        roof_size_squares: '',
         existing_roof_material: '',
         proposed_material: '',
         material_brand: '',
@@ -5406,6 +5496,102 @@
       };
     }
 
+    const PROPOSAL_PROGRESS_STEPS = [
+      { key: 'customer', label: 'Customer Info' },
+      { key: 'company', label: 'Company Info' },
+      { key: 'job', label: 'Job Details' },
+      { key: 'scope', label: 'Scope Of Work' },
+      { key: 'visual', label: 'Roof Visual Overview' },
+      { key: 'pricing', label: 'Pricing / Timeline / Warranty' },
+      { key: 'tone', label: 'Tone And Output' },
+      { key: 'generate', label: 'Generate Proposal' },
+    ];
+
+    function formatSquaresFromFootage(squareFootage) {
+      const raw = String(squareFootage || '').trim();
+      if (!raw) return '';
+      const numeric = parseFloat(raw.replace(/[^0-9.]/g, ''));
+      if (!Number.isFinite(numeric) || numeric <= 0) return '';
+      const rounded = Math.round((numeric / 100) * 10) / 10;
+      const display = Number.isInteger(rounded) ? rounded.toFixed(0) : rounded.toFixed(1);
+      return `${display} squares`;
+    }
+
+    function formatDraftDateLabel() {
+      return new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+
+    function buildSuggestedDraftTitle(toolName, sourceData) {
+      const data = sourceData || {};
+      const fallback = `${TOOL_LABELS[toolName] || toolName} — ${formatDraftDateLabel()}`;
+      const name = String(data.customer_name || data.homeowner_name || '').trim();
+      const address = String(data.customer_address || data.property_address || '').trim();
+      if (toolName === 'proposal') {
+        if (name && address) return `Proposal — ${name}, ${address}`;
+        if (name) return `Proposal — ${name}`;
+        return fallback;
+      }
+      if (toolName === 'followup') {
+        const projectType = String(data.project_type || data.job_type || '').trim();
+        if (name && projectType) return `Follow-Up — ${name} (${projectType})`;
+        if (name) return `Follow-Up — ${name}`;
+        return fallback;
+      }
+      if (toolName === 'review') {
+        const jobType = String(data.job_type || '').trim();
+        if (name && jobType) return `Review Request — ${name} (${jobType})`;
+        if (name) return `Review Request — ${name}`;
+        return fallback;
+      }
+      if (toolName === 'referral') {
+        const jobCompleted = String(data.job_completed || '').trim();
+        if (name && jobCompleted) return `Referral Message — ${name} (${jobCompleted})`;
+        if (name) return `Referral Message — ${name}`;
+      }
+      return fallback;
+    }
+
+    function buildDraftSourceData(toolName, sourceData) {
+      if (!sourceData || typeof sourceData !== 'object') return {};
+      if (toolName !== 'proposal') return { ...sourceData };
+      return {
+        ...sourceData,
+        roof_visual: sourceData.roof_visual
+          ? {
+              ...sourceData.roof_visual,
+              imagePreviewUrl: '',
+              imageUrl: '',
+            }
+          : createEmptyRoofVisual(),
+      };
+    }
+
+    function hasDraftSourceData(sourceData) {
+      return !!(sourceData && typeof sourceData === 'object' && Object.keys(sourceData).length);
+    }
+
+    function draftToolToTab(toolName) {
+      if (toolName === 'followup') return 'followup';
+      if (toolName === 'review') return 'review';
+      if (toolName === 'referral') return 'referral';
+      return 'proposal';
+    }
+
+    function cloneProposalFormWithDraft(baseForm, sourceData) {
+      return {
+        ...baseForm,
+        ...(sourceData || {}),
+        scope_items: Array.isArray(sourceData && sourceData.scope_items)
+          ? sourceData.scope_items.filter(Boolean)
+          : [...(baseForm.scope_items || [])],
+        roof_visual: {
+          ...createEmptyRoofVisual(),
+          ...(baseForm.roof_visual || {}),
+          ...((sourceData && sourceData.roof_visual) || {}),
+        },
+      };
+    }
+
     function roofVisualDisplayLabels(roofVisual) {
       if (!roofVisual) return [];
       const labels = Array.isArray(roofVisual.labels) ? roofVisual.labels.filter(Boolean) : [];
@@ -5427,7 +5613,6 @@
     function roofVisualMeasurementRows(roofVisual) {
       if (!roofVisual) return [];
       const rows = [
-        ['Estimated roof area', roofVisual.estimatedRoofArea],
         ['Estimated squares', roofVisual.estimatedSquares],
         ['Pitch note', roofVisual.pitchNote],
         ['Rake note', roofVisual.rakeNote],
@@ -5447,7 +5632,6 @@
         roofVisual.imageUrl ||
         roofVisual.visualType ||
         roofVisualDisplayLabels(roofVisual).length ||
-        roofVisual.estimatedRoofArea ||
         roofVisual.estimatedSquares ||
         roofVisual.pitchNote ||
         roofVisual.rakeNote ||
@@ -5485,7 +5669,6 @@
         visualType: (roofVisual.visualType || '').trim(),
         labels,
         customLabel: (roofVisual.customLabel || '').trim(),
-        estimatedRoofArea: (roofVisual.estimatedRoofArea || '').trim(),
         estimatedSquares: (roofVisual.estimatedSquares || '').trim(),
         pitchNote: (roofVisual.pitchNote || '').trim(),
         rakeNote: (roofVisual.rakeNote || '').trim(),
@@ -5751,9 +5934,10 @@
       );
     }
 
-    function ProposalToolV2({ token, user, onUpgradeNeeded, onNavigate }) {
+    function ProposalToolV2({ token, user, onUpgradeNeeded, onNavigate, editingDraft, onEditingDraftApplied }) {
       const isPaying = user && (user.is_admin || user.plan === 'starter' || user.plan === 'pro');
       const defaults = useSavedDefaults(token);
+      const formCardRef = useRef(null);
       const [form, setForm] = useState(() => createEmptyProposalForm());
       const [baseForm, setBaseForm] = useState(() => createEmptyProposalForm());
       const [defaultsApplied, setDefaultsApplied] = useState(false);
@@ -5764,6 +5948,8 @@
       const [loading, setLoading] = useState(false);
       const [error, setError] = useState('');
       const [roofVisualError, setRoofVisualError] = useState('');
+      const [currentStepIndex, setCurrentStepIndex] = useState(0);
+      const [activeDraftId, setActiveDraftId] = useState(null);
       const loadingProgress = useLoadingProgress(loading);
 
       useEffect(() => {
@@ -5801,6 +5987,69 @@
         setDefaultsApplied(hasDefaults);
         setDefaultsLoaded(true);
       }, [defaults, defaultsLoaded]);
+
+      useEffect(() => {
+        if (!defaultsLoaded || !editingDraft || editingDraft.tool_name !== 'proposal') return;
+        if (activeDraftId === editingDraft.id) return;
+        const nextForm = hasDraftSourceData(editingDraft.source_data)
+          ? cloneProposalFormWithDraft(baseForm, editingDraft.source_data)
+          : cloneProposalFormWithDraft(baseForm, {});
+        setForm(nextForm);
+        setResult('');
+        setDraftSaved(false);
+        setProposalVisualResult(buildRoofVisualPreviewState(nextForm.roof_visual));
+        setRoofVisualError('');
+        setError('');
+        setActiveDraftId(editingDraft.id);
+        if (onEditingDraftApplied) onEditingDraftApplied(editingDraft.id);
+        window.requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: 'smooth' }));
+      }, [editingDraft, defaultsLoaded, baseForm, activeDraftId, onEditingDraftApplied]);
+
+      useEffect(() => {
+        const container = formCardRef.current;
+        if (!container) return undefined;
+        const sections = Array.from(container.querySelectorAll('[data-proposal-step]'));
+        if (!sections.length) return undefined;
+
+        function updateClosestStep() {
+          let nextIndex = 0;
+          let bestDistance = Number.POSITIVE_INFINITY;
+          sections.forEach(section => {
+            const rect = section.getBoundingClientRect();
+            const distance = Math.abs(rect.top - 150);
+            if (rect.bottom > 120 && distance < bestDistance) {
+              bestDistance = distance;
+              nextIndex = parseInt(section.getAttribute('data-step-index') || '0', 10) || 0;
+            }
+          });
+          setCurrentStepIndex(prev => prev === nextIndex ? prev : nextIndex);
+        }
+
+        const observer = new IntersectionObserver((entries) => {
+          const visible = entries
+            .filter(entry => entry.isIntersecting)
+            .sort((a, b) => Math.abs(a.boundingClientRect.top - 150) - Math.abs(b.boundingClientRect.top - 150));
+          if (visible.length) {
+            const nextIndex = parseInt(visible[0].target.getAttribute('data-step-index') || '0', 10) || 0;
+            setCurrentStepIndex(prev => prev === nextIndex ? prev : nextIndex);
+          } else {
+            updateClosestStep();
+          }
+        }, {
+          threshold: [0, 0.2, 0.55],
+          rootMargin: '-120px 0px -55% 0px',
+        });
+
+        sections.forEach(section => observer.observe(section));
+        updateClosestStep();
+        window.addEventListener('scroll', updateClosestStep, { passive: true });
+        window.addEventListener('resize', updateClosestStep);
+        return () => {
+          observer.disconnect();
+          window.removeEventListener('scroll', updateClosestStep);
+          window.removeEventListener('resize', updateClosestStep);
+        };
+      }, []);
 
       function set(field) {
         return e => setForm(f => ({ ...f, [field]: e.target.value }));
@@ -5929,6 +6178,7 @@
         setProposalVisualResult(null);
         setRoofVisualError('');
         setError('');
+        setActiveDraftId(null);
       }
 
       async function handleSubmit(e) {
@@ -5961,7 +6211,7 @@
         const roofVisualPayload = sanitizeRoofVisualForApi(form.roof_visual);
         const payload = {
           ...form,
-          roof_size_squares: form.square_footage,
+          roof_size_squares: formatSquaresFromFootage(form.square_footage),
           roof_pitch: form.pitch,
           proposed_material: form.proposed_material || form.materials || form.roof_type,
           contractor_email: form.contractor_email || '',
@@ -5991,7 +6241,11 @@
           <div className="page-title">Generate Proposal</div>
           <div className="page-subtitle">Build a homeowner-ready roofing proposal with structure, pricing, scope, optional roof visuals, timeline, and clear next-step language.</div>
 
-          <div className="content-card">
+          <div className="content-card" ref={formCardRef}>
+            <div className="proposal-progress-indicator">
+              <span className="proposal-progress-step">Step {Math.min(currentStepIndex + 1, PROPOSAL_PROGRESS_STEPS.length)} of {PROPOSAL_PROGRESS_STEPS.length}</span>
+              <span className="proposal-progress-label">{PROPOSAL_PROGRESS_STEPS[Math.min(currentStepIndex, PROPOSAL_PROGRESS_STEPS.length - 1)].label}</span>
+            </div>
             {defaultsApplied ? (
               <div className="defaults-indicator applied">
                 Your saved company defaults have been applied. Adjust anything job-specific before you generate.
@@ -6007,7 +6261,7 @@
             )}
 
             <form onSubmit={handleSubmit}>
-              <div className="tool-section-card">
+              <div className="tool-section-card" data-proposal-step data-step-index="0">
                 <div className="tool-section-header">
                   <div>
                     <div className="tool-section-title">Customer Info</div>
@@ -6046,7 +6300,7 @@
                 </div>
               </div>
 
-              <div className="tool-section-card">
+              <div className="tool-section-card" data-proposal-step data-step-index="1">
                 <div className="tool-section-header">
                   <div>
                     <div className="tool-section-title">Company Info</div>
@@ -6089,7 +6343,7 @@
                 </div>
               </div>
 
-              <div className="tool-section-card">
+              <div className="tool-section-card" data-proposal-step data-step-index="2">
                 <div className="tool-section-header">
                   <div>
                     <div className="tool-section-title">Job Details</div>
@@ -6112,6 +6366,7 @@
                   <div className="form-group">
                     <label className="form-label">Square Footage <span className="required-mark">*</span></label>
                     <input className="form-input" type="number" min="1" max="99999" value={form.square_footage} onChange={set('square_footage')} placeholder="2400" required />
+                    <div className="field-inline-note">Enter total square footage. RoofDraftAI will convert to squares automatically.</div>
                   </div>
                   <div className="form-group">
                     <label className="form-label">Existing Roof Material <span className="label-optional">(optional)</span></label>
@@ -6126,10 +6381,6 @@
                   <div className="form-group">
                     <label className="form-label">Shingle Type / Brand <span className="label-optional">(optional)</span></label>
                     <input className="form-input" type="text" value={form.material_brand} onChange={set('material_brand')} placeholder="GAF Timberline HDZ Charcoal" />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">Roof Size / Squares <span className="label-optional">(optional)</span></label>
-                    <input className="form-input" type="text" value={form.roof_size_squares} onChange={set('roof_size_squares')} placeholder="28 squares" />
                   </div>
                   <div className="form-group">
                     <label className="form-label">Number Of Layers <span className="label-optional">(optional)</span></label>
@@ -6156,7 +6407,7 @@
                 </div>
               </div>
 
-              <div className="tool-section-card">
+              <div className="tool-section-card" data-proposal-step data-step-index="3">
                 <div className="tool-section-header">
                   <div>
                     <div className="tool-section-title">Scope Of Work</div>
@@ -6180,7 +6431,7 @@
                 </div>
               </div>
 
-              <div className="tool-section-card">
+              <div className="tool-section-card" data-proposal-step data-step-index="4">
                 <div className="tool-section-header">
                   <div>
                     <div className="tool-section-title">Roof Visual Overview</div>
@@ -6208,13 +6459,11 @@
                       onChange={handleRoofVisualFileChange}
                     />
                     <div className="field-help">Upload a satellite screenshot, drone photo, roof inspection image, damage photo, or visual you want included with the proposal.</div>
-                    <div className="field-inline-note">Image previews are shown in the current browser session only until production storage is connected.</div>
                     {form.roof_visual.imagePreviewUrl && (
                       <div className="roof-visual-upload-meta">
                         <img className="roof-visual-preview-thumb" src={form.roof_visual.imagePreviewUrl} alt="Uploaded roof visual preview for proposal." />
                         <div>
                           <strong>{form.roof_visual.imageName || 'Roof visual attached'}</strong>
-                          <div className="field-inline-note">Preview only in this session. Text notes will still carry into the generated proposal output.</div>
                         </div>
                         <button className="btn btn-ghost btn-sm" type="button" onClick={clearRoofVisualImage}>Remove image</button>
                       </div>
@@ -6256,10 +6505,6 @@
                     </div>
                   )}
 
-                  <div className="form-group">
-                    <label className="form-label">Estimated Roof Area <span className="label-optional">(optional)</span></label>
-                    <input className="form-input" type="text" value={form.roof_visual.estimatedRoofArea} onChange={setRoofVisual('estimatedRoofArea')} placeholder="Approx. 3,200 sq. ft." />
-                  </div>
                   <div className="form-group">
                     <label className="form-label">Estimated Squares <span className="label-optional">(optional)</span></label>
                     <input className="form-input" type="text" value={form.roof_visual.estimatedSquares} onChange={setRoofVisual('estimatedSquares')} placeholder="Approx. 28 squares" />
@@ -6318,7 +6563,7 @@
                 )}
               </div>
 
-              <div className="tool-section-card">
+              <div className="tool-section-card" data-proposal-step data-step-index="5">
                 <div className="tool-section-header">
                   <div>
                     <div className="tool-section-title">Pricing, Timeline, And Warranty</div>
@@ -6373,7 +6618,7 @@
                 </div>
               </div>
 
-              <div className="tool-section-card">
+              <div className="tool-section-card" data-proposal-step data-step-index="6">
                 <div className="tool-section-header">
                   <div>
                     <div className="tool-section-title">Tone And Output</div>
@@ -6397,7 +6642,7 @@
               </div>
 
               {error && <div className="form-error" style={{ marginBottom:'16px' }}>{error}</div>}
-              <div className="tool-form-actions">
+              <div className="tool-form-actions" data-proposal-step data-step-index="7">
                 <button className="btn btn-primary" type="submit" disabled={loading}
                   style={{ padding:'15px 22px', fontSize:'16px', fontFamily:'Oswald, sans-serif', letterSpacing:'0.04em', textTransform:'uppercase' }}>
                   {loading ? <><Spinner /> Generating Proposal...</> : 'Generate Proposal'}
@@ -6421,6 +6666,7 @@
                 toolName="proposal"
                 onUpgradeNeeded={onUpgradeNeeded}
                 proposalVisual={proposalVisualResult}
+                draftPayload={form}
               />
               <div className="output-disclaimer">
                 Review all pricing, measurements, visual notes, terms, warranties, and local requirements before sending. RoofDraftAI does not replace contractor judgment, estimating, engineering, insurance, or legal review.
@@ -6431,7 +6677,7 @@
       );
     }
 
-    function FollowUpToolV2({ token, user, onUpgradeNeeded }) {
+    function FollowUpToolV2({ token, user, onUpgradeNeeded, editingDraft, onEditingDraftApplied }) {
       const defaults = useSavedDefaults(token);
       const emptyForm = {
         customer_name: '',
@@ -6452,6 +6698,7 @@
       const [draftSaved, setDraftSaved] = useState(false);
       const [loading, setLoading] = useState(false);
       const [error, setError] = useState('');
+      const [activeDraftId, setActiveDraftId] = useState(null);
       const loadingProgress = useLoadingProgress(loading);
 
       useEffect(() => {
@@ -6466,6 +6713,24 @@
         setDefaultsApplied(hasDefaults);
         setDefaultsLoaded(true);
       }, [defaults, defaultsLoaded]);
+
+      useEffect(() => {
+        if (!defaultsLoaded || !editingDraft || editingDraft.tool_name !== 'followup') return;
+        if (activeDraftId === editingDraft.id) return;
+        const base = {
+          ...emptyForm,
+          contractor_name: defaults?.contractor_name || '',
+          company_name: defaults?.company_name || '',
+          contractor_phone: defaults?.contractor_phone || '',
+        };
+        setForm({ ...base, ...(hasDraftSourceData(editingDraft.source_data) ? editingDraft.source_data : {}) });
+        setResult('');
+        setDraftSaved(false);
+        setError('');
+        setActiveDraftId(editingDraft.id);
+        if (onEditingDraftApplied) onEditingDraftApplied(editingDraft.id);
+        window.requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: 'smooth' }));
+      }, [editingDraft, defaultsLoaded, defaults, activeDraftId, onEditingDraftApplied]);
 
       function set(field) { return e => setForm(f => ({ ...f, [field]: e.target.value })); }
 
@@ -6576,7 +6841,7 @@
           </div>
           {result && (
             <>
-              <TabbedResultCard result={result} draftSaved={draftSaved} token={token} user={user} toolName="followup" onUpgradeNeeded={onUpgradeNeeded} />
+              <TabbedResultCard result={result} draftSaved={draftSaved} token={token} user={user} toolName="followup" onUpgradeNeeded={onUpgradeNeeded} draftPayload={form} />
               <div className="output-disclaimer">
                 Review the message before sending. RoofDraftAI helps with wording and structure, but you are still responsible for timing, facts, pricing references, and final tone.
               </div>
@@ -6586,7 +6851,7 @@
       );
     }
 
-    function ReviewToolV2({ token, user, onUpgradeNeeded }) {
+    function ReviewToolV2({ token, user, onUpgradeNeeded, editingDraft, onEditingDraftApplied }) {
       const defaults = useSavedDefaults(token);
       const emptyForm = {
         customer_name: '',
@@ -6603,6 +6868,7 @@
       const [draftSaved, setDraftSaved] = useState(false);
       const [loading, setLoading] = useState(false);
       const [error, setError] = useState('');
+      const [activeDraftId, setActiveDraftId] = useState(null);
 
       useEffect(() => {
         if (defaults == null || defaultsLoaded) return;
@@ -6616,6 +6882,24 @@
         setDefaultsApplied(hasDefaults);
         setDefaultsLoaded(true);
       }, [defaults, defaultsLoaded]);
+
+      useEffect(() => {
+        if (!defaultsLoaded || !editingDraft || editingDraft.tool_name !== 'review') return;
+        if (activeDraftId === editingDraft.id) return;
+        const base = {
+          ...emptyForm,
+          contractor_name: defaults?.contractor_name || '',
+          company_name: defaults?.company_name || '',
+          review_link: defaults?.review_link || '',
+        };
+        setForm({ ...base, ...(hasDraftSourceData(editingDraft.source_data) ? editingDraft.source_data : {}) });
+        setResult('');
+        setDraftSaved(false);
+        setError('');
+        setActiveDraftId(editingDraft.id);
+        if (onEditingDraftApplied) onEditingDraftApplied(editingDraft.id);
+        window.requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: 'smooth' }));
+      }, [editingDraft, defaultsLoaded, defaults, activeDraftId, onEditingDraftApplied]);
 
       function set(field) { return e => setForm(f => ({ ...f, [field]: e.target.value })); }
 
@@ -6698,7 +6982,7 @@
           </div>
           {result && (
             <>
-              <TabbedResultCard result={result} draftSaved={draftSaved} token={token} user={user} toolName="review" onUpgradeNeeded={onUpgradeNeeded} />
+              <TabbedResultCard result={result} draftSaved={draftSaved} token={token} user={user} toolName="review" onUpgradeNeeded={onUpgradeNeeded} draftPayload={form} />
               <div className="output-disclaimer">
                 Review every message before sending. Do not promise incentives or make claims that do not fit your actual review process.
               </div>
@@ -6708,7 +6992,7 @@
       );
     }
 
-    function ReferralToolV2({ token, user, onUpgradeNeeded }) {
+    function ReferralToolV2({ token, user, onUpgradeNeeded, editingDraft, onEditingDraftApplied }) {
       const defaults = useSavedDefaults(token);
       const emptyForm = {
         customer_name: '',
@@ -6726,6 +7010,7 @@
       const [draftSaved, setDraftSaved] = useState(false);
       const [loading, setLoading] = useState(false);
       const [error, setError] = useState('');
+      const [activeDraftId, setActiveDraftId] = useState(null);
       const loadingProgress = useLoadingProgress(loading);
 
       useEffect(() => {
@@ -6740,6 +7025,24 @@
         setDefaultsApplied(hasDefaults);
         setDefaultsLoaded(true);
       }, [defaults, defaultsLoaded]);
+
+      useEffect(() => {
+        if (!defaultsLoaded || !editingDraft || editingDraft.tool_name !== 'referral') return;
+        if (activeDraftId === editingDraft.id) return;
+        const base = {
+          ...emptyForm,
+          contractor_name: defaults?.contractor_name || '',
+          company_name: defaults?.company_name || '',
+          phone_number: defaults?.contractor_phone || '',
+        };
+        setForm({ ...base, ...(hasDraftSourceData(editingDraft.source_data) ? editingDraft.source_data : {}) });
+        setResult('');
+        setDraftSaved(false);
+        setError('');
+        setActiveDraftId(editingDraft.id);
+        if (onEditingDraftApplied) onEditingDraftApplied(editingDraft.id);
+        window.requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: 'smooth' }));
+      }, [editingDraft, defaultsLoaded, defaults, activeDraftId, onEditingDraftApplied]);
 
       function set(field) { return e => setForm(f => ({ ...f, [field]: e.target.value })); }
 
@@ -6825,7 +7128,7 @@
           </div>
           {result && (
             <>
-              <TabbedResultCard result={result} draftSaved={draftSaved} token={token} user={user} toolName="referral" onUpgradeNeeded={onUpgradeNeeded} />
+              <TabbedResultCard result={result} draftSaved={draftSaved} token={token} user={user} toolName="referral" onUpgradeNeeded={onUpgradeNeeded} draftPayload={form} />
               <div className="output-disclaimer">
                 Review the message before sending and make sure any incentive or reward language matches what your company actually offers.
               </div>
@@ -7136,7 +7439,7 @@
                     onClick={() => accessible ? onSelectTab(card.tab) : (onUpgrade ? onUpgrade('pro') : onSelectTab('account'))}
                     style={accessible ? { fontFamily:'Oswald, sans-serif', letterSpacing:'0.03em', textTransform:'uppercase' } : {}}
                   >
-                    {accessible ? 'Open Tool' : 'Upgrade to Pro'}
+                    {accessible ? 'OPEN TOOL' : 'Upgrade to Pro'}
                   </button>
                 </div>
               );
@@ -7147,12 +7450,12 @@
             <div className="quick-action-card">
               <h4>Edit Company Defaults</h4>
               <p>{hasDefaults ? 'Your company defaults are in place. Update them any time before the next proposal.' : 'Save your company details once so proposal and message tools start faster.'}</p>
-              <button className="btn btn-outline-red btn-sm" onClick={() => onSelectTab('defaults')}>Open Defaults</button>
+              <button className="btn btn-primary btn-sm" onClick={() => onSelectTab('defaults')} style={{ fontFamily:'Oswald, sans-serif', letterSpacing:'0.03em', textTransform:'uppercase' }}>OPEN TOOL</button>
             </div>
             <div className="quick-action-card">
               <h4>View Sample Proposal</h4>
               <p>Open the fictional sample to review layout, tone, roof visual placement, and customer-facing structure.</p>
-              <a className="btn btn-outline-red btn-sm" href="/sample-proposal" target="_blank" rel="noopener">Open Sample Proposal</a>
+              <a className="btn btn-primary btn-sm" href="/sample-proposal" target="_blank" rel="noopener" style={{ fontFamily:'Oswald, sans-serif', letterSpacing:'0.03em', textTransform:'uppercase' }}>OPEN TOOL</a>
             </div>
           </div>
 
@@ -8442,7 +8745,7 @@
       return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     }
 
-    function DraftsPage({ token }) {
+    function DraftsPage({ token, onEditDraft }) {
       const [drafts, setDrafts] = useState(null);
       const [selected, setSelected] = useState(null);
       const [loading, setLoading] = useState(true);
@@ -8480,6 +8783,11 @@
         const copied = await copyWithFallback(selected.content || '');
         if (copied.ok) toast('Copied to clipboard!', 'success');
         else toast('Press Ctrl+C to copy', 'info');
+      }
+
+      function handleEdit(event, draft) {
+        event.stopPropagation();
+        if (onEditDraft) onEditDraft(draft);
       }
 
       const filteredDrafts = (drafts || []).filter(d => {
@@ -8589,6 +8897,7 @@
                     </div>
                   </div>
                   <div className="draft-card-actions" onClick={e => e.stopPropagation()}>
+                    <button className="draft-card-btn" onClick={e => handleEdit(e, d)}>Edit</button>
                     <button className="draft-card-btn" onClick={() => handleOpen(d)}>View</button>
                     <button className="draft-card-btn delete"
                       disabled={deleting === d.id}
@@ -9031,6 +9340,7 @@
       const [activeTab, setActiveTab] = useState('home');
       const [showFeatures, setShowFeatures] = useState(false);
       const [sidebarOpen, setSidebarOpen] = useState(false);
+      const [editingDraft, setEditingDraft] = useState(null);
 
       useEffect(() => {
         function handleOpenAccount() {
@@ -9046,7 +9356,25 @@
         else setActiveTab('account');
       }
 
-      const toolProps = { token, user, onUpgradeNeeded: handleUpgradeNeeded, onNavigate: setActiveTab };
+      function handleEditDraft(draft) {
+        if (!draft) return;
+        setEditingDraft(draft);
+        setActiveTab(draftToolToTab(draft.tool_name));
+        setSidebarOpen(false);
+      }
+
+      function clearEditingDraft(appliedDraftId) {
+        setEditingDraft(current => (current && current.id === appliedDraftId ? null : current));
+      }
+
+      const toolProps = {
+        token,
+        user,
+        onUpgradeNeeded: handleUpgradeNeeded,
+        onNavigate: setActiveTab,
+        editingDraft,
+        onEditingDraftApplied: clearEditingDraft,
+      };
 
       function handleSelectTab(tab) {
         if (clearUpgradeError) clearUpgradeError();
@@ -9095,7 +9423,7 @@
             {activeTab === 'followup' && <FollowUpToolV2 {...toolProps} />}
             {activeTab === 'review' && <ReviewToolV2 {...toolProps} />}
             {activeTab === 'referral' && <ReferralToolV2 {...toolProps} />}
-            {activeTab === 'drafts' && <DraftsPage token={token} />}
+            {activeTab === 'drafts' && <DraftsPage token={token} onEditDraft={handleEditDraft} />}
             {activeTab === 'folders' && <FoldersPage token={token} user={user} onUpgradeNeeded={handleUpgradeNeeded} />}
             {activeTab === 'defaults' && <DefaultsPageV2 token={token} user={user} onNavigate={setActiveTab} />}
             {activeTab === 'account' && <AccountPage token={token} user={user} onUpgrade={onUpgrade} upgradeLoading={upgradeLoading} upgradeError={upgradeError} onUserUpdate={onUserUpdate} onClearUpgradeError={clearUpgradeError} />}
@@ -9226,7 +9554,7 @@
         { q: 'How long does it take to generate a proposal?', a: 'Under 60 seconds for the written draft. If you add a roof visual, that image and the contractor-provided notes are included in the same proposal workflow.' },
         { q: 'Can I use it on my phone?', a: 'Yes. RoofDraftAI is fully mobile-friendly. Use it from the job site, your truck, or anywhere.' },
         { q: 'Does RoofDraftAI automatically measure the roof from satellite images?', a: 'No. Roof Visual Overview is contractor-guided. You can upload a satellite screenshot, drone photo, or roof image and add notes, labels, and measurement context, but final measurements must be verified by the contractor.' },
-        { q: 'Can I include pitch, rake, area, and gutter notes?', a: 'Yes. You can add pitch notes, rake notes, estimated roof area, gutter length notes, and the measurement source. These are contractor-provided notes and should be verified before sending.' },
+        { q: 'Can I include pitch, rake, squares, and gutter notes?', a: 'Yes. You can add pitch notes, rake notes, estimated squares, gutter length notes, and the measurement source. These are contractor-provided notes and should be verified before sending.' },
         { q: 'Can I use an EagleView, Roofr, Hover, insurance, or drone report?', a: 'You may reference those as the measurement source if you already have that information, but RoofDraftAI does not replace or automatically integrate with those services unless a real integration is separately built.' },
         { q: 'Will homeowners see the roof visual in the proposal?', a: 'Yes. If you add visual information, the proposal can include a Roof Visual Overview section with the image or visual notes, selected labels, measurement context, and a homeowner-friendly explanation.' },
         { q: 'What\'s included in the Pro plan?', a: 'The Pro plan is designed to include unlimited proposals, roof visual overviews, follow-up emails, review requests, referral messages, saved company defaults, and job folders.' },
@@ -9655,10 +9983,14 @@
       const [pendingUpgradePlan, setPendingUpgradePlan] = useState('');
 
       function showMarketingShell() {
+        document.documentElement.classList.remove('roofdraft-auth-pending');
+        if (document.body) document.body.classList.remove('app-auth-pending');
         if (window.RoofDraftMarketing) window.RoofDraftMarketing.showShell();
       }
 
       function hideMarketingShell() {
+        document.documentElement.classList.remove('roofdraft-auth-pending');
+        if (document.body) document.body.classList.remove('app-auth-pending');
         if (window.RoofDraftMarketing) window.RoofDraftMarketing.hideShell();
       }
 
@@ -9730,6 +10062,11 @@
             if (window.location.pathname === '/dashboard') window.history.replaceState({}, '', '/');
             if (!cancelled) setLoading(false);
             return;
+          }
+          document.documentElement.classList.add('roofdraft-auth-pending');
+          if (document.body) document.body.classList.add('app-auth-pending');
+          if (window.location.pathname === '/') {
+            window.history.replaceState({}, '', '/dashboard');
           }
           try {
             const { ok, data } = await API.call('/api/auth/me', 'GET', null, stored);
@@ -9893,8 +10230,26 @@
       if (document.body.classList.contains('app-authenticated')) return;
       if (!document.querySelector('[data-landing-page]')) return;
 
-      var elements = document.querySelectorAll('.scroll-reveal');
+      var elements = Array.prototype.slice.call(document.querySelectorAll('.scroll-reveal'));
       if (!elements.length) return;
+
+      if (window.__roofdraftScrollObserver) {
+        try { window.__roofdraftScrollObserver.disconnect(); } catch (error) {}
+      }
+      if (window.__roofdraftScrollFailSafe) {
+        window.clearInterval(window.__roofdraftScrollFailSafe);
+      }
+
+      function revealImmediately(element) {
+        if (!element) return;
+        element.classList.add('visible');
+      }
+
+      function withinRevealZone(element) {
+        var rect = element.getBoundingClientRect();
+        var viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
+        return rect.top <= viewportHeight - 40;
+      }
 
       elements.forEach(function (el) {
         el.classList.add('animate-ready');
@@ -9903,7 +10258,14 @@
       var observer = new IntersectionObserver(function (entries) {
         entries.forEach(function (entry) {
           if (entry.isIntersecting) {
-            entry.target.classList.add('visible');
+            window.requestAnimationFrame(function () {
+              revealImmediately(entry.target);
+            });
+            window.setTimeout(function () {
+              if (withinRevealZone(entry.target) && !entry.target.classList.contains('visible')) {
+                revealImmediately(entry.target);
+              }
+            }, 300);
             observer.unobserve(entry.target);
           }
         });
@@ -9913,8 +10275,32 @@
       });
 
       elements.forEach(function (el) {
+        if (withinRevealZone(el)) {
+          revealImmediately(el);
+          return;
+        }
         observer.observe(el);
       });
+
+      window.__roofdraftScrollObserver = observer;
+      window.__roofdraftScrollFailSafe = window.setInterval(function () {
+        if (document.body.classList.contains('app-authenticated')) {
+          window.clearInterval(window.__roofdraftScrollFailSafe);
+          observer.disconnect();
+          return;
+        }
+        var pending = document.querySelectorAll('.scroll-reveal.animate-ready:not(.visible)');
+        if (!pending.length) {
+          window.clearInterval(window.__roofdraftScrollFailSafe);
+          return;
+        }
+        pending.forEach(function (element) {
+          if (withinRevealZone(element)) {
+            revealImmediately(element);
+            observer.unobserve(element);
+          }
+        });
+      }, 300);
     }
 
     var scrollAnimInit = setInterval(function () {

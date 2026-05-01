@@ -52,6 +52,7 @@ def create_draft():
         tool_name = str(data.get("tool_name") or "").strip()[:100]
         title = str(data.get("title") or "").strip()[:255]
         content = str(data.get("content") or "").strip()
+        source_data = data.get("source_data") if isinstance(data.get("source_data"), dict) else {}
         folder_id = data.get("folder_id")
         if folder_id not in (None, ""):
             try:
@@ -62,7 +63,7 @@ def create_draft():
             folder_id = None
         if not tool_name or not title or not content:
             return jsonify({"error": "tool_name, title, and content are required"}), 400
-        draft = save_draft(user["id"], tool_name, title, content, folder_id)
+        draft = save_draft(user["id"], tool_name, title, content, folder_id, source_data=source_data)
         return jsonify({"draft": draft}), 201
     except Exception:
         traceback.print_exc()

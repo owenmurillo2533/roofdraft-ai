@@ -1,6 +1,27 @@
 (function () {
+  function clearAuthBootState() {
+    document.documentElement.classList.remove("roofdraft-auth-pending");
+    if (document.body) {
+      document.body.classList.remove("app-auth-pending");
+    }
+  }
+
+  function setHiddenByState(selector, hidden) {
+    document.querySelectorAll(selector).forEach(function (element) {
+      element.hidden = !!hidden;
+    });
+  }
+
+  function syncFooterAuthLinks(isAuthenticated) {
+    setHiddenByState('[data-footer-auth-state="guest"]', !!isAuthenticated);
+    setHiddenByState('[data-footer-auth-state="auth"]', !isAuthenticated);
+  }
+
   function setShellState(isAuthenticated) {
+    clearAuthBootState();
     document.body.classList.toggle("app-authenticated", !!isAuthenticated);
+    setHiddenByState("[data-marketing-shell-sibling]", !!isAuthenticated);
+    syncFooterAuthLinks(!!isAuthenticated);
   }
 
   function bindAuthButtons() {
@@ -136,6 +157,7 @@
     bindFaqItems();
     bindMobileMenu();
     bindContactForm();
+    syncFooterAuthLinks(document.body.classList.contains("app-authenticated"));
   }
 
   window.RoofDraftMarketing = {

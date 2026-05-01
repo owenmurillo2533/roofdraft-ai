@@ -74,6 +74,24 @@ def clean_list(values):
     return [str(item).strip() for item in values if str(item).strip()]
 
 
+def roof_size_squares_label(data):
+    direct = text_value(data, "roof_size_squares")
+    if direct:
+        return direct
+    square_footage = text_value(data, "square_footage")
+    if not square_footage:
+        return ""
+    try:
+        numeric = float(square_footage)
+    except (TypeError, ValueError):
+        return square_footage
+    if numeric <= 0:
+        return ""
+    squares = round(numeric / 100.0, 1)
+    display = int(squares) if float(squares).is_integer() else squares
+    return f"{display} squares"
+
+
 def roof_visual_has_content(roof_visual):
     if not isinstance(roof_visual, dict):
         return False
@@ -82,7 +100,6 @@ def roof_visual_has_content(roof_visual):
         roof_visual.get("imageName"),
         roof_visual.get("visualType"),
         roof_visual.get("customLabel"),
-        roof_visual.get("estimatedRoofArea"),
         roof_visual.get("estimatedSquares"),
         roof_visual.get("pitchNote"),
         roof_visual.get("rakeNote"),
@@ -114,7 +131,6 @@ def build_proposal_prompt(data):
     labels_block = "\n".join(f"- {item}" for item in roof_visual_labels) if roof_visual_labels else "- None provided."
     measurement_lines = "\n".join(
         [
-            f"- Estimated roof area: {text_value(roof_visual, 'estimatedRoofArea') or 'Not provided'}",
             f"- Estimated squares: {text_value(roof_visual, 'estimatedSquares') or 'Not provided'}",
             f"- Pitch note: {text_value(roof_visual, 'pitchNote') or 'Not provided'}",
             f"- Rake note: {text_value(roof_visual, 'rakeNote') or 'Not provided'}",
@@ -152,7 +168,7 @@ If roof visual information is provided:
 - Treat all labels and notes as contractor-provided.
 - Never say RoofDraftAI detected, measured, verified, or confirmed anything automatically.
 - Include a "Contractor-Provided Visual Notes" subsection when labels or summary notes exist.
-- Include a "Measurement Context" subsection when area, squares, pitch, rake, gutters, waste factor, measurement source, or measurement notes exist.
+- Include a "Measurement Context" subsection when squares, pitch, rake, gutters, waste factor, measurement source, or measurement notes exist.
 - Match this explanation style: {text_value(roof_visual, "explanationStyle") or "Simple homeowner explanation"}.
 - If measurement source is "Visual estimate only", clearly say those quantities should be verified before ordering materials or acceptance.
 - End the section with this exact disclaimer: "Visual notes are provided for clarity only. Final measurements, pitch, material quantities, local requirements, warranty terms, and pricing should be verified by the contractor before sending or acceptance."
@@ -172,7 +188,8 @@ Company address: {text_value(data, "company_address")}
 License number: {text_value(data, "license_number")}
 
 Job type: {text_value(data, "job_type", "roof_type")}
-Roof size / squares: {text_value(data, "roof_size_squares", "square_footage")}
+Square footage: {text_value(data, "square_footage")}
+Roof size / squares: {roof_size_squares_label(data)}
 Existing roof material: {text_value(data, "existing_roof_material")}
 Proposed material: {text_value(data, "proposed_material", "materials")}
 Material brand / shingle type: {text_value(data, "material_brand")}

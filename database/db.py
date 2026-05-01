@@ -55,6 +55,19 @@ def row_to_dict(row):
         return None
 
 
+def decode_json_field(raw, default=None):
+    if raw is None:
+        return {} if default is None else default
+    if isinstance(raw, dict):
+        return raw
+    if isinstance(raw, (list, tuple)):
+        return list(raw)
+    try:
+        return json.loads(raw)
+    except Exception:
+        return {} if default is None else default
+
+
 def _sqlite_executescript(conn, script):
     conn.executescript(script)
     conn.commit()
@@ -123,6 +136,7 @@ def init_db():
                 tool_name VARCHAR(100),
                 title VARCHAR(255),
                 content TEXT,
+                source_data JSONB DEFAULT '{}'::jsonb,
                 created_at TIMESTAMP DEFAULT NOW()
             )
             """,
@@ -185,6 +199,7 @@ def init_db():
             "ALTER TABLE users ADD COLUMN IF NOT EXISTS stripe_customer_id VARCHAR(255) DEFAULT NULL",
             "ALTER TABLE users ADD COLUMN IF NOT EXISTS subscription_id VARCHAR(255) DEFAULT NULL",
             "ALTER TABLE users ADD COLUMN IF NOT EXISTS subscription_status VARCHAR(50) DEFAULT NULL",
+            "ALTER TABLE saved_drafts ADD COLUMN IF NOT EXISTS source_data JSONB DEFAULT '{}'::jsonb",
         ]
         for sql in migrations:
             pg_run(sql)
@@ -281,6 +296,7 @@ def init_db():
             tool_name TEXT,
             title TEXT,
             content TEXT,
+            source_data TEXT DEFAULT '{}',
             created_at TEXT DEFAULT (datetime('now'))
         );
         CREATE TABLE IF NOT EXISTS contact_messages (
@@ -329,6 +345,17 @@ def init_db():
         CREATE INDEX IF NOT EXISTS idx_subscription_events_user ON subscription_events(user_id);
         """
     )
+
+    try:
+        existing_columns = {
+            row["name"] if isinstance(row, sqlite3.Row) else row[1]
+            for row in conn.execute("PRAGMA table_info(saved_drafts)").fetchall()
+        }
+        if "source_data" not in existing_columns:
+            conn.execute("ALTER TABLE saved_drafts ADD COLUMN source_data TEXT DEFAULT '{}'")
+            conn.commit()
+    except Exception:
+        pass
 
     try:
         conn.execute(
@@ -644,34 +671,39 @@ def save_defaults(user_id, new_data):
     return merged
 
 
-def save_draft(user_id, tool_name, title, content, folder_id=None):
+def save_draft(user_id, tool_name, title, content, folder_id=None, source_data=None):
+    encoded_source = json.dumps(source_data or {})
     if USE_POSTGRES:
         rows = pg_run(
             """
-            INSERT INTO saved_drafts (user_id, folder_id, tool_name, title, content)
-            VALUES ($1, $2, $3, $4, $5)
-            RETURNING id, user_id, folder_id, tool_name, title, content, created_at
+            INSERT INTO saved_drafts (user_id, folder_id, tool_name, title, content, source_data)
+            VALUES ($1, $2, $3, $4, $5, $6::jsonb)
+            RETURNING id, user_id, folder_id, tool_name, title, content, source_data, created_at
             """,
-            [user_id, folder_id, tool_name, title, content],
+            [user_id, folder_id, tool_name, title, content, encoded_source],
         )
         draft = rows[0] if rows else None
         if draft and draft.get("created_at") and not isinstance(draft["created_at"], str):
             draft["created_at"] = draft["created_at"].isoformat()
+        if draft:
+            draft["source_data"] = decode_json_field(draft.get("source_data"))
         return draft
 
     conn = get_db()
     cur = conn.cursor()
     cur.execute(
-        "INSERT INTO saved_drafts (user_id, folder_id, tool_name, title, content) VALUES (?, ?, ?, ?, ?)",
-        (user_id, folder_id, tool_name, title, content),
+        "INSERT INTO saved_drafts (user_id, folder_id, tool_name, title, content, source_data) VALUES (?, ?, ?, ?, ?, ?)",
+        (user_id, folder_id, tool_name, title, content, encoded_source),
     )
     conn.commit()
     row = conn.execute(
-        "SELECT id, user_id, folder_id, tool_name, title, content, created_at FROM saved_drafts WHERE id=?",
+        "SELECT id, user_id, folder_id, tool_name, title, content, source_data, created_at FROM saved_drafts WHERE id=?",
         (cur.lastrowid,),
     ).fetchone()
     conn.close()
     draft = row_to_dict(row)
+    if draft:
+        draft["source_data"] = decode_json_field(draft.get("source_data"))
     return draft
 
 
@@ -680,7 +712,7 @@ def get_drafts(user_id, folder_id=None):
         if folder_id is None:
             rows = pg_run(
                 """
-                SELECT id, folder_id, tool_name, title, content, created_at
+                SELECT id, folder_id, tool_name, title, content, source_data, created_at
                 FROM saved_drafts
                 WHERE user_id = $1
                 ORDER BY created_at DESC
@@ -690,7 +722,7 @@ def get_drafts(user_id, folder_id=None):
         else:
             rows = pg_run(
                 """
-                SELECT id, folder_id, tool_name, title, content, created_at
+                SELECT id, folder_id, tool_name, title, content, source_data, created_at
                 FROM saved_drafts
                 WHERE user_id = $1 AND folder_id = $2
                 ORDER BY created_at DESC
@@ -702,29 +734,36 @@ def get_drafts(user_id, folder_id=None):
             item = dict(row)
             if item.get("created_at") and not isinstance(item["created_at"], str):
                 item["created_at"] = item["created_at"].isoformat()
+            item["source_data"] = decode_json_field(item.get("source_data"))
             result.append(item)
         return result
 
     conn = get_db()
     if folder_id is None:
         rows = conn.execute(
-            "SELECT id, folder_id, tool_name, title, content, created_at FROM saved_drafts WHERE user_id=? ORDER BY created_at DESC",
+            "SELECT id, folder_id, tool_name, title, content, source_data, created_at FROM saved_drafts WHERE user_id=? ORDER BY created_at DESC",
             (user_id,),
         ).fetchall()
     else:
         rows = conn.execute(
-            "SELECT id, folder_id, tool_name, title, content, created_at FROM saved_drafts WHERE user_id=? AND folder_id=? ORDER BY created_at DESC",
+            "SELECT id, folder_id, tool_name, title, content, source_data, created_at FROM saved_drafts WHERE user_id=? AND folder_id=? ORDER BY created_at DESC",
             (user_id, folder_id),
         ).fetchall()
     conn.close()
-    return [row_to_dict(row) for row in rows]
+    result = []
+    for row in rows:
+        item = row_to_dict(row)
+        if item:
+            item["source_data"] = decode_json_field(item.get("source_data"))
+            result.append(item)
+    return result
 
 
 def get_draft_by_id(user_id, draft_id):
     if USE_POSTGRES:
         rows = pg_run(
             """
-            SELECT id, folder_id, tool_name, title, content, created_at
+            SELECT id, folder_id, tool_name, title, content, source_data, created_at
             FROM saved_drafts
             WHERE id = $1 AND user_id = $2
             """,
@@ -733,15 +772,20 @@ def get_draft_by_id(user_id, draft_id):
         draft = rows[0] if rows else None
         if draft and draft.get("created_at") and not isinstance(draft["created_at"], str):
             draft["created_at"] = draft["created_at"].isoformat()
+        if draft:
+            draft["source_data"] = decode_json_field(draft.get("source_data"))
         return draft
 
     conn = get_db()
     row = conn.execute(
-        "SELECT id, folder_id, tool_name, title, content, created_at FROM saved_drafts WHERE id=? AND user_id=?",
+        "SELECT id, folder_id, tool_name, title, content, source_data, created_at FROM saved_drafts WHERE id=? AND user_id=?",
         (draft_id, user_id),
     ).fetchone()
     conn.close()
-    return row_to_dict(row)
+    draft = row_to_dict(row)
+    if draft:
+        draft["source_data"] = decode_json_field(draft.get("source_data"))
+    return draft
 
 
 def delete_draft(user_id, draft_id):
