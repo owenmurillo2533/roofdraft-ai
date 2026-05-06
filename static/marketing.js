@@ -1,6 +1,6 @@
 (function () {
   function clearAuthBootState() {
-    document.documentElement.classList.remove("roofdraft-auth-pending");
+    document.documentElement.classList.remove("roofdraft-dashboard-pending");
     if (document.body) {
       document.body.classList.remove("app-auth-pending");
     }

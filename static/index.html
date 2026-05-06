@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>RoofDraftAI | Professional Roofing Proposals in Minutes</title>
-  <meta name="description" content="Create polished roofing proposals, follow-up emails, review requests, and referral messages without learning a full CRM. Built for roofing contractors and small roofing teams." />
+  <meta name="description" content="Turn your inspection notes into a professional roofing proposal in under 2 minutes. Built for roofing contractors. Free to try — no card required." />
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://roofdraftai.com/" />
 
@@ -12,8 +12,9 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://roofdraftai.com/" />
   <meta property="og:title" content="RoofDraftAI | Professional Roofing Proposals in Minutes" />
-  <meta property="og:description" content="Create polished roofing proposals, follow-up emails, review requests, and referral messages without learning a full CRM. Built for roofing contractors and small roofing teams." />
+  <meta property="og:description" content="Turn your inspection notes into a professional roofing proposal in under 2 minutes. Built for roofing contractors. Free to try — no card required." />
   <meta property="og:image" content="https://roofdraftai.com/static/og-image.png" />
+  <meta property="og:image:alt" content="RoofDraftAI proposal preview showing a professional roofing proposal layout" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
   <meta property="og:site_name" content="RoofDraftAI" />
@@ -21,9 +22,9 @@
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="RoofDraftAI | Professional Roofing Proposals in Minutes" />
-  <meta name="twitter:description" content="Create polished roofing proposals, follow-up emails, review requests, and referral messages without learning a full CRM." />
-
+  <meta name="twitter:description" content="Turn your inspection notes into a professional roofing proposal in under 2 minutes. Built for roofing contractors. Free to try — no card required." />
   <meta name="twitter:image" content="https://roofdraftai.com/static/og-image.png" />
+  <meta name="twitter:image:alt" content="RoofDraftAI proposal preview showing a professional roofing proposal layout" />
 
   <script type="application/ld+json">
     {
@@ -33,7 +34,7 @@
       "applicationCategory": "BusinessApplication",
       "operatingSystem": "Web",
       "url": "https://roofdraftai.com/",
-      "description": "RoofDraftAI helps roofing contractors generate professional proposals, follow-up emails, review requests, and referral messages without learning a full CRM.",
+      "description": "Turn inspection notes into a professional roofing proposal in under 2 minutes with a lightweight workflow built for roofing contractors.",
       "offers": {
         "@type": "Offer",
         "price": "79",
@@ -48,8 +49,12 @@
   <script>
     (function () {
       try {
-        if (window.localStorage && window.localStorage.getItem('roofdraft_token')) {
-          document.documentElement.classList.add('roofdraft-auth-pending');
+        if (
+          window.localStorage &&
+          window.localStorage.getItem('roofdraft_token') &&
+          window.location.pathname === '/dashboard'
+        ) {
+          document.documentElement.classList.add('roofdraft-dashboard-pending');
         }
       } catch (error) {}
     })();
@@ -90,31 +95,19 @@
       --radius: 4px;
     }
 
-    html, body { min-height: 100%; }
+    html, body {
+      min-height: 100%;
+      max-width: 100%;
+      overflow-x: hidden;
+    }
     #root { position: relative; z-index: 20; }
     #marketing-shell { position: relative; z-index: 1; }
-    html.roofdraft-auth-pending #marketing-shell,
-    html.roofdraft-auth-pending [data-marketing-shell-sibling],
+    html.roofdraft-dashboard-pending #marketing-shell,
+    html.roofdraft-dashboard-pending [data-marketing-shell-sibling],
     body.app-auth-pending #marketing-shell,
     body.app-auth-pending [data-marketing-shell-sibling],
     body.app-authenticated #marketing-shell,
     body.app-authenticated [data-marketing-shell-sibling] { display: none !important; }
-
-    #auth-boot-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      z-index: 40;
-      align-items: center;
-      justify-content: center;
-      background: var(--off-white);
-      padding: 24px;
-      text-align: center;
-    }
-    html.roofdraft-auth-pending #auth-boot-overlay,
-    body.app-auth-pending #auth-boot-overlay {
-      display: flex;
-    }
 
     body {
       background: var(--background);
@@ -157,12 +150,21 @@
       text-decoration: none;
     }
     .btn-primary {
-      background: var(--roof-red);
-      color: #fff;
-      border: 2px solid var(--roof-red);
+      background: #C0392B;
+      color: #FFFFFF;
+      font-family: 'Oswald', sans-serif;
+      font-weight: 600;
+      font-size: 14px;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      border: none;
+      border-radius: 4px;
+      padding: 12px 20px;
+      cursor: pointer;
+      transition: background 0.15s ease, transform 0.1s ease;
     }
-    .btn-primary:hover { background: var(--roof-red-dark); border-color: var(--roof-red-dark); text-decoration: none; color: #fff; }
-    .btn-primary:active { background: var(--roof-red-dark); }
+    .btn-primary:hover { background: #a93226; text-decoration: none; color: #fff; }
+    .btn-primary:active { background: #a93226; transform: scale(0.98); }
     .btn-outline {
       background: transparent;
       color: var(--charcoal);
@@ -188,10 +190,13 @@
     /* ---- Form elements ---- */
     .form-group { display: flex; flex-direction: column; gap: 5px; }
     .form-label {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--charcoal);
       font-family: 'Source Sans 3', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: #3d3632;
+      letter-spacing: 0.01em;
+      margin-bottom: 6px;
+      display: block;
     }
     .form-input, .form-select, .form-textarea {
       background: var(--white);
@@ -357,8 +362,8 @@
     .sidebar {
       width: 248px;
       flex-shrink: 0;
-      background: var(--white);
-      border-right: 1px solid var(--border);
+      background: #141210;
+      border-right: 1px solid rgba(255, 255, 255, 0.08);
       display: flex;
       flex-direction: column;
       height: 100vh;
@@ -366,7 +371,7 @@
     }
     .sidebar-logo {
       padding: 22px 20px 18px;
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
       flex-shrink: 0;
     }
     .sidebar-logo-text {
@@ -374,9 +379,9 @@
       font-size: 22px;
       font-weight: 700;
       letter-spacing: 0.02em;
-      color: var(--near-black);
+      color: #FFFFFF;
     }
-    .sidebar-logo-text span { color: var(--roof-red); }
+    .sidebar-logo-text span { color: #C0392B; }
     .sidebar-nav {
       flex: 1;
       padding: 14px 12px;
@@ -386,12 +391,12 @@
     }
     .nav-item {
       display: flex; align-items: center; gap: 10px;
-      padding: 10px 12px;
-      border-radius: var(--radius);
+      padding: 11px 14px 11px 16px;
+      border-radius: 4px;
       cursor: pointer;
-      font-size: 15px;
-      font-weight: 600;
-      color: var(--charcoal);
+      font-size: 14px;
+      font-weight: 400;
+      color: rgba(255, 255, 255, 0.75);
       transition: all 0.12s;
       border: none;
       border-left: 3px solid transparent;
@@ -400,16 +405,31 @@
       text-align: left;
       font-family: 'Source Sans 3', sans-serif;
     }
-    .nav-item:hover { background: var(--light-gray); color: var(--near-black); }
+    .nav-item:hover { background: rgba(255, 255, 255, 0.05); color: #FFFFFF; }
     .nav-item.active {
-      background: #fdf0ee;
-      color: var(--roof-red);
-      border-left-color: var(--roof-red);
+      color: #FFFFFF;
+      border-left-color: #C0392B;
+      background: rgba(255, 255, 255, 0.07);
     }
-    .nav-icon { width: 18px; text-align: center; flex-shrink: 0; font-style: normal; }
+    .nav-icon {
+      width: 18px;
+      text-align: center;
+      flex-shrink: 0;
+      font-style: normal;
+      color: inherit;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .nav-icon svg {
+      width: 18px;
+      height: 18px;
+      color: inherit;
+      display: block;
+    }
     .sidebar-bottom {
       padding: 16px;
-      border-top: 1px solid var(--border);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
       flex-shrink: 0;
     }
     .user-info { margin-bottom: 12px; }
@@ -425,62 +445,94 @@
       font-family: 'Source Sans 3', sans-serif;
       border: 1.5px solid;
     }
-    .badge-free { border-color: var(--dark-gray); color: var(--dark-gray); }
-    .badge-starter { border-color: var(--slate); color: var(--slate); }
-    .badge-pro { border-color: var(--roof-red); color: var(--roof-red); }
-    .badge-admin { border-color: var(--roof-red); color: var(--roof-red); background: #fdf0ee; }
+    .badge-free { border-color: rgba(255, 255, 255, 0.2); color: rgba(255, 255, 255, 0.72); }
+    .badge-starter { border-color: rgba(41, 128, 185, 0.55); color: #8ec8f5; background: rgba(41, 128, 185, 0.12); }
+    .badge-pro { border-color: rgba(192, 57, 43, 0.6); color: #f4b5ae; background: rgba(192, 57, 43, 0.12); }
+    .badge-admin { background: #C0392B; color: #FFFFFF; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; border-color: #C0392B; }
     .gen-counter { margin-top: 10px; margin-bottom: 12px; }
     .gen-counter-label {
       font-size: 13px;
-      color: var(--slate);
+      color: rgba(255, 255, 255, 0.65);
       margin-bottom: 6px;
       font-weight: 600;
     }
     .progress-bar {
       height: 6px;
-      background: var(--light-gray);
+      background: rgba(255, 255, 255, 0.08);
       border-radius: 3px;
       overflow: hidden;
-      border: 1px solid var(--border);
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
     .progress-fill {
       height: 100%;
-      background: var(--roof-red);
+      background: #C0392B;
       border-radius: 3px;
       transition: width 0.3s ease;
     }
     .logout-btn {
-      background: none;
-      border: 1px solid var(--border);
-      color: var(--slate);
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: rgba(255, 255, 255, 0.5);
       width: 100%; padding: 9px;
-      border-radius: var(--radius);
+      border-radius: 4px;
       cursor: pointer;
       font-family: 'Source Sans 3', sans-serif;
       font-size: 14px;
       font-weight: 600;
       transition: all 0.12s;
     }
-    .logout-btn:hover { border-color: var(--charcoal); color: var(--charcoal); }
+    .logout-btn:hover { border-color: rgba(255, 255, 255, 0.4); color: #FFFFFF; }
 
     /* ---- Main content ---- */
     .main-content {
       flex: 1;
       overflow-y: auto;
-      padding: 36px 44px;
-      background: var(--off-white);
+      padding: 0;
+      background: #F8F6F3;
     }
-    .page-title {
+    .page-header {
+      background: #141210;
+      padding: 36px 48px 32px;
+      margin-bottom: 32px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .page-kicker {
+      display: block;
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #C0392B;
+      margin-bottom: 10px;
+    }
+    .page-header .page-title {
       font-family: 'Oswald', sans-serif;
-      font-size: 34px;
-      font-weight: 600;
-      color: var(--near-black);
-      margin-bottom: 4px;
+      font-weight: 700;
+      font-size: 42px;
+      color: #FFFFFF;
+      letter-spacing: -0.4px;
+      line-height: 1.05;
+      margin: 0 0 8px;
+      max-width: 100%;
+      overflow-wrap: anywhere;
+      word-break: break-word;
     }
-    .page-subtitle {
-      color: var(--slate);
+    .page-header .page-subtitle {
+      font-family: 'Source Sans 3', sans-serif;
       font-size: 15px;
-      margin-bottom: 28px;
+      color: rgba(255, 255, 255, 0.5);
+      margin: 0;
+      max-width: 100%;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+    .page-body {
+      padding: 0 48px 40px;
+    }
+    .dashboard-home-body {
+      padding: 28px 44px 40px;
     }
 
     /* ---- Content card ---- */
@@ -726,24 +778,58 @@
       margin-bottom: 4px;
     }
     .welcome-greeting p { color: var(--slate); font-size: 15px; }
-    .section-header { margin-bottom: 16px; }
+    .section-header {
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: #C0392B;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(192, 57, 43, 0.25);
+    }
     .section-header h3 {
-      font-family: 'Oswald', sans-serif;
-      font-size: 20px;
-      font-weight: 600;
-      color: var(--charcoal);
+      margin: 0;
+      font: inherit;
+      color: inherit;
+      letter-spacing: inherit;
+      text-transform: inherit;
     }
 
     /* ============================================================
        LANDING PAGE
     ============================================================ */
-    .landing { min-height: 100vh; background: var(--off-white); }
+    .landing {
+      min-height: 100vh;
+      background: var(--off-white);
+      overflow-x: clip;
+    }
+    #marketing-shell,
+    #marketing-shell > nav,
+    #marketing-shell > section,
+    #marketing-shell > footer {
+      max-width: 100vw;
+      overflow-x: hidden;
+    }
+    #marketing-shell section[id] { scroll-margin-top: 86px; }
+    .hero-copy,
+    .hero-proof,
+    .problem-inner > *,
+    .marketing-demo-grid > *,
+    .marketing-before-after-grid > *,
+    .marketing-sample-grid > *,
+    .marketing-roi-shell > *,
+    .marketing-feature-grid > *,
+    .marketing-persona-grid > * {
+      min-width: 0;
+    }
 
     /* Nav */
     .landing-nav {
       display: flex; align-items: center; justify-content: space-between;
       padding: 0 60px;
-      height: 64px;
+      min-height: 68px;
       box-sizing: border-box;
       border-bottom: 1px solid var(--border);
       position: sticky; top: 0; z-index: 100;
@@ -788,6 +874,7 @@
     }
     .hero-copy {
       max-width: 760px;
+      width: 100%;
     }
     .hero-kicker {
       display: inline-flex;
@@ -812,6 +899,7 @@
       margin-bottom: 22px;
       color: #FFFFFF;
       letter-spacing: -0.01em;
+      overflow-wrap: anywhere;
     }
     .hero-headline span { color: var(--roof-red); }
     .hero-sub {
@@ -822,6 +910,12 @@
       line-height: 1.7;
     }
     .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; }
+    .hero-primary-cta {
+      padding: 16px 34px !important;
+      font-size: 18px !important;
+      letter-spacing: 0.05em !important;
+      box-shadow: 0 14px 34px rgba(192,57,43,0.28);
+    }
     .landing-trust-note {
       margin-top: 18px;
       font-size: 13px;
@@ -912,39 +1006,66 @@
       background: var(--white);
       border-top: 1px solid var(--border);
       border-bottom: 1px solid var(--border);
-      padding: 28px 60px;
+      padding: 18px 60px;
     }
-    .trust-bar-label {
+    .trust-bar-inner {
+      max-width: 1160px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      justify-content: center;
+    }
+    .trust-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--off-white);
       font-size: 13px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--slate-light);
-      margin-bottom: 20px;
-    }
-    .trust-stats {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 0;
-    }
-    .trust-stat {
-      padding: 0 28px 0 0;
-      border-right: 1px solid var(--border);
-    }
-    .trust-stat:first-child { padding-left: 0; }
-    .trust-stat:last-child { border-right: none; padding-right: 0; }
-    .trust-stat-num {
-      font-family: 'Oswald', sans-serif;
-      font-size: 28px;
-      font-weight: 700;
-      color: var(--roof-red);
-      line-height: 1.1;
-      margin-bottom: 3px;
-    }
-    .trust-stat-label {
-      font-size: 13px;
-      color: var(--slate);
       font-weight: 600;
+      color: var(--slate);
+      line-height: 1.4;
+      white-space: nowrap;
+    }
+    .trust-pill-icon {
+      font-size: 14px;
+      line-height: 1;
+    }
+
+    .marketing-stats-section {
+      background: var(--white);
+      padding: 12px 60px 72px;
+      border-bottom: 1px solid var(--border);
+    }
+    .marketing-stats-grid {
+      max-width: 1160px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 28px;
+    }
+    .marketing-stat {
+      padding-top: 8px;
+    }
+    .marketing-stat-value {
+      display: block;
+      font-family: 'Oswald', sans-serif;
+      font-size: clamp(42px, 6vw, 58px);
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -0.03em;
+      color: var(--roof-red);
+      margin-bottom: 10px;
+    }
+    .marketing-stat-label {
+      font-size: 15px;
+      line-height: 1.55;
+      color: var(--slate);
+      max-width: 280px;
     }
 
     /* Problem section */
@@ -1228,10 +1349,11 @@
       background: var(--white);
       border: 1px solid var(--border);
       border-radius: 8px;
-      overflow: hidden;
+      overflow-x: auto;
+      overflow-y: hidden;
       box-shadow: 0 2px 8px rgba(26,23,21,0.06);
     }
-    .compare-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    .compare-table { width: 100%; min-width: 640px; border-collapse: collapse; font-size: 14px; }
     .compare-table th {
       padding: 13px 16px;
       text-align: center;
@@ -1454,8 +1576,8 @@
     .features-link {
       display: block;
       font-size: 12px;
-      color: var(--roof-red);
-      text-decoration: underline;
+      color: rgba(255, 255, 255, 0.5);
+      text-decoration: none;
       cursor: pointer;
       background: none;
       border: none;
@@ -1465,7 +1587,7 @@
       font-weight: 600;
       text-align: left;
     }
-    .features-link:hover { color: var(--roof-red-dark); }
+    .features-link:hover { color: rgba(255, 255, 255, 0.85); }
 
     /* UpgradeModal v2 */
     .upgrade-plans-grid {
@@ -2138,8 +2260,8 @@
       position: sticky;
       top: 0;
       z-index: 200;
-      background: var(--white);
-      border-bottom: 1px solid var(--border);
+      background: #141210;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
       padding: 0 16px;
       height: 56px;
       align-items: center;
@@ -2150,20 +2272,21 @@
       font-family: 'Oswald', sans-serif;
       font-size: 20px;
       font-weight: 700;
-      color: var(--near-black);
+      color: #FFFFFF;
+      letter-spacing: 0.02em;
     }
-    .mobile-nav-logo span { color: var(--roof-red); }
+    .mobile-nav-logo span { color: #C0392B; }
     .mobile-nav-btn {
       background: none;
-      border: 1px solid var(--border);
+      border: 1px solid rgba(255,255,255,0.18);
       border-radius: var(--radius);
       padding: 7px 10px;
       cursor: pointer;
       font-size: 18px;
-      color: var(--charcoal);
+      color: #FFFFFF;
       line-height: 1;
     }
-    .mobile-nav-btn:hover { border-color: var(--charcoal); }
+    .mobile-nav-btn:hover { border-color: rgba(255,255,255,0.42); }
 
     /* Sidebar overlay on mobile */
     .sidebar-overlay {
@@ -2210,7 +2333,23 @@
         box-shadow: 4px 0 24px rgba(26,23,21,0.15);
       }
       .sidebar.mobile-open { transform: translateX(0); }
-      .main-content { padding: 20px 16px; }
+      .main-content { padding: 0; }
+      .page-header,
+      .welcome-header {
+        padding: 30px 20px 26px;
+      }
+      .page-body,
+      .dashboard-home-body {
+        padding: 24px 16px 32px;
+      }
+      .welcome-header-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+      }
+      .welcome-date { padding-left: 0; }
+      .welcome-h { font-size: clamp(36px, 11vw, 40px); line-height: 1.02; }
+      .page-header .page-title { font-size: clamp(32px, 9vw, 34px); }
       .tool-form-grid { grid-template-columns: 1fr; }
       .tool-form-grid .span-2 { grid-column: span 1; }
       .hero-proof-grid { grid-template-columns: 1fr; }
@@ -2220,6 +2359,12 @@
       .tool-form-actions .btn-ghost,
       .tool-form-actions .btn {
         width: 100%;
+      }
+      .draft-edit-banner {
+        flex-direction: column;
+      }
+      .draft-edit-actions {
+        justify-content: flex-start;
       }
     }
 
@@ -2235,17 +2380,61 @@
     .page-fade-in { animation: fadeSlideIn 0.28s ease forwards; }
 
     /* Ã¢â€â‚¬Ã¢â€â‚¬ Dashboard stats row Ã¢â€â‚¬Ã¢â€â‚¬ */
-    .dash-stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 32px; }
-    .dash-stat-card { background: var(--white); border: 1px solid var(--border); border-radius: 8px; padding: 20px 22px; display: flex; align-items: center; gap: 16px; box-shadow: 0 1px 3px rgba(26,23,21,0.05); transition: box-shadow 0.2s ease, transform 0.2s ease; }
-    .dash-stat-card:hover { box-shadow: 0 4px 12px rgba(26,23,21,0.08); transform: translateY(-2px); }
+    .dash-stats-row {
+      background: #1c1917;
+      padding: 0;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+      margin-bottom: 32px;
+      border-top: 1px solid rgba(255,255,255,0.07);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .dash-stat-card {
+      background: transparent;
+      border: none;
+      border-right: 1px solid rgba(255,255,255,0.07);
+      padding: 28px 32px;
+      border-radius: 0;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: none;
+      transition: none;
+    }
+    .dash-stat-card:last-child { border-right: none; }
+    .dash-stat-card:hover { box-shadow: none; transform: none; }
     .dash-stat-icon { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
     .dash-stat-icon svg { width: 22px; height: 22px; }
     .dash-stat-icon.red { background: rgba(192,57,43,0.1); color: var(--roof-red); }
     .dash-stat-icon.gold { background: rgba(212,168,83,0.15); color: var(--warm-tan); }
     .dash-stat-icon.slate { background: rgba(74,85,104,0.1); color: var(--slate); }
     .dash-stat-icon.green { background: rgba(39,174,96,0.1); color: var(--success); }
-    .dash-stat-num { font-family: 'Oswald', sans-serif; font-size: 28px; font-weight: 600; color: var(--near-black); line-height: 1; }
-    .dash-stat-label { font-size: 12px; color: var(--slate-light); font-weight: 500; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.04em; }
+    .dash-stat-num {
+      font-family: 'Oswald', sans-serif;
+      font-size: 44px;
+      font-weight: 700;
+      color: #FFFFFF;
+      line-height: 1;
+      letter-spacing: -0.5px;
+      display: block;
+      margin-bottom: 6px;
+    }
+    .dash-stat-num-text {
+      font-size: 28px;
+      letter-spacing: -0.2px;
+      line-height: 1.15;
+    }
+    .dash-stat-label {
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.4);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+    .dash-stat-card.stat-ready .dash-stat-num { color: #C0392B; }
 
     /* Ã¢â€â‚¬Ã¢â€â‚¬ Tool cards upgrade Ã¢â€â‚¬Ã¢â€â‚¬ */
     .tool-card { display: flex; flex-direction: column; position: relative; overflow: hidden; }
@@ -2257,26 +2446,79 @@
     .tool-generate-hint { font-size: 12px; color: var(--roof-red); font-weight: 600; margin-top: 10px; display: flex; align-items: center; gap: 4px; }
 
     /* Ã¢â€â‚¬Ã¢â€â‚¬ Recent activity feed Ã¢â€â‚¬Ã¢â€â‚¬ */
-    .activity-section { margin-top: 36px; }
-    .activity-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-    .activity-header h3 { font-family: 'Oswald', sans-serif; font-size: 18px; font-weight: 600; color: var(--near-black); }
-    .activity-list { display: flex; flex-direction: column; gap: 0; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: var(--white); }
-    .activity-item { display: flex; align-items: center; gap: 14px; padding: 14px 18px; border-bottom: 1px solid var(--light-gray); transition: background 0.15s ease; cursor: pointer; }
-    .activity-item:last-child { border-bottom: none; }
-    .activity-item:hover { background: var(--off-white); }
-    .activity-type-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .activity-section { margin-top: 8px; }
+    .activity-header.section-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .activity-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      border: none;
+      border-radius: 0;
+      overflow: visible;
+      background: transparent;
+    }
+    .activity-item {
+      background: #FFFFFF;
+      border: 1px solid rgba(0,0,0,0.07);
+      border-left: 3px solid transparent;
+      border-radius: 6px;
+      padding: 14px 16px;
+      margin-bottom: 0;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      transition: background 0.12s ease;
+      cursor: pointer;
+    }
+    .activity-item:hover { background: #fdfcfb; border-color: rgba(0,0,0,0.13); }
+    .activity-item:has(.dot-proposal),
+    .activity-item:has(.badge-proposal) { border-left-color: #C0392B; }
+    .activity-item:has(.dot-followup),
+    .activity-item:has(.badge-followup) { border-left-color: #2980B9; }
+    .activity-item:has(.dot-referral),
+    .activity-item:has(.badge-referral) { border-left-color: #8E44AD; }
+    .activity-item:has(.dot-review),
+    .activity-item:has(.badge-review) { border-left-color: #27AE60; }
+    .activity-type-dot { display: none; }
     .dot-proposal { background: #C0392B; }
     .dot-followup { background: #3498DB; }
     .dot-review { background: #27AE60; }
     .dot-referral { background: #8E44AD; }
     .activity-info { flex: 1; min-width: 0; }
-    .activity-title { font-size: 14px; font-weight: 600; color: var(--near-black); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .activity-meta { font-size: 12px; color: var(--slate-light); margin-top: 2px; }
-    .activity-badge { font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 3px; text-transform: uppercase; letter-spacing: 0.04em; flex-shrink: 0; }
+    .activity-title {
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: #1c1917;
+      margin-bottom: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .activity-meta {
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 12px;
+      color: #9c948e;
+      margin-top: 0;
+    }
+    .activity-badge {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 3px;
+      flex-shrink: 0;
+    }
     .badge-proposal { background: rgba(192,57,43,0.1); color: var(--roof-red); }
-    .badge-followup { background: rgba(52,152,219,0.1); color: #2980B9; }
-    .badge-review { background: rgba(39,174,96,0.1); color: #1E8449; }
-    .badge-referral { background: rgba(142,68,173,0.1); color: #7D3C98; }
+    .badge-followup { background: rgba(41, 128, 185, 0.1); color: #2980B9; }
+    .badge-review { background: rgba(39,174,96,0.1); color: #27AE60; }
+    .badge-referral { background: rgba(142, 68, 173, 0.1); color: #8E44AD; }
     .activity-empty { text-align: center; padding: 36px 24px; }
     .activity-empty-icon { font-size: 36px; margin-bottom: 12px; opacity: 0.3; }
     .activity-empty h4 { font-size: 15px; color: var(--slate); font-weight: 600; margin-bottom: 6px; }
@@ -2298,24 +2540,89 @@
     .onboarding-item button { background: none; border: none; padding: 0; color: var(--roof-red); font-size: 14px; cursor: pointer; text-decoration: underline; font-family: 'Source Sans 3', sans-serif; }
 
     /* Ã¢â€â‚¬Ã¢â€â‚¬ Welcome header upgrade Ã¢â€â‚¬Ã¢â€â‚¬ */
-    .welcome-header { margin-bottom: 28px; }
-    .welcome-header-row { display: flex; align-items: flex-end; justify-content: space-between; }
-    .welcome-date { font-size: 13px; color: var(--slate-light); font-weight: 500; }
-    .welcome-h { font-family: 'Oswald', sans-serif; font-size: 32px; font-weight: 600; color: var(--near-black); line-height: 1.1; }
-    .welcome-sub { font-size: 14px; color: var(--slate); margin-top: 5px; }
+    .welcome-header {
+      background: #141210;
+      padding: 44px 48px 40px;
+      margin: 0;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .welcome-kicker {
+      display: block;
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #C0392B;
+      margin-bottom: 10px;
+    }
+    .welcome-header-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; }
+    .welcome-header-row > :first-child { min-width: 0; flex: 1; }
+    .welcome-date {
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.35);
+      letter-spacing: 0.03em;
+      padding-left: 16px;
+      flex-shrink: 0;
+    }
+    .welcome-h {
+      font-family: 'Oswald', sans-serif;
+      font-weight: 700;
+      font-size: 52px;
+      color: #FFFFFF;
+      letter-spacing: -0.5px;
+      line-height: 1.05;
+      margin: 0 0 10px;
+      max-width: 100%;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+    .welcome-sub {
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 16px;
+      color: rgba(255, 255, 255, 0.55);
+      margin: 0;
+      max-width: 100%;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
 
     /* Ã¢â€â‚¬Ã¢â€â‚¬ User avatar in sidebar Ã¢â€â‚¬Ã¢â€â‚¬ */
-    .user-avatar { width: 38px; height: 38px; border-radius: 50%; background: var(--roof-red); color: #fff; display: flex; align-items: center; justify-content: center; font-family: 'Oswald', sans-serif; font-weight: 600; font-size: 15px; flex-shrink: 0; }
+    .user-avatar { width: 38px; height: 38px; border-radius: 50%; background: #C0392B; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-family: 'Oswald', sans-serif; font-weight: 600; font-size: 15px; flex-shrink: 0; }
     .user-info-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
     .user-info-text { flex: 1; min-width: 0; }
-    .user-name { font-size: 14px; font-weight: 700; color: var(--near-black); margin-bottom: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .user-name { font-size: 14px; font-weight: 600; color: #FFFFFF; margin-bottom: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
     /* Ã¢â€â‚¬Ã¢â€â‚¬ Breadcrumb Ã¢â€â‚¬Ã¢â€â‚¬ */
-    .breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--slate-light); margin-bottom: 20px; }
-    .breadcrumb-sep { color: var(--mid-gray); }
-    .breadcrumb-current { color: var(--charcoal); font-weight: 600; }
-    .breadcrumb button { background: none; border: none; padding: 0; color: var(--roof-red); cursor: pointer; font-size: 13px; font-family: 'Source Sans 3', sans-serif; }
-    .breadcrumb button:hover { text-decoration: underline; }
+    .page-header .breadcrumb {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 12px;
+      color: rgba(255,255,255,0.35);
+      margin-bottom: 14px;
+    }
+    .page-header .breadcrumb-sep,
+    .page-header .breadcrumb button {
+      color: rgba(255,255,255,0.35);
+    }
+    .page-header .breadcrumb-current {
+      color: rgba(255,255,255,0.6);
+      font-weight: 600;
+    }
+    .page-header .breadcrumb button {
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      font-size: 12px;
+      font-family: 'Source Sans 3', sans-serif;
+    }
+    .page-header .breadcrumb button:hover { text-decoration: underline; }
 
     /* Ã¢â€â‚¬Ã¢â€â‚¬ How It Works section (landing) Ã¢â€â‚¬Ã¢â€â‚¬ */
     .how-section { padding: 80px 40px; background: var(--white); }
@@ -2398,12 +2705,13 @@
     .footer-v2-brand .footer-logo { font-family: 'Oswald', sans-serif; font-size: 24px; font-weight: 700; color: #fff; margin-bottom: 10px; }
     .footer-v2-brand .footer-logo span { color: var(--roof-red); }
     .footer-v2-brand p { font-size: 14px; line-height: 1.6; color: rgba(255,255,255,0.55); }
+    .footer-v2-promo { margin-top: 12px; font-size: 13px; line-height: 1.6; color: rgba(255,255,255,0.68); }
     .footer-v2-col h4 { font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.9); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 14px; }
     .footer-v2-col a, .footer-v2-col button { display: block; font-size: 14px; color: rgba(255,255,255,0.55); text-decoration: none; margin-bottom: 9px; background: none; border: none; cursor: pointer; padding: 0; text-align: left; font-family: 'Source Sans 3', sans-serif; transition: color 0.15s ease; }
     .footer-v2-col a:hover, .footer-v2-col button:hover { color: rgba(255,255,255,0.9); text-decoration: none; }
     .footer-v2-bottom { display: flex; align-items: center; justify-content: space-between; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 24px; }
     .footer-v2-copy { font-size: 13px; color: rgba(255,255,255,0.4); }
-    .footer-v2-tagline { font-size: 13px; color: rgba(255,255,255,0.35); font-style: italic; }
+    .footer-v2-tagline { font-size: 13px; color: rgba(255,255,255,0.35); }
 
     /* Ã¢â€â‚¬Ã¢â€â‚¬ Draft card improvements Ã¢â€â‚¬Ã¢â€â‚¬ */
     .draft-card { background: var(--white); border: 1px solid var(--border); border-radius: 8px; padding: 18px 20px; margin-bottom: 10px; display: flex; align-items: flex-start; gap: 14px; transition: box-shadow 0.15s ease, transform 0.15s ease; cursor: pointer; }
@@ -2447,7 +2755,10 @@
     /* Ã¢â€â‚¬Ã¢â€â‚¬ Responsive extras Ã¢â€â‚¬Ã¢â€â‚¬ */
     @media (max-width: 900px) { .dash-stats-row { grid-template-columns: repeat(2, 1fr); } }
     @media (max-width: 600px) {
-      .dash-stats-row { grid-template-columns: 1fr 1fr; gap: 10px; }
+      .dash-stats-row { grid-template-columns: 1fr 1fr; gap: 0; }
+      .dash-stat-card { border-bottom: 1px solid rgba(255,255,255,0.07); }
+      .dash-stat-card:nth-child(2n) { border-right: none; }
+      .dash-stat-card:nth-last-child(-n+2) { border-bottom: none; }
       .how-steps { grid-template-columns: 1fr; }
       .footer-v2-top { grid-template-columns: 1fr; gap: 28px; }
       .footer-v2-bottom { flex-direction: column; gap: 8px; text-align: center; }
@@ -2457,39 +2768,38 @@
       position: sticky;
       top: 0;
       z-index: 40;
-      background: rgba(10, 15, 25, 0.92);
-      backdrop-filter: blur(16px);
+      background: #141210;
       border-bottom: 1px solid rgba(255,255,255,0.08);
     }
     .landing-logo,
     .footer-logo,
     .sidebar-logo-text,
     .mobile-nav-logo {
-      color: #fff;
+      color: #FFFFFF;
       font-family: 'Oswald', sans-serif;
-      letter-spacing: 0.03em;
+      letter-spacing: 0.02em;
       text-transform: uppercase;
     }
     .landing-logo span,
     .footer-logo span,
     .sidebar-logo-text span,
     .mobile-nav-logo span {
-      color: var(--roof-red-light);
+      color: #C0392B;
     }
     .sidebar .sidebar-logo-text {
-      color: var(--near-black);
+      color: #FFFFFF;
       max-width: none;
       overflow: visible;
       white-space: normal;
     }
     .sidebar .sidebar-logo-text span {
-      color: var(--roof-red);
+      color: #C0392B;
     }
     .dashboard .mobile-nav-logo {
-      color: var(--near-black);
+      color: #FFFFFF;
     }
     .dashboard .mobile-nav-logo span {
-      color: var(--roof-red);
+      color: #C0392B;
     }
     .landing-nav-links a,
     .landing-nav-actions .btn-ghost {
@@ -2517,13 +2827,16 @@
       max-width: 640px;
       text-wrap: balance;
     }
-    .hero-headline span { color: #ffb5aa; }
     .hero-sub { color: rgba(255,255,255,0.82); max-width: 620px; }
     .landing-trust-note { color: rgba(255,255,255,0.7); }
     .hero-proof-card {
       background: rgba(9, 13, 21, 0.78);
       border: 1px solid rgba(255,255,255,0.08);
       box-shadow: 0 28px 70px rgba(5, 8, 14, 0.35);
+    }
+    #marketing-shell .btn,
+    .marketing-mobile-actions button {
+      min-height: 48px;
     }
     .hero-proof-badge {
       background: rgba(255,255,255,0.08);
@@ -2755,17 +3068,93 @@
       color: var(--slate);
     }
     .how-steps { grid-template-columns: repeat(4, 1fr); }
+    .marketing-video-section {
+      padding: 80px 40px;
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+    }
+    .marketing-video-shell {
+      max-width: 1160px;
+      margin: 0 auto;
+    }
+    .marketing-video-box {
+      aspect-ratio: 16 / 9;
+      width: 100%;
+      margin-top: -6px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background:
+        radial-gradient(circle at top left, rgba(192,57,43,0.22), transparent 25%),
+        linear-gradient(145deg, #15120f 0%, #241d19 45%, #322521 100%);
+      box-shadow: 0 24px 60px rgba(26,23,21,0.16);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .marketing-video-box::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+      background-size: 28px 28px;
+      pointer-events: none;
+    }
+    .marketing-video-play {
+      position: relative;
+      z-index: 1;
+      width: 94px;
+      height: 94px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.18);
+      background: rgba(255,255,255,0.08);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #FFFFFF;
+      font-size: 34px;
+      box-shadow: 0 18px 46px rgba(0,0,0,0.28);
+    }
+    .marketing-video-caption {
+      margin-top: 14px;
+      text-align: center;
+      font-size: 14px;
+      color: var(--slate-light);
+    }
     .marketing-before-after-section {
       padding: 80px 40px;
-      background: #f7f7f7;
+      background: #f4f1ec;
+    }
+    .marketing-before-after-grid {
+      align-items: stretch;
+    }
+    .marketing-compare-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      color: var(--slate);
+      margin-bottom: 12px;
+    }
+    .marketing-compare-card {
+      border-radius: 18px;
+      padding: 24px;
+      border: 1px solid rgba(44,40,37,0.08);
+      min-height: 100%;
     }
     .marketing-compare-card.bad {
-      border-color: rgba(192,57,43,0.18);
-      background: #fff8f7;
+      border-color: rgba(44,40,37,0.08);
+      background: #ede9e3;
     }
     .marketing-compare-card.good {
-      border-color: rgba(39,174,96,0.18);
-      background: #f7fcf9;
+      border-color: rgba(192,57,43,0.14);
+      background: #ffffff;
+      box-shadow: 0 20px 44px rgba(26,23,21,0.08);
     }
     .marketing-compare-card h3 {
       font-size: 20px;
@@ -2781,10 +3170,54 @@
       color: var(--charcoal);
       white-space: pre-line;
     }
+    .marketing-compare-quote strong {
+      display: block;
+      font-family: 'Oswald', sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--near-black);
+      margin-bottom: 6px;
+    }
+    .marketing-compare-quote span {
+      display: block;
+      margin-bottom: 14px;
+    }
+    .marketing-compare-quote span:last-child {
+      margin-bottom: 0;
+    }
+    .marketing-compare-card.bad .marketing-compare-quote {
+      background: #e2ddd7;
+      border-style: dashed;
+      color: #6f6760;
+      box-shadow: none;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 14px;
+    }
+    .marketing-compare-card.bad .marketing-compare-quote strong,
+    .marketing-compare-card.bad .marketing-compare-quote span {
+      display: inline;
+      margin: 0;
+      font-family: inherit;
+      font-size: inherit;
+      color: inherit;
+      font-weight: 400;
+    }
+    .marketing-compare-card.good .marketing-compare-quote {
+      background: #ffffff;
+      box-shadow: 0 18px 38px rgba(17,28,45,0.08);
+    }
+    .marketing-compare-caption {
+      margin-top: 14px;
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--slate);
+      font-weight: 600;
+    }
     .marketing-chatgpt-shell,
     .marketing-built-for-shell,
     .marketing-roi-shell,
     .marketing-sample-shell,
+    .marketing-video-shell,
     .pricing-section-inner,
     .faq-inner,
     .footer-v2-inner,
@@ -2822,6 +3255,18 @@
     .marketing-roi-card h3,
     .marketing-roi-card p,
     .marketing-roi-list li { color: rgba(255,255,255,0.9); }
+    .marketing-roi-callout {
+      margin-bottom: 18px;
+      padding: 18px 20px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.14);
+      border-left: 4px solid var(--roof-red);
+      background: rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.92);
+      font-size: 15px;
+      line-height: 1.7;
+      font-style: italic;
+    }
     .marketing-roi-quote {
       padding: 22px;
       border-radius: 16px;
@@ -2843,6 +3288,31 @@
       color: var(--slate);
       font-size: 15px;
       line-height: 1.65;
+    }
+    .pricing-value-line {
+      margin-top: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--near-black);
+    }
+    .pricing-trial-line {
+      margin-top: 6px;
+      font-size: 13px;
+      color: var(--slate);
+      font-weight: 600;
+    }
+    .pricing-cta-note {
+      margin-top: 10px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--slate);
+    }
+    .pricing-coupon-note {
+      margin-top: 10px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--roof-red);
+      font-weight: 700;
     }
     .marketing-pro-request-card {
       margin-top: 26px;
@@ -2875,6 +3345,11 @@
     .marketing-final-cta-shell li {
       color: rgba(255,255,255,0.75);
     }
+    .marketing-final-cta-support {
+      margin-top: 14px;
+      font-size: 14px;
+      color: rgba(255,255,255,0.72);
+    }
     .marketing-mobile-toggle {
       display: none;
       align-items: center;
@@ -2891,6 +3366,7 @@
       font-size: 18px;
       font-weight: 700;
       line-height: 1;
+      margin-left: auto;
     }
     .marketing-mobile-panel {
       display: none;
@@ -2931,13 +3407,39 @@
       font-size: 14px;
       color: rgba(255,255,255,0.7);
     }
+    .marketing-proposal-card,
+    .marketing-notes-card,
+    .marketing-output-card,
+    .problem-doc,
+    .pricing-card-v2,
+    .contact-card,
+    .contact-form-wrap,
+    .marketing-sample-card,
+    .marketing-visual-overview-card {
+      width: 100%;
+      min-width: 0;
+      overflow: hidden;
+    }
+    .faq-contact-intro {
+      color: var(--slate);
+      font-size: 16px;
+      line-height: 1.7;
+      margin-bottom: 28px;
+    }
     @media (max-width: 1100px) {
       .marketing-feature-grid { grid-template-columns: repeat(2, 1fr); }
       .marketing-persona-grid { grid-template-columns: repeat(2, 1fr); }
       .how-steps { grid-template-columns: repeat(2, 1fr); }
     }
     @media (max-width: 900px) {
+      .landing-nav {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 12px;
+      }
       .hero-inner,
+      .marketing-stats-grid,
       .marketing-demo-grid,
       .marketing-before-after-grid,
       .marketing-sample-grid,
@@ -2953,8 +3455,10 @@
       .marketing-chatgpt-section,
       .marketing-persona-section,
       .marketing-roi-section,
+      .marketing-video-section,
       .marketing-final-cta-section,
       .problem-section,
+      .marketing-stats-section,
       .how-section,
       .tools-section,
       .pricing-section,
@@ -2965,26 +3469,101 @@
       }
       .landing-nav-links,
       .landing-nav-actions { display: none; }
-      .marketing-mobile-toggle { display: inline-flex; }
+      .marketing-mobile-toggle {
+        display: inline-flex !important;
+        position: static;
+        transform: none;
+        margin-left: 0;
+        justify-self: end;
+        z-index: 2;
+      }
+      .trust-bar { padding-left: 24px; padding-right: 24px; }
+      .trust-bar-inner { justify-content: flex-start; }
     }
     @media (max-width: 640px) {
+      .landing-nav {
+        padding: 0 16px;
+        gap: 12px;
+      }
+      .landing-logo {
+        font-size: 20px;
+        min-width: 0;
+      }
+      .marketing-mobile-toggle {
+        margin-right: 0;
+        flex-shrink: 0;
+      }
       .hero {
         padding-top: 28px;
         padding-bottom: 56px;
+        padding-left: 24px;
+        padding-right: 24px;
+      }
+      .hero-inner {
+        gap: 28px;
+      }
+      .hero-kicker {
+        display: inline-block;
+        max-width: 100%;
+        white-space: normal;
       }
       .hero-headline {
-        font-size: clamp(34px, 10.5vw, 42px);
+        font-size: clamp(30px, 9vw, 38px);
         line-height: 1.08;
-        max-width: none;
+        max-width: 320px;
         letter-spacing: -0.015em;
+        text-wrap: initial;
+        overflow-wrap: anywhere;
+        word-break: break-word;
       }
       .hero-sub {
-        font-size: 16px;
+        font-size: 15px;
         line-height: 1.6;
       }
       .section-title {
         font-size: clamp(24px, 7.5vw, 32px);
         line-height: 1.16;
+      }
+      .marketing-stats-grid {
+        gap: 20px;
+      }
+      .trust-pill {
+        flex: 1 1 calc(50% - 6px);
+        min-width: 0;
+        max-width: calc(50% - 6px);
+        white-space: normal;
+        justify-content: flex-start;
+      }
+      .hero-actions {
+        flex-direction: column;
+      }
+      .hero-actions .btn {
+        width: 100%;
+      }
+      .marketing-video-play {
+        width: 74px;
+        height: 74px;
+        font-size: 28px;
+      }
+      .marketing-proposal-card {
+        padding: 16px;
+        max-width: 100%;
+      }
+      .marketing-proposal-card .doc-brand {
+        font-size: 20px;
+      }
+      .marketing-proposal-card .doc-top {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+      .marketing-proposal-card .doc-badge {
+        align-self: flex-start;
+      }
+      .marketing-proposal-card .doc-panel,
+      .marketing-proposal-card .doc-section,
+      .marketing-proposal-card .doc-summary {
+        font-size: 14px;
       }
       .pricing-amount {
         line-height: 1.08;
@@ -2996,11 +3575,11 @@
 
     /* ---- Final pre-Stripe app polish ---- */
     .tool-section-card {
-      background: var(--off-white);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 20px;
-      margin-bottom: 18px;
+      background: #FFFFFF;
+      border: 1px solid rgba(0,0,0,0.08);
+      border-radius: 8px;
+      padding: 32px;
+      margin-bottom: 24px;
     }
     .proposal-progress-indicator {
       position: sticky;
@@ -3036,18 +3615,23 @@
       align-items: flex-start;
       justify-content: space-between;
       gap: 12px;
-      margin-bottom: 16px;
+      margin-bottom: 24px;
     }
     .tool-section-title {
       font-family: 'Oswald', sans-serif;
       font-size: 22px;
+      font-weight: 600;
       line-height: 1.1;
-      color: var(--near-black);
+      color: #141210;
+      letter-spacing: -0.2px;
+      margin-bottom: 4px;
     }
     .tool-section-copy {
+      font-family: 'Source Sans 3', sans-serif;
       font-size: 14px;
-      color: var(--slate);
+      color: #9c948e;
       max-width: 640px;
+      margin-bottom: 0;
     }
     .tool-section-grid-3,
     .tool-section-grid-4,
@@ -3118,10 +3702,75 @@
       margin-bottom: 18px;
     }
     .tool-info-banner,
+    .defaults-indicator.applied {
+      background: rgba(39, 174, 96, 0.08);
+      border: 1px solid rgba(39, 174, 96, 0.25);
+      border-left: 3px solid #27AE60;
+      border-radius: 4px;
+      padding: 12px 16px;
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 14px;
+      color: #1c1917;
+      margin-bottom: 24px;
+    }
     .tool-empty-note {
       background: #f8fafc;
       border: 1px solid #dbe5f0;
       color: #31465d;
+    }
+    .draft-edit-banner {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+      padding: 14px 16px;
+      border-radius: 8px;
+      border: 1px solid rgba(192, 57, 43, 0.18);
+      border-left: 3px solid #C0392B;
+      background: rgba(192, 57, 43, 0.05);
+      color: #2c2825;
+    }
+    .draft-edit-banner strong {
+      display: block;
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #7f2c22;
+      margin-bottom: 4px;
+    }
+    .draft-edit-banner p {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.5;
+      color: #4c4540;
+    }
+    .draft-edit-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      flex-shrink: 0;
+    }
+    .draft-edit-actions button {
+      background: none;
+      border: none;
+      padding: 0;
+      color: var(--roof-red);
+      cursor: pointer;
+      text-decoration: underline;
+      font-size: 13px;
+      font-family: 'Source Sans 3', sans-serif;
+      font-weight: 600;
+    }
+    .activity-empty-actions {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 18px;
     }
     .status-callout {
       background: #fbf7f2;
@@ -3134,28 +3783,69 @@
       color: #9a3412;
       margin-top: 18px;
     }
+    .next-tool-prompt {
+      margin-top: 18px;
+      padding: 14px 16px;
+      border-radius: 8px;
+      border: 1px solid rgba(192, 57, 43, 0.18);
+      background: #fffaf8;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .next-tool-prompt-text {
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--charcoal);
+      font-weight: 600;
+    }
+    .next-tool-prompt button {
+      background: none;
+      border: none;
+      padding: 0;
+      color: var(--roof-red);
+      cursor: pointer;
+      text-decoration: underline;
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+    }
     .quick-action-card {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 18px;
+      background: #FFFFFF;
+      border: 1px solid rgba(0,0,0,0.08);
+      border-left: 3px solid #C0392B;
+      border-radius: 6px;
+      padding: 24px;
       display: flex;
       flex-direction: column;
       gap: 10px;
       min-height: 184px;
-      box-shadow: 0 2px 8px rgba(26,23,21,0.04);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .quick-action-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
     }
     .quick-action-card h4 {
-      font-size: 18px;
+      font-family: 'Oswald', sans-serif;
+      font-weight: 600;
+      font-size: 20px;
       line-height: 1.15;
-      color: var(--near-black);
+      color: #141210;
+      letter-spacing: -0.2px;
+      margin-bottom: 8px;
     }
     .quick-action-card p {
+      font-family: 'Source Sans 3', sans-serif;
       font-size: 14px;
-      color: var(--slate);
+      color: #7a726c;
       line-height: 1.55;
       margin: 0;
       flex: 1;
+      margin-bottom: 20px;
     }
     .tool-usage-grid {
       display: grid;
@@ -3165,21 +3855,26 @@
     }
     .usage-note-card,
     .billing-note-card {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 18px 20px;
+      background: #FFFFFF;
+      border: 1px solid rgba(0,0,0,0.08);
+      border-left: 3px solid #C0392B;
+      border-radius: 6px;
+      padding: 20px 24px;
     }
     .usage-note-card h4,
     .billing-note-card h4 {
+      font-family: 'Oswald', sans-serif;
       font-size: 18px;
-      margin-bottom: 8px;
+      font-weight: 600;
+      color: #141210;
+      margin-bottom: 4px;
     }
     .usage-note-card p,
     .billing-note-card p {
       margin: 0;
-      color: var(--slate);
+      color: #7a726c;
       font-size: 14px;
+      font-family: 'Source Sans 3', sans-serif;
     }
     .editable-output-wrap {
       margin-top: 18px;
@@ -3680,13 +4375,6 @@
   </style>
 </head>
 <body>
-  <div id="auth-boot-overlay" aria-live="polite" aria-label="Opening your RoofDraftAI workspace">
-    <div class="loading-screen-inner">
-      <div class="loading-brand-logo">RoofDraft<span>AI</span></div>
-      <div class="loading-brand-sub">Opening your workspace...</div>
-      <div class="spinner spinner-dark" aria-hidden="true"></div>
-    </div>
-  </div>
   <div id="marketing-shell" class="landing" data-landing-page="true">
     <nav class="landing-nav">
       <a class="landing-logo" href="/">RoofDraft<span>AI</span></a>
@@ -3712,7 +4400,7 @@
         </div>
         <div class="marketing-mobile-actions">
           <button data-auth-target="login" type="button">Sign In</button>
-          <button data-auth-target="register" type="button">Generate Free Proposal</button>
+          <button data-auth-target="register" type="button">Try Free</button>
         </div>
       </div>
     </nav>
@@ -3720,13 +4408,13 @@
     <section class="hero">
       <div class="hero-inner">
         <div class="hero-copy">
-          <div class="hero-kicker">Lightweight proposal and customer-message software for roofers</div>
-          <h1 class="hero-headline">Turn roof inspection notes into a polished proposal before you leave the driveway.</h1>
+          <div class="hero-kicker">Built specifically for roofing contractors</div>
+          <h1 class="hero-headline">Send a professional roofing proposal before you leave the driveway.</h1>
           <p class="hero-sub">
-            RoofDraftAI helps roofing contractors generate professional proposals, follow-up emails, review requests, referral messages, and optional roof visual overviews without learning a full CRM.
+            RoofDraftAI turns your inspection notes into a client-ready proposal in under 2 minutes. Contractors who respond first close up to 50% more jobs. Free to try &mdash; no card required.
           </p>
           <div class="hero-actions">
-            <button class="btn btn-primary" data-auth-target="register" type="button" style="padding: 14px 32px; font-size: 17px; font-family: 'Oswald', sans-serif; letter-spacing: 0.04em; text-transform: uppercase;">
+            <button class="btn btn-primary hero-primary-cta" data-auth-target="register" type="button" style="padding: 14px 32px; font-size: 17px; font-family: 'Oswald', sans-serif; letter-spacing: 0.04em; text-transform: uppercase;">
               Generate My Free Proposal
             </button>
           <a href="/sample-proposal" class="btn btn-outline-white" target="_blank" rel="noopener" style="padding: 14px 26px; font-size: 16px;">
@@ -3794,6 +4482,16 @@
       </div>
     </section>
 
+    <section class="trust-bar" aria-label="RoofDraftAI trust signals">
+      <div class="trust-bar-inner">
+        <div class="trust-pill"><span class="trust-pill-icon">&#9889;</span><span>Proposals in under 2 minutes</span></div>
+        <div class="trust-pill"><span class="trust-pill-icon">&#128241;</span><span>Works from your phone</span></div>
+        <div class="trust-pill"><span class="trust-pill-icon">&#128274;</span><span>No card required to try</span></div>
+        <div class="trust-pill"><span class="trust-pill-icon">&#10060;</span><span>Not a CRM</span></div>
+        <div class="trust-pill"><span class="trust-pill-icon">&#11088;</span><span>Built specifically for roofers</span></div>
+      </div>
+    </section>
+
     <section class="marketing-demo-section">
       <div class="marketing-chatgpt-shell">
         <div class="section-eyebrow">Immediate Product Preview</div>
@@ -3858,6 +4556,23 @@
       </div>
     </section>
 
+    <section class="marketing-stats-section" aria-label="Roofing sales timing statistics">
+      <div class="marketing-stats-grid">
+        <div class="marketing-stat scroll-reveal">
+          <span class="marketing-stat-value">50%</span>
+          <div class="marketing-stat-label">More jobs closed by contractors who respond first</div>
+        </div>
+        <div class="marketing-stat scroll-reveal scroll-reveal-delay-1">
+          <span class="marketing-stat-value">2 min</span>
+          <div class="marketing-stat-label">Average time to generate a complete proposal</div>
+        </div>
+        <div class="marketing-stat scroll-reveal scroll-reveal-delay-2">
+          <span class="marketing-stat-value">24 hrs</span>
+          <div class="marketing-stat-label">How long homeowners wait before moving to the next roofer</div>
+        </div>
+      </div>
+    </section>
+
     <section id="how-it-works" class="how-section">
       <div class="how-inner">
         <div class="section-eyebrow">How RoofDraftAI Works</div>
@@ -3887,21 +4602,75 @@
       </div>
     </section>
 
+    <section class="marketing-video-section">
+      <div class="marketing-video-shell">
+        <div class="section-eyebrow">See It In Action</div>
+        <h2 class="section-title scroll-reveal">Watch a proposal get built in under 2 minutes.</h2>
+        <p class="faq-contact-intro scroll-reveal scroll-reveal-delay-1">From rough inspection notes to a client-ready proposal &mdash; on a phone, at a job site.</p>
+        <div class="marketing-video-box scroll-reveal scroll-reveal-delay-2" role="img" aria-label="RoofDraftAI demo video placeholder showing a play button over a dark video player frame">
+          <div class="marketing-video-play" aria-hidden="true">&#9658;</div>
+        </div>
+        <div class="marketing-video-caption">Full demo coming soon &mdash; try it free now instead.</div>
+      </div>
+    </section>
+
     <section class="marketing-before-after-section">
       <div class="marketing-chatgpt-shell">
         <div class="section-eyebrow">Before And After</div>
-        <h2 class="section-title scroll-reveal">A better customer-facing presentation without more typing.</h2>
+        <h2 class="section-title scroll-reveal">The difference is what gets you the job.</h2>
         <div class="marketing-before-after-grid">
-          <div class="marketing-compare-card bad scroll-reveal scroll-reveal-delay-1">
-            <div class="marketing-card-kicker">Before</div>
-            <h3>Rushed and easy to ignore</h3>
-            <div class="marketing-compare-quote">Hey Mrs. Johnson, roof is 28 squares with architectural shingles. Total is $14,850. Let me know.</div>
+          <div class="scroll-reveal scroll-reveal-delay-1">
+            <div class="marketing-compare-label">&#10060; What most roofers send today</div>
+            <div class="marketing-compare-card bad">
+              <h3>Looks like a rushed text message</h3>
+              <div class="marketing-compare-quote">Hey Mrs. Johnson, roof is 28 squares with architectural shingles. Total is $14,850. Let me know.</div>
+            </div>
           </div>
-          <div class="marketing-compare-card good scroll-reveal scroll-reveal-delay-2">
-            <div class="marketing-card-kicker">After</div>
-            <h3>Professional and ready to review</h3>
-            <div class="marketing-compare-quote">Hi Mrs. Johnson, thank you for the opportunity to inspect your roof. Based on the inspection, we recommend a full replacement using architectural asphalt shingles. The project includes tear-off, underlayment, flashing details, ventilation, cleanup, and workmanship warranty coverage. The proposal is organized so you can review scope, materials, timing, investment, and next steps clearly before approval.</div>
+          <div class="scroll-reveal scroll-reveal-delay-2">
+            <div class="marketing-compare-label">&#9989; What RoofDraftAI generates</div>
+            <div class="marketing-compare-card good">
+              <h3>Looks organized, professional, and ready to approve</h3>
+              <div class="marketing-compare-quote">
+                <strong>Project Summary</strong>
+                <span>Hi Mrs. Johnson, thank you for the opportunity to inspect your roof. Based on the inspection, we recommend a full replacement using architectural asphalt shingles.</span>
+                <strong>Included Scope</strong>
+                <span>Tear-off, underlayment, flashing details, ventilation, cleanup, and workmanship warranty coverage are already organized into a clear homeowner-facing scope.</span>
+                <strong>Homeowner Next Step</strong>
+                <span>The proposal shows scope, materials, timing, investment, and what happens next so the customer knows how to move forward.</span>
+              </div>
+            </div>
+            <div class="marketing-compare-caption">Sent in under 2 minutes. From the job site. On your phone.</div>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="marketing-chatgpt-section">
+      <div class="marketing-chatgpt-shell">
+        <div class="section-eyebrow">Why Not Just Use ChatGPT?</div>
+        <h2 class="section-title scroll-reveal">Because a focused roofing workflow is easier to use consistently in the field.</h2>
+        <div class="compare-table-wrap">
+          <table class="compare-table">
+            <thead>
+              <tr>
+                <th>Workflow need</th>
+                <th>ChatGPT</th>
+                <th>RoofDraftAI</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Roofing-specific proposal structure</td><td>Requires manual prompting</td><td>Built into the form and output flow</td></tr>
+              <tr><td>Saved company defaults</td><td>No built-in contractor profile</td><td>Reusable company defaults and proposal inputs</td></tr>
+              <tr><td>Job-specific proposal flow</td><td>Flexible but inconsistent</td><td>Structured around roofing jobs and homeowner-ready output</td></tr>
+              <tr><td>Follow-up, review, and referral tools</td><td>Possible with custom prompts</td><td>Included in the same contractor workflow</td></tr>
+              <tr><td>Contractor-guided roof visual overview</td><td>No built-in workflow</td><td>Included in the proposal flow when you want visual scope clarity</td></tr>
+              <tr><td>Consistent homeowner formatting</td><td>Varies by prompt quality</td><td>Designed to stay organized and readable</td></tr>
+              <tr><td>Field use</td><td>More prompt writing required</td><td>Fewer steps when you are moving between inspections</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="marketing-pricing-honesty" style="margin-top: 20px;">
+          ChatGPT is flexible. RoofDraftAI is for the contractor who wants less prompt writing, more structure, and a lighter workflow built around roofing proposals and customer follow-up.
         </div>
       </div>
     </section>
@@ -3982,36 +4751,6 @@
       </div>
     </section>
 
-    <section class="marketing-chatgpt-section">
-      <div class="marketing-chatgpt-shell">
-        <div class="section-eyebrow">Why Not Just Use ChatGPT?</div>
-        <h2 class="section-title scroll-reveal">Because a focused roofing workflow is easier to use consistently in the field.</h2>
-        <div class="compare-table-wrap">
-          <table class="compare-table">
-            <thead>
-              <tr>
-                <th>Workflow need</th>
-                <th>ChatGPT</th>
-                <th>RoofDraftAI</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><td>Roofing-specific proposal structure</td><td>Requires manual prompting</td><td>Built into the form and output flow</td></tr>
-              <tr><td>Saved company defaults</td><td>No built-in contractor profile</td><td>Reusable company defaults and proposal inputs</td></tr>
-              <tr><td>Job-specific proposal flow</td><td>Flexible but inconsistent</td><td>Structured around roofing jobs and homeowner-ready output</td></tr>
-              <tr><td>Follow-up, review, and referral tools</td><td>Possible with custom prompts</td><td>Included in the same contractor workflow</td></tr>
-              <tr><td>Contractor-guided roof visual overview</td><td>No built-in workflow</td><td>Included in the proposal flow when you want visual scope clarity</td></tr>
-              <tr><td>Consistent homeowner formatting</td><td>Varies by prompt quality</td><td>Designed to stay organized and readable</td></tr>
-              <tr><td>Field use</td><td>More prompt writing required</td><td>Fewer steps when you are moving between inspections</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="marketing-pricing-honesty" style="margin-top: 20px;">
-          ChatGPT is flexible. RoofDraftAI is for the contractor who wants less prompt writing, more structure, and a lighter workflow built around roofing proposals and customer follow-up.
-        </div>
-      </div>
-    </section>
-
     <section class="marketing-persona-section">
       <div class="marketing-chatgpt-shell">
         <div class="section-eyebrow">Who It Is Built For</div>
@@ -4035,6 +4774,9 @@
         </div>
         <div class="marketing-roi-card scroll-reveal scroll-reveal-delay-1">
           <div class="marketing-card-kicker" style="color: #ffd4cd;">Why roofers use it</div>
+          <div class="marketing-roi-callout">
+            The average roofing job is worth $8,000 to $15,000. If a faster, more professional proposal helps you close just one extra job per year, RoofDraftAI pays for itself more than 8 times over.
+          </div>
           <ul class="marketing-roi-list">
             <li>Save time writing proposals after inspections</li>
             <li>Reduce inconsistent messaging across reps and jobs</li>
@@ -4095,13 +4837,16 @@
               <li><span class="pf-x">&times;</span><span class="pf-x-text">Job folders</span></li>
             </ul>
             <button class="btn btn-outline-red btn-full" data-auth-target="register" type="button">Generate Free Proposal</button>
+            <div class="pricing-cta-note">No credit card required</div>
           </div>
 
           <div class="pricing-card-v2 pricing-card-pro scroll-reveal scroll-reveal-delay-1" style="border-top: 4px solid #C0392B;">
             <div class="pricing-badge-all">Most Popular</div>
             <div class="pricing-plan">Pro</div>
             <div class="pricing-amount">$79</div>
-            <div class="pricing-period">Cancel anytime</div>
+            <div class="pricing-period">per month</div>
+            <div class="pricing-value-line">Less than the cost of one lost job</div>
+            <div class="pricing-trial-line">7-day free trial included</div>
             <hr class="pricing-divider" />
             <ul class="pricing-features-v2">
               <li><span class="pf-check">&#10003;</span><span>Unlimited proposals</span></li>
@@ -4112,10 +4857,11 @@
               <li><span class="pf-check">&#10003;</span><span>Job folders and saved drafts</span></li>
               <li><span class="pf-check">&#10003;</span><span>Priority support</span></li>
             </ul>
-            <button class="btn btn-primary btn-full" data-upgrade-plan="pro" type="button" style="font-family: 'Oswald', sans-serif; letter-spacing: 0.03em; text-transform: uppercase;">Get Started &mdash; $79/month</button>
+            <button class="btn btn-primary btn-full" data-upgrade-plan="pro" type="button" style="font-family: 'Oswald', sans-serif; letter-spacing: 0.03em; text-transform: uppercase;">Start Free Trial &mdash; $79/month</button>
+            <div class="pricing-coupon-note">Use code TOOLKIT20 for 20% off your first 3 months</div>
           </div>
         </div>
-        <div class="pricing-note" style="margin-top: 18px;">All plans include a 7-day free trial. No contracts. Cancel any time.</div>
+        <div class="pricing-note" style="margin-top: 18px;">Start with one free proposal, then upgrade only when you want the full workflow.</div>
         <div class="marketing-pricing-honesty">
           RoofDraftAI is not a CRM, estimating engine, measurement tool, or payment platform. It is a lightweight proposal and customer-message tool for roofers who want better customer-facing documents without another heavy software rollout.
         </div>
@@ -4136,6 +4882,14 @@
             <div class="static-faq-answer">No. Contractors are responsible for verifying measurements, pricing, materials, local requirements, and final terms. RoofDraftAI helps turn your job details into polished customer-facing language.</div>
           </div>
           <div class="static-faq-item">
+            <button class="static-faq-question" type="button" aria-expanded="false">Can I use RoofDraftAI on my phone at a job site?<span class="static-faq-arrow">&#9662;</span></button>
+            <div class="static-faq-answer">Yes. RoofDraftAI is fully mobile-friendly. Most contractors generate their proposal on-site immediately after the inspection &mdash; before they even leave the driveway. No laptop needed.</div>
+          </div>
+          <div class="static-faq-item">
+            <button class="static-faq-question" type="button" aria-expanded="false">How is RoofDraftAI different from just emailing a Word document?<span class="static-faq-arrow">&#9662;</span></button>
+            <div class="static-faq-answer">Word documents feel generic to homeowners and take time to format. RoofDraftAI generates a structured, professional proposal in under 2 minutes with your company info, scope, materials, warranty, and next steps already organized. Most homeowners can tell the difference, and it affects who they trust.</div>
+          </div>
+          <div class="static-faq-item">
             <button class="static-faq-question" type="button" aria-expanded="false">Why not just use ChatGPT?<span class="static-faq-arrow">&#9662;</span></button>
             <div class="static-faq-answer">ChatGPT is flexible, but RoofDraftAI is built around a roofing-specific workflow with structured proposal fields, reusable company defaults, and tools for follow-up, review requests, referrals, and roof visual overviews.</div>
           </div>
@@ -4149,11 +4903,7 @@
           </div>
           <div class="static-faq-item">
             <button class="static-faq-question" type="button" aria-expanded="false">How do I subscribe to Pro?<span class="static-faq-arrow">&#9662;</span></button>
-            <div class="static-faq-answer">After signing up for a free account, go to Account &amp; Billing in your dashboard to upgrade. The Pro plan is $79/month and includes unlimited proposals, follow-up emails, review requests, referral messages, saved drafts, job folders, and priority support.</div>
-          </div>
-          <div class="static-faq-item">
-            <button class="static-faq-question" type="button" aria-expanded="false">Can I use RoofDraftAI from my phone?<span class="static-faq-arrow">&#9662;</span></button>
-            <div class="static-faq-answer">Yes. The app is mobile-friendly so contractors can use it in the field.</div>
+            <div class="static-faq-answer">After signing up for a free account, go to Account &amp; Billing in your dashboard to upgrade. Pro is $79/month, starts with a 7-day free trial, and includes unlimited proposals, follow-up emails, review requests, referral messages, saved drafts, job folders, and priority support.</div>
           </div>
           <div class="static-faq-item">
             <button class="static-faq-question" type="button" aria-expanded="false">Does RoofDraftAI automatically measure the roof from satellite images?<span class="static-faq-arrow">&#9662;</span></button>
@@ -4184,15 +4934,14 @@
             <div class="static-faq-answer">No. It is a fictional demo to show the type of output RoofDraftAI can create.</div>
           </div>
         </div>
-        </div>
       </div>
     </section>
 
-    <section id="contact" class="contact-section" data-marketing-shell-sibling>
+    <section id="contact" class="contact-section">
       <div class="contact-inner">
         <div class="section-eyebrow">Contact</div>
         <h2 class="section-title scroll-reveal">Questions before you get started?</h2>
-        <p class="scroll-reveal scroll-reveal-delay-1" style="color: var(--slate); font-size: 16px; margin-bottom: 32px; margin-top: -20px;">
+        <p class="faq-contact-intro scroll-reveal scroll-reveal-delay-1">
           Reach out if you want help evaluating the workflow, testing the output, or choosing the right plan for your roofing team.
         </p>
         <div class="contact-cards">
@@ -4215,8 +4964,8 @@
         </div>
         <div class="contact-form-wrap scroll-reveal scroll-reveal-delay-3">
           <div class="contact-form-title">Send a Message</div>
-          <div class="contact-success" data-contact-success hidden>Message sent. We will get back to you within 24 hours.</div>
-          <div class="contact-error" data-contact-error hidden>Something went wrong. Please email support@roofdraftai.com directly.</div>
+          <div class="contact-success" data-contact-success hidden>Message sent. We'll get back to you within 24 hours.</div>
+          <div class="contact-error" data-contact-error hidden>Something went wrong. Please email us directly at support@roofdraftai.com</div>
           <form data-contact-form>
             <div class="contact-form-grid">
               <div class="form-group">
@@ -4246,8 +4995,8 @@
           <div class="marketing-final-cta-grid">
             <div>
               <div class="section-eyebrow">Final Call To Action</div>
-              <h2 class="section-title">Send your next roofing proposal with more confidence.</h2>
-              <p>Start with one free proposal. No card required.</p>
+              <h2 class="section-title">Your next job could be won or lost in the first proposal.</h2>
+              <p>Send a professional proposal in under 2 minutes. Free to try. No card required.</p>
             </div>
             <div>
               <div class="hero-actions" style="justify-content: flex-start; margin-top: 8px;">
@@ -4256,7 +5005,7 @@
                 </button>
                 <a href="/sample-proposal" class="btn btn-outline-white" target="_blank" rel="noopener">View Sample Proposal</a>
               </div>
-              <p style="margin-top: 14px;">Built for roof inspection follow-up, homeowner-facing proposals, and lightweight sales workflow support.</p>
+              <p class="marketing-final-cta-support">Join contractors who are winning more jobs with faster, cleaner proposals.</p>
             </div>
           </div>
         </div>
@@ -4268,7 +5017,8 @@
         <div class="footer-v2-top">
           <div class="footer-v2-brand">
             <div class="footer-logo">RoofDraft<span>AI</span></div>
-            <p>A lightweight proposal and customer-message tool built for roofing contractors who want polished, ready-to-send documents without a full CRM.</p>
+            <p>Lightweight proposal and customer-message tool for roofing contractors.</p>
+            <p class="footer-v2-promo">New subscribers can use code TOOLKIT20 for 20% off the first 3 months.</p>
           </div>
           <div class="footer-v2-col">
             <h4>Navigation</h4>
@@ -4276,9 +5026,6 @@
             <a href="#sample-proposal">Sample Proposal</a>
             <a href="#pricing">Pricing</a>
             <a href="#faq">FAQ</a>
-            <button data-auth-target="login" data-footer-auth-state="guest" type="button">Sign In</button>
-            <a href="/dashboard" data-footer-auth-state="auth" hidden>Dashboard</a>
-            <button data-auth-target="register" type="button">Generate Free Proposal</button>
           </div>
           <div class="footer-v2-col">
             <h4>Legal And Support</h4>
@@ -4290,7 +5037,7 @@
         </div>
         <div class="footer-v2-bottom">
           <div class="footer-v2-copy">&copy; 2026 RoofDraftAI. All rights reserved.</div>
-          <div class="footer-v2-tagline">RoofDraftAI.com</div>
+          <div class="footer-v2-tagline">Not a CRM. Not an estimating tool. Just better proposals.</div>
         </div>
       </div>
     </footer>
@@ -4490,8 +5237,9 @@
       return Promise.resolve({ ok: false, fallback: true });
     }
 
-    function useLoadingProgress(loading) {
+    function useLoadingProgress(loading, phases) {
       const [message, setMessage] = useState('');
+      const safePhases = phases || {};
 
       useEffect(() => {
         if (!loading) {
@@ -4501,14 +5249,14 @@
         const startedAt = Date.now();
         function updateMessage() {
           const elapsed = Date.now() - startedAt;
-          if (elapsed < 3000) setMessage('Analyzing your job details...');
-          else if (elapsed < 8000) setMessage('Writing your proposal...');
-          else setMessage('Almost ready...');
+          if (elapsed < 3000) setMessage(safePhases.initial || 'Reviewing your details...');
+          else if (elapsed < 8000) setMessage(safePhases.middle || 'Drafting your output...');
+          else setMessage(safePhases.late || 'Almost ready...');
         }
         updateMessage();
         const timer = setInterval(updateMessage, 600);
         return () => clearInterval(timer);
-      }, [loading]);
+      }, [loading, safePhases.initial, safePhases.middle, safePhases.late]);
 
       return message;
     }
@@ -4722,126 +5470,8 @@
     // ---------------------------------------------------------------------------
     // Upgrade Modal
     // ---------------------------------------------------------------------------
-    function UpgradeModal({ onClose, token, onUpgraded }) {
-      const [promoCode, setPromoCode] = useState('');
-      const [promoStatus, setPromoStatus] = useState(null); // null | 'success' | string (error)
-      const [promoLoading, setPromoLoading] = useState(false);
-
-      async function handleApplyPromo(e) {
-        e.preventDefault();
-        if (!promoCode.trim()) return;
-        setPromoLoading(true);
-        setPromoStatus(null);
-        try {
-          const { ok, data } = await API.call('/api/auth/apply-promo', 'POST', { code: promoCode.trim() }, token);
-          if (ok) {
-            if (data.message === 'affiliate') {
-              setPromoStatus('affiliate');
-            } else {
-              setPromoStatus('success');
-              if (onUpgraded) onUpgraded(data.user);
-              setTimeout(onClose, 1500);
-            }
-          } else {
-            setPromoStatus(data.error || 'Invalid promo code');
-          }
-        } catch {
-          setPromoStatus('Something went wrong. Please try again.');
-        } finally {
-          setPromoLoading(false);
-        }
-      }
-      const PLANS = [
-        {
-          name: 'Free',
-          plan: null,
-          price: '$0',
-          period: '/mo',
-          features: ['1 proposal included', 'Proposal Generator', ' -  Follow-Up Email', ' -  Review Request', ' -  Job Folders'],
-        },
-        {
-          name: 'Pro',
-          plan: 'pro',
-          price: '$79',
-          period: '/mo',
-          features: ['Unlimited proposals', 'All 4 tools', 'Saved defaults', 'Job Folders', 'Priority support'],
-          highlight: true,
-        },
-      ];
-      return (
-        <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
-          <div className="modal-box" style={{ maxWidth:'560px' }}>
-            <button className="modal-close" onClick={onClose}>&times;</button>
-            <div className="modal-title">Upgrade Your Plan</div>
-            <div className="modal-subtitle">Upgrade your plan to unlock more tools and unlimited generations.</div>
-            <div className="upgrade-plans-grid">
-              {PLANS.map(p => (
-                <div key={p.name} className={`upgrade-plan-card${p.highlight ? ' featured' : ''}`}>
-                  <div className="upgrade-plan-name">{p.name}</div>
-                  <div className="upgrade-plan-price">{p.price}<span>{p.period}</span></div>
-                  <ul className="upgrade-plan-features">
-                    {p.features.map(f => (
-                      <li key={f}>
-                        <span style={{ color: f.startsWith(' - ') ? 'var(--mid-gray)' : 'var(--success)', fontWeight:700, flexShrink:0 }}>
-                          {f.startsWith(' - ') ? 'No' : 'Yes'}
-                        </span>
-                        <span style={{ color: f.startsWith(' - ') ? 'var(--slate-light)' : 'var(--charcoal)' }}>
-                          {f.startsWith(' - ') ? f.slice(2) : f}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                  {p.plan ? (
-                    <button onClick={() => initiateCheckout(p.plan, token)}
-                      className={`btn btn-sm btn-full${p.highlight ? ' btn-primary' : ' btn-outline-red'}`}
-                      style={p.highlight ? { fontFamily:'Oswald, sans-serif', letterSpacing:'0.03em', textTransform:'uppercase', marginTop:'auto' } : { marginTop:'auto' }}>
-                      Get {p.name}
-                    </button>
-                  ) : (
-                    <button className="btn btn-sm btn-ghost btn-full" style={{ marginTop:'auto' }} onClick={onClose}>
-                      Current Plan
-                    </button>
-                  )}
-                </div>
-              ))}
-            </div>
-            {/* Promo code section */}
-            <div style={{ marginTop:'18px', borderTop:'1px solid var(--border)', paddingTop:'16px' }}>
-              {promoStatus === 'success' ? (
-                <div style={{ background:'#f0fdf4', border:'1px solid #86efac', borderRadius:'4px', padding:'10px 14px', fontSize:'14px', color:'#166534', fontWeight:600, textAlign:'center' }}>
-                  Promo code applied. Activating your plan...
-                </div>
-              ) : (
-                <form onSubmit={handleApplyPromo} style={{ display:'flex', gap:'8px' }}>
-                  <input
-                    className="form-input"
-                    type="text"
-                    placeholder="Have a promo code?"
-                    value={promoCode}
-                    onChange={e => setPromoCode(e.target.value.toUpperCase())}
-                    style={{ flex:1, fontSize:'14px', padding:'9px 12px' }}
-                  />
-                  <button type="submit" className="btn btn-outline btn-sm" disabled={promoLoading}>
-                    {promoLoading ? 'Applying...' : 'Apply'}
-                  </button>
-                </form>
-              )}
-              {promoStatus === 'success' && (
-                <div style={{ fontSize:'13px', color:'var(--success)', marginTop:'6px', fontWeight:600 }}>Code applied! Upgrading your account...</div>
-              )}
-              {promoStatus === 'affiliate' && (
-                <div style={{ fontSize:'13px', color:'var(--slate)', marginTop:'6px' }}>Referral code noted  -  your account stays on the free plan until you subscribe.</div>
-              )}
-              {promoStatus && promoStatus !== 'success' && promoStatus !== 'affiliate' && (
-                <div style={{ fontSize:'13px', color:'var(--roof-red)', marginTop:'6px' }}>{promoStatus}</div>
-              )}
-            </div>
-            <button className="btn btn-ghost btn-full" style={{ marginTop:'14px' }} onClick={onClose}>
-              Not right now
-            </button>
-          </div>
-        </div>
-      );
+    function UpgradeModal() {
+      return null;
     }
 
     // ---------------------------------------------------------------------------
@@ -5334,6 +5964,46 @@
       }, [token]);
 
       return defaults;
+    }
+
+    function PageHeader({ kicker, title, subtitle, breadcrumbs }) {
+      return (
+        <div className="page-header">
+          {Array.isArray(breadcrumbs) && breadcrumbs.length > 0 && (
+            <div className="breadcrumb">
+              {breadcrumbs.map((item, index) => (
+                <React.Fragment key={`${item.label}-${index}`}>
+                  {index > 0 && <span className="breadcrumb-sep">/</span>}
+                  {item.onClick ? (
+                    <button type="button" onClick={item.onClick}>{item.label}</button>
+                  ) : (
+                    <span className="breadcrumb-current">{item.label}</span>
+                  )}
+                </React.Fragment>
+              ))}
+            </div>
+          )}
+          <span className="page-kicker">{kicker}</span>
+          <h1 className="page-title">{title}</h1>
+          {subtitle ? <p className="page-subtitle">{subtitle}</p> : null}
+        </div>
+      );
+    }
+
+    function DraftEditingBanner({ draftMeta, toolLabel, onBack, onReset, resetLabel = 'Start Fresh' }) {
+      if (!draftMeta) return null;
+      return (
+        <div className="draft-edit-banner">
+          <div>
+            <strong>Editing saved {toolLabel}: {draftMeta.title || 'Untitled draft'}</strong>
+            <p>The form below was pre-filled from this saved draft. Update what changed for this job, then generate a fresh version or start over from your defaults.</p>
+          </div>
+          <div className="draft-edit-actions">
+            {onBack && <button type="button" className="btn btn-ghost btn-sm" onClick={onBack}>Back to Saved Drafts</button>}
+            {onReset && <button type="button" className="btn btn-primary btn-sm" onClick={onReset}>{resetLabel}</button>}
+          </div>
+        </div>
+      );
     }
 
     const PROPOSAL_JOB_TYPES = [
@@ -5950,7 +6620,12 @@
       const [roofVisualError, setRoofVisualError] = useState('');
       const [currentStepIndex, setCurrentStepIndex] = useState(0);
       const [activeDraftId, setActiveDraftId] = useState(null);
-      const loadingProgress = useLoadingProgress(loading);
+      const [activeDraftMeta, setActiveDraftMeta] = useState(null);
+      const loadingProgress = useLoadingProgress(loading, {
+        initial: 'Analyzing your job details...',
+        middle: 'Writing your proposal...',
+        late: 'Almost ready...',
+      });
 
       useEffect(() => {
         if (defaults == null || defaultsLoaded) return;
@@ -6001,6 +6676,7 @@
         setRoofVisualError('');
         setError('');
         setActiveDraftId(editingDraft.id);
+        setActiveDraftMeta({ id: editingDraft.id, title: editingDraft.title || 'Proposal draft' });
         if (onEditingDraftApplied) onEditingDraftApplied(editingDraft.id);
         window.requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: 'smooth' }));
       }, [editingDraft, defaultsLoaded, baseForm, activeDraftId, onEditingDraftApplied]);
@@ -6179,6 +6855,7 @@
         setRoofVisualError('');
         setError('');
         setActiveDraftId(null);
+        setActiveDraftMeta(null);
       }
 
       async function handleSubmit(e) {
@@ -6238,9 +6915,17 @@
 
       return (
         <div className="page-fade-in">
-          <div className="page-title">Generate Proposal</div>
-          <div className="page-subtitle">Build a homeowner-ready roofing proposal with structure, pricing, scope, optional roof visuals, timeline, and clear next-step language.</div>
+          <PageHeader
+            kicker="PROPOSAL TOOL"
+            title="Generate Proposal"
+            subtitle="Build a homeowner-ready roofing proposal with structure, pricing, scope, optional roof visuals, timeline, and clear next-step language."
+            breadcrumbs={[
+              { label: 'Dashboard', onClick: () => onNavigate && onNavigate('home') },
+              { label: 'Proposal Generator' },
+            ]}
+          />
 
+          <div className="page-body">
           <div className="content-card" ref={formCardRef}>
             <div className="proposal-progress-indicator">
               <span className="proposal-progress-step">Step {Math.min(currentStepIndex + 1, PROPOSAL_PROGRESS_STEPS.length)} of {PROPOSAL_PROGRESS_STEPS.length}</span>
@@ -6259,6 +6944,13 @@
                 Free accounts can generate one proposal now. Upgrade to Pro to unlock unlimited proposals, saved defaults, job folders, and the complete message workflow.
               </div>
             )}
+            <DraftEditingBanner
+              draftMeta={activeDraftMeta}
+              toolLabel="proposal"
+              onBack={() => onNavigate && onNavigate('drafts')}
+              onReset={resetForm}
+              resetLabel="Start Fresh Proposal"
+            />
 
             <form onSubmit={handleSubmit}>
               <div className="tool-section-card" data-proposal-step data-step-index="0">
@@ -6668,16 +7360,23 @@
                 proposalVisual={proposalVisualResult}
                 draftPayload={form}
               />
+              <div className="next-tool-prompt">
+                <div className="next-tool-prompt-text">Job done? Generate your review request text now &rarr;</div>
+                <button type="button" onClick={() => onNavigate && onNavigate('review')}>
+                  Open Review Request Tool
+                </button>
+              </div>
               <div className="output-disclaimer">
                 Review all pricing, measurements, visual notes, terms, warranties, and local requirements before sending. RoofDraftAI does not replace contractor judgment, estimating, engineering, insurance, or legal review.
               </div>
             </>
           )}
+          </div>
         </div>
       );
     }
 
-    function FollowUpToolV2({ token, user, onUpgradeNeeded, editingDraft, onEditingDraftApplied }) {
+    function FollowUpToolV2({ token, user, onUpgradeNeeded, onNavigate, editingDraft, onEditingDraftApplied }) {
       const defaults = useSavedDefaults(token);
       const emptyForm = {
         customer_name: '',
@@ -6699,7 +7398,12 @@
       const [loading, setLoading] = useState(false);
       const [error, setError] = useState('');
       const [activeDraftId, setActiveDraftId] = useState(null);
-      const loadingProgress = useLoadingProgress(loading);
+      const [activeDraftMeta, setActiveDraftMeta] = useState(null);
+      const loadingProgress = useLoadingProgress(loading, {
+        initial: 'Reviewing the customer context...',
+        middle: 'Writing your follow-up...',
+        late: 'Almost ready...',
+      });
 
       useEffect(() => {
         if (defaults == null || defaultsLoaded) return;
@@ -6728,11 +7432,27 @@
         setDraftSaved(false);
         setError('');
         setActiveDraftId(editingDraft.id);
+        setActiveDraftMeta({ id: editingDraft.id, title: editingDraft.title || 'Follow-up draft' });
         if (onEditingDraftApplied) onEditingDraftApplied(editingDraft.id);
         window.requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: 'smooth' }));
       }, [editingDraft, defaultsLoaded, defaults, activeDraftId, onEditingDraftApplied]);
 
       function set(field) { return e => setForm(f => ({ ...f, [field]: e.target.value })); }
+
+      function resetForm() {
+        const resetTo = {
+          ...emptyForm,
+          contractor_name: defaults?.contractor_name || '',
+          company_name: defaults?.company_name || '',
+          contractor_phone: defaults?.contractor_phone || '',
+        };
+        setForm(resetTo);
+        setResult('');
+        setDraftSaved(false);
+        setError('');
+        setActiveDraftId(null);
+        setActiveDraftMeta(null);
+      }
 
       async function handleSubmit(e) {
         e.preventDefault();
@@ -6760,14 +7480,29 @@
 
       return (
         <div className="page-fade-in">
-          <div className="page-title">Follow-Up Email Tool</div>
-          <div className="page-subtitle">Create follow-up emails and SMS-length versions for inspections, unanswered proposals, pending decisions, and scheduling touches.</div>
+          <PageHeader
+            kicker="FOLLOW-UP TOOL"
+            title="Follow-Up Email Tool"
+            subtitle="Create follow-up emails and SMS-length versions for inspections, unanswered proposals, pending decisions, and scheduling touches."
+            breadcrumbs={[
+              { label: 'Dashboard', onClick: () => onNavigate && onNavigate('home') },
+              { label: 'Follow-Up Email' },
+            ]}
+          />
+          <div className="page-body">
           <div className="content-card">
             {defaultsApplied && (
               <div className="defaults-indicator applied">
                 Your saved company defaults have been applied where available.
               </div>
             )}
+            <DraftEditingBanner
+              draftMeta={activeDraftMeta}
+              toolLabel="follow-up"
+              onBack={() => onNavigate && onNavigate('drafts')}
+              onReset={resetForm}
+              resetLabel="Start Fresh Follow-Up"
+            />
             <div className="tool-empty-note">
               Use this after a roof inspection, after sending a proposal, or when a homeowner has gone quiet and you want a professional next touch without sounding pushy.
             </div>
@@ -6847,11 +7582,12 @@
               </div>
             </>
           )}
+          </div>
         </div>
       );
     }
 
-    function ReviewToolV2({ token, user, onUpgradeNeeded, editingDraft, onEditingDraftApplied }) {
+    function ReviewToolV2({ token, user, onUpgradeNeeded, onNavigate, editingDraft, onEditingDraftApplied }) {
       const defaults = useSavedDefaults(token);
       const emptyForm = {
         customer_name: '',
@@ -6869,6 +7605,12 @@
       const [loading, setLoading] = useState(false);
       const [error, setError] = useState('');
       const [activeDraftId, setActiveDraftId] = useState(null);
+      const [activeDraftMeta, setActiveDraftMeta] = useState(null);
+      const loadingProgress = useLoadingProgress(loading, {
+        initial: 'Reviewing the project details...',
+        middle: 'Writing your review request...',
+        late: 'Almost ready...',
+      });
 
       useEffect(() => {
         if (defaults == null || defaultsLoaded) return;
@@ -6897,11 +7639,27 @@
         setDraftSaved(false);
         setError('');
         setActiveDraftId(editingDraft.id);
+        setActiveDraftMeta({ id: editingDraft.id, title: editingDraft.title || 'Review request draft' });
         if (onEditingDraftApplied) onEditingDraftApplied(editingDraft.id);
         window.requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: 'smooth' }));
       }, [editingDraft, defaultsLoaded, defaults, activeDraftId, onEditingDraftApplied]);
 
       function set(field) { return e => setForm(f => ({ ...f, [field]: e.target.value })); }
+
+      function resetForm() {
+        const resetTo = {
+          ...emptyForm,
+          contractor_name: defaults?.contractor_name || '',
+          company_name: defaults?.company_name || '',
+          review_link: defaults?.review_link || '',
+        };
+        setForm(resetTo);
+        setResult('');
+        setDraftSaved(false);
+        setError('');
+        setActiveDraftId(null);
+        setActiveDraftMeta(null);
+      }
 
       async function handleSubmit(e) {
         e.preventDefault();
@@ -6929,14 +7687,29 @@
 
       return (
         <div className="page-fade-in">
-          <div className="page-title">Review Request Tool</div>
-          <div className="page-subtitle">Generate a natural email version and text version for asking happy homeowners to leave a review.</div>
+          <PageHeader
+            kicker="REVIEW TOOL"
+            title="Review Request Tool"
+            subtitle="Generate a natural email version and text version for asking happy homeowners to leave a review."
+            breadcrumbs={[
+              { label: 'Dashboard', onClick: () => onNavigate && onNavigate('home') },
+              { label: 'Review Request' },
+            ]}
+          />
+          <div className="page-body">
           <div className="content-card">
             {defaultsApplied && (
               <div className="defaults-indicator applied">
                 Your saved company defaults have been applied where available.
               </div>
             )}
+            <DraftEditingBanner
+              draftMeta={activeDraftMeta}
+              toolLabel="review request"
+              onBack={() => onNavigate && onNavigate('drafts')}
+              onReset={resetForm}
+              resetLabel="Start Fresh Review Request"
+            />
             <form onSubmit={handleSubmit}>
               <div className="tool-form-grid">
                 <div className="form-group">
@@ -6988,11 +7761,12 @@
               </div>
             </>
           )}
+          </div>
         </div>
       );
     }
 
-    function ReferralToolV2({ token, user, onUpgradeNeeded, editingDraft, onEditingDraftApplied }) {
+    function ReferralToolV2({ token, user, onUpgradeNeeded, onNavigate, editingDraft, onEditingDraftApplied }) {
       const defaults = useSavedDefaults(token);
       const emptyForm = {
         customer_name: '',
@@ -7011,7 +7785,12 @@
       const [loading, setLoading] = useState(false);
       const [error, setError] = useState('');
       const [activeDraftId, setActiveDraftId] = useState(null);
-      const loadingProgress = useLoadingProgress(loading);
+      const [activeDraftMeta, setActiveDraftMeta] = useState(null);
+      const loadingProgress = useLoadingProgress(loading, {
+        initial: 'Reviewing the completed job details...',
+        middle: 'Writing your referral request...',
+        late: 'Almost ready...',
+      });
 
       useEffect(() => {
         if (defaults == null || defaultsLoaded) return;
@@ -7040,11 +7819,27 @@
         setDraftSaved(false);
         setError('');
         setActiveDraftId(editingDraft.id);
+        setActiveDraftMeta({ id: editingDraft.id, title: editingDraft.title || 'Referral message draft' });
         if (onEditingDraftApplied) onEditingDraftApplied(editingDraft.id);
         window.requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: 'smooth' }));
       }, [editingDraft, defaultsLoaded, defaults, activeDraftId, onEditingDraftApplied]);
 
       function set(field) { return e => setForm(f => ({ ...f, [field]: e.target.value })); }
+
+      function resetForm() {
+        const resetTo = {
+          ...emptyForm,
+          contractor_name: defaults?.contractor_name || '',
+          company_name: defaults?.company_name || '',
+          phone_number: defaults?.contractor_phone || '',
+        };
+        setForm(resetTo);
+        setResult('');
+        setDraftSaved(false);
+        setError('');
+        setActiveDraftId(null);
+        setActiveDraftMeta(null);
+      }
 
       async function handleSubmit(e) {
         e.preventDefault();
@@ -7072,14 +7867,29 @@
 
       return (
         <div className="page-fade-in">
-          <div className="page-title">Referral Request Tool</div>
-          <div className="page-subtitle">Turn completed jobs into simple, professional referral opportunities with an email version and a text version.</div>
+          <PageHeader
+            kicker="REFERRAL TOOL"
+            title="Referral Request Tool"
+            subtitle="Turn completed jobs into simple, professional referral opportunities with an email version and a text version."
+            breadcrumbs={[
+              { label: 'Dashboard', onClick: () => onNavigate && onNavigate('home') },
+              { label: 'Referral Message' },
+            ]}
+          />
+          <div className="page-body">
           <div className="content-card">
             {defaultsApplied && (
               <div className="defaults-indicator applied">
                 Your saved company defaults have been applied where available.
               </div>
             )}
+            <DraftEditingBanner
+              draftMeta={activeDraftMeta}
+              toolLabel="referral message"
+              onBack={() => onNavigate && onNavigate('drafts')}
+              onReset={resetForm}
+              resetLabel="Start Fresh Referral Request"
+            />
             <form onSubmit={handleSubmit}>
               <div className="tool-form-grid">
                 <div className="form-group">
@@ -7134,6 +7944,7 @@
               </div>
             </>
           )}
+          </div>
         </div>
       );
     }
@@ -7148,218 +7959,14 @@
       { key: 'referral', tab: 'referral', name: 'Referral Message',   desc: 'Text and email to ask happy customers for referrals without being awkward.' },
     ];
 
-    function DashboardHome({ user, token, onSelectTab }) {
-      const isFree = user.plan === 'free' && !user.is_admin;
-      const genCount = user.generations_this_month || 0;
-      const totalGens = user.total_generations || 0;
-      const freeUsed = totalGens;
-      const allUsed = isFree && freeUsed >= FREE_LIMIT;
-      const toast = useToast();
-
-      const [recentDrafts, setRecentDrafts] = useState(null);
-      const [dismissed, setDismissed] = useState(() => {
-        try { return localStorage.getItem('rd_onboarding_dismissed') === '1'; } catch { return false; }
-      });
-
-      useEffect(() => {
-        API.call('/api/drafts', 'GET', null, token).then(({ ok, data }) => {
-          if (ok) setRecentDrafts((data.drafts || []).slice(0, 5));
-          else setRecentDrafts([]);
-        }).catch(() => setRecentDrafts([]));
-      }, [token]);
-
-      const todayStr = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
-      const hasDrafts = recentDrafts && recentDrafts.length > 0;
-      const hasDefaults = false; // simplified  -  full implementation would check API
-
-      const onboardingSteps = [
-        { id: 'proposal', label: 'Generate your first proposal', done: totalGens > 0, action: () => onSelectTab('proposal') },
-        { id: 'defaults', label: 'Set up your company defaults', done: false, action: () => onSelectTab('defaults') },
-        { id: 'draft', label: 'Save a draft', done: hasDrafts, action: () => onSelectTab('proposal') },
-      ];
-      const doneCount = onboardingSteps.filter(s => s.done).length;
-      const allDone = doneCount === onboardingSteps.length;
-      const showOnboarding = !dismissed && !allDone && totalGens < 3;
-
-      const TOOL_STRIPE_COLORS = {
-        proposal: 'var(--roof-red)',
-        followup: '#3498DB',
-        review: '#27AE60',
-        referral: '#8E44AD',
-      };
-
-      return (
-        <div className="page-fade-in">
-          {allUsed && (
-            <div className="upgrade-banner">
-              <div className="upgrade-banner-text">
-                <strong>Your free proposal has already been used</strong>
-                <span>Upgrade to keep generating polished proposals, follow-ups, reviews, and referral messages.</span>
-              </div>
-              <div className="upgrade-actions">
-                <button onClick={() => initiateCheckout('pro', token)} className="btn btn-primary btn-sm">Pro  -  $79/mo</button>
-              </div>
-            </div>
-          )}
-
-          {/* Welcome header */}
-          <div className="welcome-header">
-            <div className="welcome-header-row">
-              <div>
-                <div className="welcome-h">Welcome back, {user.username}</div>
-                <div className="welcome-sub">
-                  {isFree
-                    ? (freeUsed > 0 ? 'Your free proposal has been used. Upgrade any time to keep going.' : 'Ready to generate your first proposal?')
-                    : (genCount > 0 ? `You've generated ${genCount} document${genCount !== 1 ? 's' : ''} this month.` : 'Ready to generate your next document?')}
-                </div>
-              </div>
-              <div className="welcome-date">{todayStr}</div>
-            </div>
-          </div>
-
-          {/* Stats row */}
-          <div className="dash-stats-row">
-            <div className="dash-stat-card">
-              <div className="dash-stat-icon red">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
-              </div>
-              <div>
-                <div className="dash-stat-num">{totalGens}</div>
-                <div className="dash-stat-label">Total Generated</div>
-              </div>
-            </div>
-            <div className="dash-stat-card">
-              <div className="dash-stat-icon gold">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-              </div>
-              <div>
-                <div className="dash-stat-num">{genCount}</div>
-                <div className="dash-stat-label">This Month</div>
-              </div>
-            </div>
-            <div className="dash-stat-card">
-              <div className="dash-stat-icon slate">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="21,8 21,21 3,21 3,8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
-              </div>
-              <div>
-                <div className="dash-stat-num">{recentDrafts ? recentDrafts.length : ' - '}</div>
-                <div className="dash-stat-label">Saved Drafts</div>
-              </div>
-            </div>
-            <div className="dash-stat-card">
-              <div className="dash-stat-icon green">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22,4 12,14.01 9,11.01"/></svg>
-              </div>
-              <div>
-                <div className="dash-stat-num">{isFree ? `${Math.max(0, FREE_LIMIT - freeUsed)}` : 'Unlimited'}</div>
-                <div className="dash-stat-label">{isFree ? 'Free Proposals Left' : 'Generations Left'}</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Onboarding checklist */}
-          {showOnboarding && (
-            <div className="onboarding-card">
-              <div className="onboarding-header">
-                <div className="onboarding-title">Get started with RoofDraftAI</div>
-                <button className="onboarding-dismiss" onClick={() => { setDismissed(true); try { localStorage.setItem('rd_onboarding_dismissed','1'); } catch {} }}>Dismiss</button>
-              </div>
-              <div className="onboarding-progress-label">{doneCount} of {onboardingSteps.length} complete</div>
-              <div className="onboarding-progress-bar">
-                <div className="onboarding-progress-fill" style={{ width: `${(doneCount / onboardingSteps.length) * 100}%` }} />
-              </div>
-              <div className="onboarding-items">
-                {onboardingSteps.map(step => (
-                  <div key={step.id} className={`onboarding-item${step.done ? ' done' : ''}`}>
-                    <div className={`onboarding-check${step.done ? ' done' : ''}`}>{step.done ? '\u2713' : ''}</div>
-                    {step.done ? <span>{step.label}</span> : <button onClick={step.action}>{step.label}</button>}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Tool cards */}
-          <div className="section-header"><h3>Your Tools</h3></div>
-          <div className="tools-grid">
-            {TOOLS.map(tool => {
-              const accessible = canUseTool(user, tool.key);
-              const stripeColor = TOOL_STRIPE_COLORS[tool.key] || 'var(--roof-red)';
-              return (
-                <div
-                  key={tool.key}
-                  className={`tool-card${!accessible ? ' tool-card-locked' : ''}`}
-                  onClick={() => accessible && onSelectTab(tool.tab)}
-                  style={{ borderTop: `3px solid ${stripeColor}` }}
-                >
-                  <div className="tool-card-icon">
-                    {React.createElement(TOOL_ICON_MAP[tool.key] || IconFileText, { size: 36 })}
-                  </div>
-                  <div className="tool-card-name">{tool.name}</div>
-                  <div className="tool-card-desc">{tool.desc}</div>
-                  {accessible ? (
-                    <div style={{ marginTop: 'auto', paddingTop: 12 }}>
-                      <button className="btn btn-primary btn-sm"
-                        onClick={e => { e.stopPropagation(); onSelectTab(tool.tab); }}>
-                        Open Tool
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="locked-badge">Pro Plan Required</div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Recent Activity */}
-          <div className="activity-section">
-            <div className="activity-header">
-              <h3>Recent Activity</h3>
-              {hasDrafts && (
-                <button className="btn btn-ghost btn-sm" onClick={() => onSelectTab('drafts')} style={{ fontSize: 13 }}>
-                  View All Drafts
-                </button>
-              )}
-            </div>
-            {recentDrafts === null ? (
-              <div style={{ background: 'var(--white)', border: '1px solid var(--border)', borderRadius: 8, padding: '24px' }}>
-                <div className="skeleton-h" />
-                <div className="skeleton-line med" />
-                <div className="skeleton-line short" />
-              </div>
-            ) : !hasDrafts ? (
-              <div className="activity-list">
-                <div className="activity-empty">
-                  <div className="activity-empty-icon">&#10148;</div>
-                  <h4>No activity yet</h4>
-                  <p>Generate your first proposal to see it here.</p>
-                </div>
-              </div>
-            ) : (
-              <div className="activity-list">
-                {recentDrafts.map(d => (
-                  <div key={d.id} className="activity-item" onClick={() => onSelectTab('drafts')}>
-                    <div className={`activity-type-dot dot-${d.tool_name || 'proposal'}`} />
-                    <div className="activity-info">
-                      <div className="activity-title">{d.title || 'Untitled'}</div>
-                      <div className="activity-meta">{formatDate(d.created_at)}</div>
-                    </div>
-                    <span className={`activity-badge badge-${d.tool_name || 'proposal'}`}>
-                      {TOOL_LABELS[d.tool_name] || d.tool_name || 'Draft'}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-      );
+    function DashboardHome(props) {
+      return <DashboardHomeV2 {...props} />;
     }
 
     // ---------------------------------------------------------------------------
     function DashboardHomeV2({ user, token, onSelectTab, onUpgrade }) {
       const isFree = user.plan === 'free' && !user.is_admin;
+      const canAccessDrafts = user.is_admin || user.plan === 'pro';
       const totalGens = user.total_generations || 0;
       const usedFreeProposal = isFree && totalGens >= FREE_LIMIT;
       const [recentDrafts, setRecentDrafts] = useState(null);
@@ -7367,17 +7974,28 @@
       const todayStr = new Date().toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric' });
 
       useEffect(() => {
-        Promise.all([
-          API.call('/api/drafts', 'GET', null, token),
-          API.call('/api/defaults', 'GET', null, token),
-        ]).then(([draftRes, defaultsRes]) => {
-          setRecentDrafts(draftRes.ok ? (draftRes.data.drafts || []).slice(0, 5) : []);
-          setDefaultsData(defaultsRes.ok ? (defaultsRes.data.defaults || {}) : {});
-        }).catch(() => {
-          setRecentDrafts([]);
-          setDefaultsData({});
-        });
-      }, [token]);
+        let cancelled = false;
+        async function loadHomeData() {
+          try {
+            const defaultsPromise = API.call('/api/defaults', 'GET', null, token);
+            const draftsPromise = canAccessDrafts
+              ? API.call('/api/drafts', 'GET', null, token)
+              : Promise.resolve({ ok: true, data: { drafts: [] } });
+            const [draftRes, defaultsRes] = await Promise.all([draftsPromise, defaultsPromise]);
+            if (cancelled) return;
+            setRecentDrafts(draftRes.ok ? (draftRes.data.drafts || []).slice(0, 5) : []);
+            setDefaultsData(defaultsRes.ok ? (defaultsRes.data.defaults || {}) : {});
+          } catch (error) {
+            if (cancelled) return;
+            setRecentDrafts([]);
+            setDefaultsData({});
+          }
+        }
+        loadHomeData();
+        return () => {
+          cancelled = true;
+        };
+      }, [token, canAccessDrafts]);
 
       const hasDefaults = defaultsData && ['company_name', 'contractor_name', 'contractor_phone', 'payment_terms', 'warranty_labor'].some(key => defaultsData[key]);
       const toolCards = [
@@ -7404,17 +8022,19 @@
           <div className="welcome-header">
             <div className="welcome-header-row">
               <div>
-                <div className="welcome-h">Welcome back, {user.username}</div>
-                <div className="welcome-sub">
+                <span className="welcome-kicker">YOUR WORKSPACE</span>
+                <h1 className="welcome-h">Welcome back, {user.username}</h1>
+                <p className="welcome-sub">
                   {isFree
                     ? (usedFreeProposal ? 'Your free proposal has been used. Upgrade to unlock the full workflow.' : 'Start with your included free proposal, then edit any field before sending.')
                     : 'Your proposal and customer-message workspace is ready for the next job.'}
-                </div>
+                </p>
               </div>
               <div className="welcome-date">{todayStr}</div>
             </div>
           </div>
 
+          <div className="dashboard-home-body">
           <div className="tool-usage-grid">
             <div className="usage-note-card">
               <h4>Current plan</h4>
@@ -7474,11 +8094,13 @@
             </div>
             <div className="dash-stat-card">
               <div>
-                <div className="dash-stat-num">{recentDrafts ? recentDrafts.length : '-'}</div>
-                <div className="dash-stat-label">Recent Saved Outputs</div>
+                <div className={`dash-stat-num${canAccessDrafts ? '' : ' dash-stat-num-text'}`}>
+                  {canAccessDrafts ? (recentDrafts ? recentDrafts.length : '-') : 'Locked'}
+                </div>
+                <div className="dash-stat-label">{canAccessDrafts ? 'Recent Saved Outputs' : 'Saved Drafts'}</div>
               </div>
             </div>
-            <div className="dash-stat-card">
+            <div className={`dash-stat-card${!isFree ? ' stat-ready' : ''}`}>
               <div>
                 <div className="dash-stat-num">{isFree ? (usedFreeProposal ? '1 of 1' : '0 of 1') : 'Ready'}</div>
                 <div className="dash-stat-label">{isFree ? 'Free Proposal Usage' : 'Workspace Status'}</div>
@@ -7487,7 +8109,7 @@
           </div>
 
           <div className="activity-section">
-            <div className="activity-header">
+            <div className="activity-header section-header">
               <h3>Recent Documents</h3>
               {recentDrafts && recentDrafts.length > 0 && (
                 <button className="btn btn-ghost btn-sm" onClick={() => onSelectTab('drafts')} style={{ fontSize:13 }}>
@@ -7495,7 +8117,20 @@
                 </button>
               )}
             </div>
-            {recentDrafts === null ? (
+            {!canAccessDrafts ? (
+              <div className="activity-list">
+                <div className="activity-empty">
+                  <div className="activity-empty-icon">&#128193;</div>
+                  <h4>Saved drafts unlock on Pro</h4>
+                  <p>Store proposals, follow-ups, review requests, and referral messages so you can reopen, organize, and reuse them by job.</p>
+                  <div className="activity-empty-actions">
+                    <button className="btn btn-primary btn-sm" onClick={() => onUpgrade ? onUpgrade('pro') : onSelectTab('account')} style={{ fontFamily:'Oswald, sans-serif', letterSpacing:'0.03em', textTransform:'uppercase' }}>
+                      Unlock Saved Drafts
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ) : recentDrafts === null ? (
               <div style={{ background:'var(--white)', border:'1px solid var(--border)', borderRadius:8, padding:'24px' }}>
                 <div className="skeleton-h" />
                 <div className="skeleton-line med" />
@@ -7507,6 +8142,14 @@
                   <div className="activity-empty-icon">&#10148;</div>
                   <h4>No saved outputs yet</h4>
                   <p>Generate a proposal, review, follow-up, or referral message to start building your document history.</p>
+                  <div className="activity-empty-actions">
+                    <button className="btn btn-primary btn-sm" onClick={() => onSelectTab('proposal')} style={{ fontFamily:'Oswald, sans-serif', letterSpacing:'0.03em', textTransform:'uppercase' }}>
+                      Open Proposal Tool
+                    </button>
+                    <button className="btn btn-ghost btn-sm" onClick={() => onSelectTab('folders')}>
+                      Open Job Folders
+                    </button>
+                  </div>
                 </div>
               </div>
             ) : (
@@ -7526,118 +8169,27 @@
               </div>
             )}
           </div>
+          </div>
         </div>
       );
     }
 
     // AdminPage
     // ---------------------------------------------------------------------------
-    function AffiliateDetailModal({ affiliateEmail, token, onClose }) {
-      const [commissions, setCommissions] = useState(null);
-      const [loading, setLoading] = useState(true);
-      const [markingPaid, setMarkingPaid] = useState(null);
-
-      useEffect(() => {
-        API.call(`/api/admin/affiliates/${encodeURIComponent(affiliateEmail)}/commissions`, 'GET', null, token)
-          .then(res => {
-            setCommissions(res.ok ? (res.data.commissions || []) : []);
-            setLoading(false);
-          });
-      }, [affiliateEmail, token]);
-
-      async function handleMarkPaid(commId) {
-        setMarkingPaid(commId);
-        const res = await API.call(`/api/admin/commissions/${commId}/mark-paid`, 'PATCH', {}, token);
-        if (res.ok) {
-          setCommissions(prev => prev.map(c => c.id === commId ? { ...c, status: 'paid' } : c));
-        }
-        setMarkingPaid(null);
-      }
-
-      function fmtDate(str) {
-        if (!str) return ' - ';
-        try { return new Date(str).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
-        catch { return str; }
-      }
-
-      const PLAN_PRICE = { starter: 49, pro: 79 };
-      const totalOwed = commissions ? commissions
-        .filter(c => c.status === 'pending' && (c.user_plan === 'starter' || c.user_plan === 'pro'))
-        .reduce((sum, c) => sum + Math.round((PLAN_PRICE[c.user_plan] || 0) * (c.commission_percent || 0) / 100), 0) : 0;
-
-      return (
-        <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
-          <div className="modal-box" style={{ maxWidth:'720px', maxHeight:'80vh', overflowY:'auto' }}>
-            <button className="modal-close" onClick={onClose}>&times;</button>
-            <div className="modal-title" style={{ fontSize:'20px' }}>Affiliate Details</div>
-            <div style={{ color:'var(--slate)', marginBottom:'16px' }}>{affiliateEmail}</div>
-            <div style={{ fontSize:'12px', color:'var(--slate-light)', marginBottom:'16px', padding:'10px', background:'var(--light-gray)', borderRadius:'4px' }}>
-              Stripe integration will automate commission tracking. For now, mark commissions paid manually after processing.
-            </div>
-            {loading ? <div style={{padding:'20px',textAlign:'center'}}><Spinner dark /></div> : (
-              <>
-                <table className="admin-table">
-                  <thead>
-                    <tr>
-                      <th>User Email</th>
-                      <th>Date Joined</th>
-                      <th>Plan</th>
-                      <th>Commission</th>
-                      <th>Status</th>
-                      <th>Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {(commissions || []).map(c => (
-                      <tr key={c.id}>
-                        <td style={{fontSize:'13px'}}>{c.referred_user_email}</td>
-                        <td><span className="admin-date">{fmtDate(c.created_at)}</span></td>
-                        <td>
-                          <span className={`plan-badge ${getPlanBadgeClass(c.user_plan || 'free', false)}`}>
-                            {(c.user_plan || 'free').charAt(0).toUpperCase() + (c.user_plan || 'free').slice(1)}
-                          </span>
-                        </td>
-                        <td style={{fontSize:'13px'}}>{c.commission_percent}%{(c.user_plan === 'starter' || c.user_plan === 'pro') ? ` ($${Math.round(PLAN_PRICE[c.user_plan] * c.commission_percent / 100)}/mo)` : ''}</td>
-                        <td>
-                          <span style={{fontSize:'12px',fontWeight:700,color: c.status==='paid' ? 'var(--success)' : 'var(--warm-tan)'}}>
-                            {c.status === 'paid' ? 'Paid' : 'Pending'}
-                          </span>
-                        </td>
-                        <td>
-                          {c.status === 'pending' && (
-                            <button
-                              className="btn btn-primary"
-                              style={{padding:'5px 10px',fontSize:'12px'}}
-                              disabled={markingPaid === c.id}
-                              onClick={() => handleMarkPaid(c.id)}
-                            >
-                              {markingPaid === c.id ? <Spinner /> : 'Mark Paid'}
-                            </button>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                    {(!commissions || commissions.length === 0) && (
-                      <tr><td colSpan={6} style={{textAlign:'center',color:'var(--slate)',padding:'20px'}}>No referrals yet.</td></tr>
-                    )}
-                  </tbody>
-                </table>
-                {totalOwed > 0 && (
-                  <div style={{marginTop:'16px',padding:'12px',background:'#fff3cd',borderRadius:'4px',fontSize:'14px',color:'#856404',fontWeight:600}}>
-                    Total pending owed (paying users only): ${totalOwed}/mo
-                  </div>
-                )}
-              </>
-            )}
-          </div>
-        </div>
-      );
+    function AffiliateDetailModal() {
+      return null;
     }
 
-    function AdminPage({ token }) {
+    function AdminPage({ token, onNavigate }) {
       const toast = useToast();
       const [data, setData] = useState(null);
-      const [loading, setLoading] = useState(true);
+      const [loading, setLoading] = useState(() => {
+        try {
+          return window.location.pathname === '/dashboard' && !!window.localStorage.getItem(TOKEN_STORAGE_KEY);
+        } catch (error) {
+          return false;
+        }
+      });
       const [error, setError] = useState('');
       const [savingUserId, setSavingUserId] = useState(null);
       const [togglingUserId, setTogglingUserId] = useState(null);
@@ -7791,18 +8343,55 @@
 
       if (loading) {
         return (
-          <div style={{ display:'flex', alignItems:'center', gap:12, padding:'40px 0', color:'var(--slate)' }}>
-            <Spinner dark /><span>Loading admin data...</span>
+          <div className="page-fade-in">
+            <PageHeader
+              kicker="ADMIN PANEL"
+              title="Admin Dashboard"
+              subtitle="Overview, users, usage, promo codes, and contact activity for the production platform."
+              breadcrumbs={[
+                { label: 'Dashboard', onClick: () => onNavigate && onNavigate('home') },
+                { label: 'Admin' },
+              ]}
+            />
+            <div className="page-body" style={{ display:'flex', alignItems:'center', gap:12, color:'var(--slate)' }}>
+              <Spinner dark /><span>Loading admin data...</span>
+            </div>
           </div>
         );
       }
 
       if (error) {
-        return <div style={{ padding:'40px 0', color:'var(--roof-red)', fontWeight:600 }}>{error}</div>;
+        return (
+          <div className="page-fade-in">
+            <PageHeader
+              kicker="ADMIN PANEL"
+              title="Admin Dashboard"
+              subtitle="Overview, users, usage, promo codes, and contact activity for the production platform."
+              breadcrumbs={[
+                { label: 'Dashboard', onClick: () => onNavigate && onNavigate('home') },
+                { label: 'Admin' },
+              ]}
+            />
+            <div className="page-body" style={{ color:'var(--roof-red)', fontWeight:600 }}>{error}</div>
+          </div>
+        );
       }
 
       if (!data) {
-        return <div style={{ padding:'40px 0', color:'var(--slate)' }}>No admin data available.</div>;
+        return (
+          <div className="page-fade-in">
+            <PageHeader
+              kicker="ADMIN PANEL"
+              title="Admin Dashboard"
+              subtitle="Overview, users, usage, promo codes, and contact activity for the production platform."
+              breadcrumbs={[
+                { label: 'Dashboard', onClick: () => onNavigate && onNavigate('home') },
+                { label: 'Admin' },
+              ]}
+            />
+            <div className="page-body" style={{ color:'var(--slate)' }}>No admin data available.</div>
+          </div>
+        );
       }
 
       const overview = data.overview || {};
@@ -7814,9 +8403,17 @@
 
       return (
         <div className="page-fade-in">
-          <div className="page-title">Admin Dashboard</div>
-          <div className="page-subtitle">Overview, users, usage, promo codes, and contact activity for the production platform.</div>
+          <PageHeader
+            kicker="ADMIN PANEL"
+            title="Admin Dashboard"
+            subtitle="Overview, users, usage, promo codes, and contact activity for the production platform."
+            breadcrumbs={[
+              { label: 'Dashboard', onClick: () => onNavigate && onNavigate('home') },
+              { label: 'Admin' },
+            ]}
+          />
 
+          <div className="page-body">
           <div className="admin-stats-grid">
             <div className="admin-stat-card">
               <div className="admin-stat-label">Total Users</div>
@@ -8042,6 +8639,7 @@
                 )}
               </tbody>
             </table>
+          </div>
           </div>
         </div>
       );
@@ -8462,10 +9060,18 @@
       if (!canEdit) {
         return (
           <div className="page-fade-in">
-            <div className="page-title">My Defaults</div>
-            <div className="page-subtitle">Save your company profile and proposal defaults so each new job starts closer to finished.</div>
+            <PageHeader
+              kicker="SETTINGS"
+              title="My Defaults"
+              subtitle="Save your company profile and proposal defaults so each new job starts closer to finished."
+              breadcrumbs={[
+                { label: 'Dashboard', onClick: () => onNavigate && onNavigate('home') },
+                { label: 'My Defaults' },
+              ]}
+            />
+            <div className="page-body">
             <div className="defaults-upgrade-card">
-              <div className="defaults-upgrade-icon">Folder</div>
+              <div className="defaults-upgrade-icon">&#9881;</div>
               <div className="defaults-upgrade-title">Available on paid plans</div>
               <div className="defaults-upgrade-desc">
                 Saved defaults are available on Starter and Pro. Upgrade to keep your company details, warranty language, payment terms, and material presets ready for every proposal.
@@ -8474,22 +9080,42 @@
                 <button onClick={() => onNavigate && onNavigate('account')} className="btn btn-primary btn-sm">Upgrade to Pro</button>
               </div>
             </div>
+            </div>
           </div>
         );
       }
 
       if (loading) {
         return (
-          <div style={{ display:'flex', alignItems:'center', gap:12, padding:'40px 0', color:'var(--slate)' }}>
-            <Spinner dark /><span>Loading your defaults...</span>
+          <div className="page-fade-in">
+            <PageHeader
+              kicker="SETTINGS"
+              title="My Defaults"
+              subtitle="Save the information you reuse most so your proposal workflow starts faster on every job."
+              breadcrumbs={[
+                { label: 'Dashboard', onClick: () => onNavigate && onNavigate('home') },
+                { label: 'My Defaults' },
+              ]}
+            />
+            <div className="page-body" style={{ display:'flex', alignItems:'center', gap:12, color:'var(--slate)' }}>
+              <Spinner dark /><span>Loading your defaults...</span>
+            </div>
           </div>
         );
       }
 
       return (
         <div className="page-fade-in">
-          <div className="page-title">My Defaults</div>
-          <div className="page-subtitle">Save the information you reuse most so your proposal workflow starts faster on every job.</div>
+          <PageHeader
+            kicker="SETTINGS"
+            title="My Defaults"
+            subtitle="Save the information you reuse most so your proposal workflow starts faster on every job."
+            breadcrumbs={[
+              { label: 'Dashboard', onClick: () => onNavigate && onNavigate('home') },
+              { label: 'My Defaults' },
+            ]}
+          />
+          <div className="page-body">
           {error && <div className="tool-error-box" style={{ marginBottom:16 }}>{error}</div>}
 
           <div className="content-card" style={{ marginBottom:'22px' }}>
@@ -8567,13 +9193,14 @@
               {proposalSaved && <span className="defaults-saved-msg">Saved</span>}
             </div>
           </div>
+          </div>
         </div>
       );
     }
 
     // Account / Billing Placeholder
     // ---------------------------------------------------------------------------
-    function AccountPage({ token, user, onUpgrade, upgradeLoading, upgradeError, onUserUpdate, onClearUpgradeError }) {
+    function AccountPage({ token, user, onUpgrade, upgradeLoading, upgradeError, onUserUpdate, onClearUpgradeError, onNavigate }) {
       const toast = useToast();
       const [portalLoading, setPortalLoading] = useState(false);
       const [promoCode, setPromoCode] = useState('');
@@ -8627,14 +9254,22 @@
         ? 'Admin access'
         : user.subscription_status
           ? String(user.subscription_status).replace(/_/g, ' ').replace(/\b\w/g, letter => letter.toUpperCase())
-          : (user.stripe_customer_id ? 'Pending sync' : 'Not active');
+          : (user.stripe_customer_id ? 'Pending sync' : 'Free plan active');
       const canManageBilling = !!user.stripe_customer_id && !user.is_admin;
 
       return (
         <div className="page-fade-in">
-          <div className="page-title">Account & Billing</div>
-          <div className="page-subtitle">Manage your current plan, upgrade to Pro, and access billing tools once your Stripe subscription is active.</div>
+          <PageHeader
+            kicker="ACCOUNT"
+            title="Account & Billing"
+            subtitle="Review your current plan, start a 7-day Pro trial when needed, and manage billing tools once a Stripe subscription is active."
+            breadcrumbs={[
+              { label: 'Dashboard', onClick: () => onNavigate && onNavigate('home') },
+              { label: 'Account & Billing' },
+            ]}
+          />
 
+          <div className="page-body">
           <div className="content-card" style={{ marginBottom:'22px' }}>
             <div className="section-header" style={{ marginBottom:'18px' }}>
               <h3>Current status</h3>
@@ -8642,7 +9277,7 @@
             <div className="dash-stats-row">
               <div className="dash-stat-card">
                 <div>
-                  <div className="dash-stat-num">{planLabel}</div>
+                  <div className="dash-stat-num dash-stat-num-text">{planLabel}</div>
                   <div className="dash-stat-label">Current Plan</div>
                 </div>
               </div>
@@ -8654,11 +9289,11 @@
               </div>
               <div className="dash-stat-card">
                 <div>
-                  <div className="dash-stat-num">{billingStatus}</div>
+                  <div className="dash-stat-num dash-stat-num-text">{billingStatus}</div>
                   <div className="dash-stat-label">Billing Status</div>
                 </div>
               </div>
-              <div className="dash-stat-card">
+              <div className={`dash-stat-card${user.is_admin || user.plan === 'pro' || user.plan === 'starter' ? ' stat-ready' : ''}`}>
                 <div>
                   <div className="dash-stat-num">{user.is_admin || user.plan === 'pro' || user.plan === 'starter' ? 'Ready' : Math.max(0, FREE_LIMIT - (user.total_generations || 0))}</div>
                   <div className="dash-stat-label">{user.is_admin || user.plan === 'pro' || user.plan === 'starter' ? 'Workspace Status' : 'Free Proposals Left'}</div>
@@ -8725,6 +9360,7 @@
               Need help with billing? Email <a href="mailto:support@roofdraftai.com" style={{ color:'var(--roof-red)' }}>support@roofdraftai.com</a>.
             </div>
           </div>
+          </div>
         </div>
       );
     }
@@ -8745,7 +9381,7 @@
       return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     }
 
-    function DraftsPage({ token, onEditDraft }) {
+    function DraftsPage({ token, onEditDraft, onNavigate }) {
       const [drafts, setDrafts] = useState(null);
       const [selected, setSelected] = useState(null);
       const [loading, setLoading] = useState(true);
@@ -8798,9 +9434,17 @@
 
       if (loading) {
         return (
-          <div>
-            <div className="page-title">Saved Drafts</div>
-            <div style={{ marginTop: 24 }}>
+          <div className="page-fade-in">
+            <PageHeader
+              kicker="YOUR DOCUMENTS"
+              title="Saved Drafts"
+              subtitle="Saved proposals and customer messages you chose to keep in RoofDraftAI."
+              breadcrumbs={[
+                { label: 'Dashboard', onClick: () => onNavigate && onNavigate('home') },
+                { label: 'Saved Drafts' },
+              ]}
+            />
+            <div className="page-body">
               {[1,2,3].map(i => (
                 <div key={i} className="skeleton-card" style={{ marginBottom: 10 }}>
                   <div className="skeleton-h" style={{ width: '40%' }} />
@@ -8816,21 +9460,28 @@
         const draftResultId = 'draft-result-' + selected.id;
         return (
           <div className="page-fade-in">
-            <button className="breadcrumb" onClick={() => setSelected(null)} style={{ marginBottom: 20 }}>
-              <span style={{ color: 'var(--roof-red)' }}>&larr;</span>
-              <span style={{ color: 'var(--roof-red)', cursor: 'pointer' }}>Saved Drafts</span>
-              <span className="breadcrumb-sep">&gt;</span>
-              <span className="breadcrumb-current">{selected.title}</span>
-            </button>
+            <PageHeader
+              kicker="YOUR DOCUMENTS"
+              title={selected.title}
+              subtitle="Review, export, or copy this saved document."
+              breadcrumbs={[
+                { label: 'Dashboard', onClick: () => onNavigate && onNavigate('home') },
+                { label: 'Saved Drafts', onClick: () => setSelected(null) },
+                { label: selected.title },
+              ]}
+            />
+            <div className="page-body">
             <div className="draft-viewer-meta">
               <span className={`activity-badge badge-${selected.tool_name || 'proposal'}`}>{TOOL_LABELS[selected.tool_name] || selected.tool_name}</span>
               <span className="draft-date">{formatDate(selected.created_at)}</span>
             </div>
-            <div className="page-title" style={{ fontSize: '24px', marginBottom: 20, marginTop: 10 }}>{selected.title}</div>
             <div className="result-card">
               <div className="result-header">
                 <div className="result-title">Saved Draft</div>
                 <div style={{ display:'flex', gap:8, flexWrap:'wrap', justifyContent:'flex-end' }}>
+                  <button className="btn btn-sm btn-primary" onClick={event => handleEdit(event, selected)}>
+                    Edit Draft
+                  </button>
                   <button className="btn btn-sm btn-ghost"
                     onClick={() => downloadPDF(draftResultId, `RoofDraftAI_${selected.title || 'Draft'}.pdf`)}>
                     Download PDF
@@ -8841,6 +9492,7 @@
                 </div>
               </div>
               <div id={draftResultId} className="result-content" dangerouslySetInnerHTML={{ __html: renderMarkdown(selected.content || '') }} />
+            </div>
             </div>
           </div>
         );
@@ -8856,9 +9508,17 @@
 
       return (
         <div className="page-fade-in">
-          <div className="page-title">Saved Drafts</div>
-          <div className="page-subtitle">Saved proposals and customer messages you chose to keep in RoofDraftAI.</div>
+          <PageHeader
+            kicker="YOUR DOCUMENTS"
+            title="Saved Drafts"
+            subtitle="Saved proposals and customer messages you chose to keep in RoofDraftAI."
+            breadcrumbs={[
+              { label: 'Dashboard', onClick: () => onNavigate && onNavigate('home') },
+              { label: 'Saved Drafts' },
+            ]}
+          />
 
+          <div className="page-body">
           <div className="drafts-toolbar">
             <div className="drafts-search">
               <span className="drafts-search-icon">
@@ -8883,6 +9543,22 @@
                   <div className="drafts-empty-icon">&#10148;</div>
                   <h3>{drafts && drafts.length > 0 ? 'No drafts match your filter.' : 'No saved drafts yet'}</h3>
                   <p>{drafts && drafts.length > 0 ? 'Try a different search or filter.' : 'Generate a document, then use Save to Folder if you want to keep it here for later.'}</p>
+                  <div className="activity-empty-actions">
+                    {drafts && drafts.length > 0 ? (
+                      <button className="btn btn-outline-red btn-sm" onClick={() => { setSearchQuery(''); setFilterType('all'); }}>
+                        Clear Search and Filters
+                      </button>
+                    ) : (
+                      <>
+                        <button className="btn btn-primary btn-sm" onClick={() => onNavigate && onNavigate('proposal')}>
+                          Open Proposal Tool
+                        </button>
+                        <button className="btn btn-ghost btn-sm" onClick={() => onNavigate && onNavigate('folders')}>
+                          Open Job Folders
+                        </button>
+                      </>
+                    )}
+                  </div>
             </div>
           ) : (
             <div>
@@ -8909,6 +9585,7 @@
               ))}
             </div>
           )}
+          </div>
         </div>
       );
     }
@@ -8916,18 +9593,26 @@
     // ---------------------------------------------------------------------------
     // Job Folders Page (Pro only)
     // ---------------------------------------------------------------------------
-    function FoldersPage({ token, user, onUpgradeNeeded }) {
+    function FoldersPage({ token, user, onUpgradeNeeded, onNavigate, onEditDraft }) {
       const isPro = user.is_admin || user.plan === 'pro';
       const toast = useToast();
 
       // Upgrade wall for non-pro
       if (!isPro) {
         return (
-          <div>
-            <div className="page-title">Job Folders</div>
-            <div className="page-subtitle">Organize your proposals and generated content by client or job.</div>
+          <div className="page-fade-in">
+            <PageHeader
+              kicker="JOB MANAGEMENT"
+              title="Job Folders"
+              subtitle="Organize your proposals and generated content by client or job."
+              breadcrumbs={[
+                { label: 'Dashboard', onClick: () => onNavigate && onNavigate('home') },
+                { label: 'Job Folders' },
+              ]}
+            />
+            <div className="page-body">
             <div className="defaults-upgrade-card">
-              <div className="defaults-upgrade-icon" style={{ fontSize:32 }}>Folder</div>
+              <div className="defaults-upgrade-icon" style={{ fontSize:32 }}>&#128193;</div>
               <div className="defaults-upgrade-title">Available on Pro Plan</div>
               <div className="defaults-upgrade-desc">
                 Job Folders let you save, name, and organize every proposal, email, and message you generate  -  sorted by client or job site. Access everything in one place.
@@ -8939,6 +9624,7 @@
                   Upgrade to Pro
                 </button>
               </div>
+            </div>
             </div>
           </div>
         );
@@ -9016,6 +9702,12 @@
         if (ok) setViewingDraft(data.draft);
       }
 
+      function handleEditDraft(event, draft) {
+        event.stopPropagation();
+        setViewingDraft(null);
+        if (onEditDraft) onEditDraft(draft);
+      }
+
       async function handleDeleteDraft(e, dId) {
         e.stopPropagation();
         if (!window.confirm('Are you sure you want to delete this draft? This cannot be undone.')) return;
@@ -9034,9 +9726,17 @@
       const selectedFolderName = selectedFolder === 'all' ? 'All Drafts' : (folders.find(f => f.id === selectedFolder)?.name || 'Drafts');
 
       return (
-        <div>
-          <div className="page-title">Job Folders</div>
-          <div className="page-subtitle">Organize your saved content by client or job site.</div>
+        <div className="page-fade-in">
+          <PageHeader
+            kicker="JOB MANAGEMENT"
+            title="Job Folders"
+            subtitle="Organize your saved content by client or job site."
+            breadcrumbs={[
+              { label: 'Dashboard', onClick: () => onNavigate && onNavigate('home') },
+              { label: 'Job Folders' },
+            ]}
+          />
+          <div className="page-body">
           <div className="folders-layout">
 
             {/* Left panel */}
@@ -9144,6 +9844,7 @@
                           </div>
                         ) : (
                           <>
+                            <button className="draft-delete-btn" onClick={e => handleEditDraft(e, d)}>Edit</button>
                             <button className="draft-delete-btn"
                               onClick={() => { setMovingDraftId(d.id); setMoveFolderVal(d.folder_id ? String(d.folder_id) : ''); }}>
                               Move
@@ -9174,6 +9875,11 @@
                 </div>
                 <div style={{ paddingTop:14, borderTop:'1px solid var(--border)', marginTop:14, display:'flex', gap:8 }}>
                   <button
+                    className="btn btn-sm btn-primary"
+                    onClick={event => handleEditDraft(event, viewingDraft)}>
+                    Edit Draft
+                  </button>
+                  <button
                     className="btn btn-sm btn-ghost"
                     onClick={() => downloadPDF(`folder-draft-${viewingDraft.id}`, `RoofDraftAI_${viewingDraft.title || 'Draft'}.pdf`)}>
                     Download PDF
@@ -9192,6 +9898,7 @@
               </div>
             </div>
           )}
+          </div>
         </div>
       );
     }
@@ -9256,8 +9963,8 @@
       const isFree = user.plan === 'free' && !user.is_admin;
       const freeUsed = Math.min(FREE_LIMIT, user.total_generations || 0);
       const pct = isFree ? Math.min(100, (freeUsed / FREE_LIMIT) * 100) : 0;
-      const isPaying = user.is_admin || user.plan === 'starter' || user.plan === 'pro';
       const isPro = user.is_admin || user.plan === 'pro';
+      const canAccessDrafts = user.is_admin || user.plan === 'pro';
       const NAV_ICONS = {
         home:     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>,
         proposal: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>,
@@ -9276,7 +9983,7 @@
         { key: 'followup', label: 'Follow-Up Email', always: false },
         { key: 'review', label: 'Review Request', always: false },
         { key: 'referral', label: 'Referral Message', always: false },
-        ...(isPaying ? [{ key: 'drafts', label: 'Saved Drafts', always: true }] : []),
+        { key: 'drafts', label: 'Saved Drafts', always: canAccessDrafts, proOnly: !canAccessDrafts },
         { key: 'folders', label: 'Job Folders', always: isPro, proOnly: !isPro },
         { key: 'defaults', label: 'My Defaults', always: true },
         { key: 'account', label: 'Account & Billing', always: true },
@@ -9286,8 +9993,8 @@
       return (
         <div className={`sidebar${mobileOpen ? ' mobile-open' : ''}`}>
           <div className="sidebar-logo" style={{ display:'flex', alignItems:'center', justifyContent:'space-between' }}>
-            <div className="sidebar-logo-text">RoofDraft<span>AI</span></div>
-            {onMobileClose && <button onClick={onMobileClose} style={{ background:'none', border:'none', cursor:'pointer', fontSize:'20px', color:'var(--slate-light)', padding:'4px', lineHeight:1 }} aria-label="Close menu">&times;</button>}
+            <div className="sidebar-logo-text">ROOFDRAFT<span>AI</span></div>
+            {onMobileClose && <button onClick={onMobileClose} style={{ background:'none', border:'none', cursor:'pointer', fontSize:'20px', color:'rgba(255,255,255,0.72)', padding:'4px', lineHeight:1 }} aria-label="Close menu">&times;</button>}
           </div>
           <nav className="sidebar-nav">
             {navItems.map(item => {
@@ -9371,7 +10078,7 @@
         token,
         user,
         onUpgradeNeeded: handleUpgradeNeeded,
-        onNavigate: setActiveTab,
+        onNavigate: handleSelectTab,
         editingDraft,
         onEditingDraftApplied: clearEditingDraft,
       };
@@ -9385,7 +10092,7 @@
       return (
         <div className="dashboard">
           <div className="mobile-nav-bar">
-            <div className="mobile-nav-logo">RoofDraft<span>AI</span></div>
+            <div className="mobile-nav-logo">ROOFDRAFT<span>AI</span></div>
             <button className="mobile-nav-btn" onClick={() => setSidebarOpen(true)} aria-label="Open menu">&#9776;</button>
           </div>
 
@@ -9401,33 +10108,16 @@
             onMobileClose={() => setSidebarOpen(false)}
           />
           <main className="main-content">
-            {activeTab !== 'home' && (
-              <div className="breadcrumb">
-                <button onClick={() => handleSelectTab('home')}>Dashboard</button>
-                <span className="breadcrumb-sep">&gt;</span>
-                <span className="breadcrumb-current">
-                  {activeTab === 'proposal' ? 'Proposal Generator' :
-                   activeTab === 'followup' ? 'Follow-Up Email' :
-                   activeTab === 'review' ? 'Review Request' :
-                   activeTab === 'referral' ? 'Referral Message' :
-                   activeTab === 'drafts' ? 'Saved Drafts' :
-                   activeTab === 'folders' ? 'Job Folders' :
-                   activeTab === 'defaults' ? 'My Defaults' :
-                   activeTab === 'account' ? 'Account & Billing' :
-                   activeTab === 'admin' ? 'Admin' : activeTab}
-                </span>
-              </div>
-            )}
-            {activeTab === 'home' && <DashboardHomeV2 user={user} token={token} onSelectTab={setActiveTab} onUpgrade={onUpgrade} />}
+            {activeTab === 'home' && <DashboardHomeV2 user={user} token={token} onSelectTab={handleSelectTab} onUpgrade={onUpgrade} />}
             {activeTab === 'proposal' && <ProposalToolV2 {...toolProps} />}
             {activeTab === 'followup' && <FollowUpToolV2 {...toolProps} />}
             {activeTab === 'review' && <ReviewToolV2 {...toolProps} />}
             {activeTab === 'referral' && <ReferralToolV2 {...toolProps} />}
-            {activeTab === 'drafts' && <DraftsPage token={token} onEditDraft={handleEditDraft} />}
-            {activeTab === 'folders' && <FoldersPage token={token} user={user} onUpgradeNeeded={handleUpgradeNeeded} />}
-            {activeTab === 'defaults' && <DefaultsPageV2 token={token} user={user} onNavigate={setActiveTab} />}
-            {activeTab === 'account' && <AccountPage token={token} user={user} onUpgrade={onUpgrade} upgradeLoading={upgradeLoading} upgradeError={upgradeError} onUserUpdate={onUserUpdate} onClearUpgradeError={clearUpgradeError} />}
-            {activeTab === 'admin' && user.is_admin && <AdminPage token={token} />}
+            {activeTab === 'drafts' && <DraftsPage token={token} onEditDraft={handleEditDraft} onNavigate={handleSelectTab} />}
+            {activeTab === 'folders' && <FoldersPage token={token} user={user} onUpgradeNeeded={handleUpgradeNeeded} onNavigate={handleSelectTab} onEditDraft={handleEditDraft} />}
+            {activeTab === 'defaults' && <DefaultsPageV2 token={token} user={user} onNavigate={handleSelectTab} />}
+            {activeTab === 'account' && <AccountPage token={token} user={user} onUpgrade={onUpgrade} upgradeLoading={upgradeLoading} upgradeError={upgradeError} onUserUpdate={onUserUpdate} onClearUpgradeError={clearUpgradeError} onNavigate={handleSelectTab} />}
+            {activeTab === 'admin' && user.is_admin && <AdminPage token={token} onNavigate={handleSelectTab} />}
           </main>
           {showFeatures && <FeatureComparisonModal user={user} onClose={() => setShowFeatures(false)} onUpgrade={onUpgrade} upgradeLoading={upgradeLoading} />}
         </div>
@@ -9516,7 +10206,8 @@
     // ---------------------------------------------------------------------------
     const LANDING_TESTIMONIALS = [];
 
-    function LandingPage({ onShowLogin, onShowRegister }) {
+    function LandingPage() {
+      return null;
       const [legalModal, setLegalModal] = useState(null);
       const [contactForm, setContactForm] = useState({ name: '', email: '', message: '' });
       const [contactStatus, setContactStatus] = useState(null); // null | 'success' | 'error'
@@ -9561,7 +10252,7 @@
       ];
 
       const COMPARE_ROWS = [
-        ['Monthly proposals', '5/mo', 'Unlimited', 'Unlimited'],
+        ['Monthly proposals', '1 included', 'Unlimited', 'Unlimited'],
         ['Proposal Generator', true, true, true],
         ['Follow-Up Email', false, false, true],
         ['Review Request', false, false, true],
@@ -9641,7 +10332,7 @@
 
           {/* Trust bar */}
           <div className="trust-bar">
-            <div className="trust-bar-label">Trusted by roofing contractors across the US</div>
+            <div className="trust-bar-label">Built for roofing contractors, owner-operators, and small sales teams</div>
             <div className="trust-stats">
               <div className="trust-stat">
                 <div className="trust-stat-num">60 sec</div>
@@ -9703,7 +10394,7 @@
                 </div>
                 <div className="how-step">
                   <div className="how-step-num">2</div>
-                  <div className="how-step-icon">Ã¢Å¡Â¡</div>
+                  <div className="how-step-icon">&#9889;</div>
                   <div className="how-step-title">AI Writes Your Proposal</div>
                   <div className="how-step-desc">RoofDraftAI turns your job notes into a complete, professional proposal draft that is ready to review and send.</div>
                 </div>
@@ -9735,7 +10426,7 @@
                       <div className="landing-tool-card-desc">{t.desc}</div>
                       <button className="btn btn-outline-red btn-sm" onClick={onShowRegister}
                         style={{ marginTop: 'auto', alignSelf: 'flex-start', fontSize: '13px' }}>
-                        Try Free Ã¢â€ â€™
+                        Generate Free Proposal
                       </button>
                     </div>
                   );
@@ -9975,7 +10666,13 @@
     function App() {
       const [user, setUser] = useState(null);
       const [token, setToken] = useState(null);
-      const [loading, setLoading] = useState(true);
+      const [loading, setLoading] = useState(() => {
+        try {
+          return !!window.localStorage.getItem(TOKEN_STORAGE_KEY);
+        } catch (error) {
+          return false;
+        }
+      });
       const [modal, setModal] = useState(null);
       const [upgradeBanner, setUpgradeBanner] = useState(null);
       const [upgradeLoading, setUpgradeLoading] = useState(false);
@@ -9983,13 +10680,13 @@
       const [pendingUpgradePlan, setPendingUpgradePlan] = useState('');
 
       function showMarketingShell() {
-        document.documentElement.classList.remove('roofdraft-auth-pending');
+        document.documentElement.classList.remove('roofdraft-dashboard-pending');
         if (document.body) document.body.classList.remove('app-auth-pending');
         if (window.RoofDraftMarketing) window.RoofDraftMarketing.showShell();
       }
 
       function hideMarketingShell() {
-        document.documentElement.classList.remove('roofdraft-auth-pending');
+        document.documentElement.classList.remove('roofdraft-dashboard-pending');
         if (document.body) document.body.classList.remove('app-auth-pending');
         if (window.RoofDraftMarketing) window.RoofDraftMarketing.hideShell();
       }
@@ -10056,17 +10753,19 @@
         }, 600000);
 
         async function boot() {
+          const isDashboardPath = window.location.pathname === '/dashboard';
           const stored = localStorage.getItem(TOKEN_STORAGE_KEY);
           if (!stored) {
             showMarketingShell();
-            if (window.location.pathname === '/dashboard') window.history.replaceState({}, '', '/');
+            if (isDashboardPath) window.history.replaceState({}, '', '/');
             if (!cancelled) setLoading(false);
             return;
           }
-          document.documentElement.classList.add('roofdraft-auth-pending');
-          if (document.body) document.body.classList.add('app-auth-pending');
-          if (window.location.pathname === '/') {
-            window.history.replaceState({}, '', '/dashboard');
+          if (isDashboardPath && document.body) {
+            document.body.classList.add('app-auth-pending');
+          }
+          if (!cancelled) {
+            setLoading(isDashboardPath);
           }
           try {
             const { ok, data } = await API.call('/api/auth/me', 'GET', null, stored);
@@ -10075,15 +10774,18 @@
               setUser(data);
               setToken(stored);
               hideMarketingShell();
+              if (window.location.pathname !== '/dashboard') {
+                window.history.replaceState({}, '', '/dashboard');
+              }
             } else {
               localStorage.removeItem(TOKEN_STORAGE_KEY);
               showMarketingShell();
-              if (window.location.pathname === '/dashboard') window.history.replaceState({}, '', '/');
+              if (isDashboardPath) window.history.replaceState({}, '', '/');
             }
           } catch (err) {
             localStorage.removeItem(TOKEN_STORAGE_KEY);
             showMarketingShell();
-            if (window.location.pathname === '/dashboard') window.history.replaceState({}, '', '/');
+            if (isDashboardPath) window.history.replaceState({}, '', '/');
           } finally {
             if (!cancelled) setLoading(false);
           }
@@ -10239,6 +10941,9 @@
       if (window.__roofdraftScrollFailSafe) {
         window.clearInterval(window.__roofdraftScrollFailSafe);
       }
+      if (window.__roofdraftScrollFinalReveal) {
+        window.clearTimeout(window.__roofdraftScrollFinalReveal);
+      }
 
       function revealImmediately(element) {
         if (!element) return;
@@ -10249,6 +10954,12 @@
         var rect = element.getBoundingClientRect();
         var viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
         return rect.top <= viewportHeight - 40;
+      }
+
+      function withinAnimationBand(element) {
+        var rect = element.getBoundingClientRect();
+        var viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
+        return rect.top <= viewportHeight * 1.15;
       }
 
       elements.forEach(function (el) {
@@ -10275,23 +10986,35 @@
       });
 
       elements.forEach(function (el) {
-        if (withinRevealZone(el)) {
+        if (withinRevealZone(el) || !withinAnimationBand(el)) {
           revealImmediately(el);
           return;
         }
         observer.observe(el);
       });
 
+      var fallbackStartedAt = Date.now();
       window.__roofdraftScrollObserver = observer;
       window.__roofdraftScrollFailSafe = window.setInterval(function () {
         if (document.body.classList.contains('app-authenticated')) {
           window.clearInterval(window.__roofdraftScrollFailSafe);
+          window.clearTimeout(window.__roofdraftScrollFinalReveal);
           observer.disconnect();
           return;
         }
         var pending = document.querySelectorAll('.scroll-reveal.animate-ready:not(.visible)');
         if (!pending.length) {
           window.clearInterval(window.__roofdraftScrollFailSafe);
+          window.clearTimeout(window.__roofdraftScrollFinalReveal);
+          return;
+        }
+        if (Date.now() - fallbackStartedAt >= 1800) {
+          pending.forEach(function (element) {
+            revealImmediately(element);
+            observer.unobserve(element);
+          });
+          window.clearInterval(window.__roofdraftScrollFailSafe);
+          window.clearTimeout(window.__roofdraftScrollFinalReveal);
           return;
         }
         pending.forEach(function (element) {
@@ -10301,6 +11024,15 @@
           }
         });
       }, 300);
+
+      window.__roofdraftScrollFinalReveal = window.setTimeout(function () {
+        if (document.body.classList.contains('app-authenticated')) return;
+        document.querySelectorAll('.scroll-reveal.animate-ready:not(.visible)').forEach(function (element) {
+          revealImmediately(element);
+          observer.unobserve(element);
+        });
+        window.clearInterval(window.__roofdraftScrollFailSafe);
+      }, 1800);
     }
 
     var scrollAnimInit = setInterval(function () {

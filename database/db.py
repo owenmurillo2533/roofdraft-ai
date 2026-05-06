@@ -651,7 +651,7 @@ def save_defaults(user_id, new_data):
             INSERT INTO user_defaults (user_id, defaults_data, updated_at)
             VALUES ($1, $2::jsonb, NOW())
             ON CONFLICT (user_id) DO UPDATE
-            SET defaults_data = $2::jsonb, updated_at = NOW()
+            SET defaults_data = EXCLUDED.defaults_data, updated_at = NOW()
             """,
             [user_id, encoded],
         )
@@ -1036,6 +1036,25 @@ def get_user_by_stripe_customer_id(customer_id):
     ).fetchone()
     conn.close()
     return row_to_dict(row)
+
+
+def subscription_event_exists(stripe_event_id):
+    if not stripe_event_id:
+        return False
+    if USE_POSTGRES:
+        rows = pg_run(
+            "SELECT 1 FROM subscription_events WHERE stripe_event_id=$1 LIMIT 1",
+            [stripe_event_id],
+        )
+        return bool(rows)
+
+    conn = get_db()
+    row = conn.execute(
+        "SELECT 1 FROM subscription_events WHERE stripe_event_id=? LIMIT 1",
+        (stripe_event_id,),
+    ).fetchone()
+    conn.close()
+    return row is not None
 
 
 def record_subscription_event(user_id, event_type, plan, stripe_event_id):

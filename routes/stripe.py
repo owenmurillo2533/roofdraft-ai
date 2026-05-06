@@ -12,6 +12,7 @@ from database.db import (
     get_user_by_stripe_customer_id,
     record_subscription_event,
     require_auth,
+    subscription_event_exists,
     update_user_subscription,
 )
 from extensions import limiter
@@ -54,8 +55,12 @@ def create_checkout_session():
             line_items=[{"price": price_id, "quantity": 1}],
             customer_email=user["email"],
             allow_promotion_codes=True,
+            client_reference_id=str(user["id"]),
             metadata={"user_id": str(user["id"]), "plan": plan},
-            subscription_data={"trial_period_days": 7},
+            subscription_data={
+                "trial_period_days": 7,
+                "metadata": {"user_id": str(user["id"]), "plan": plan},
+            },
             success_url=f"{domain}/dashboard?upgrade=success&plan={plan}",
             cancel_url=f"{domain}/?upgrade=cancelled",
         )
@@ -79,11 +84,17 @@ def stripe_webhook():
             except Exception:
                 return jsonify({"error": "Invalid signature"}), 400
         else:
-            event = json.loads(payload.decode("utf-8"))
+            try:
+                event = json.loads(payload.decode("utf-8"))
+            except json.JSONDecodeError:
+                return jsonify({"error": "Invalid payload"}), 400
 
         event_type = event.get("type", "")
         event_id = event.get("id")
         data_object = (event.get("data") or {}).get("object") or {}
+
+        if event_id and subscription_event_exists(event_id):
+            return jsonify({"received": True})
 
         if event_type == "checkout.session.completed":
             metadata = data_object.get("metadata") or {}
@@ -91,13 +102,20 @@ def stripe_webhook():
             plan = (metadata.get("plan") or "pro").strip().lower() or "pro"
             customer_id = data_object.get("customer")
             subscription_id = data_object.get("subscription")
+            subscription_status = "active"
+            if subscription_id:
+                try:
+                    subscription = stripe.Subscription.retrieve(subscription_id)
+                    subscription_status = subscription.get("status") or subscription_status
+                except Exception:
+                    traceback.print_exc()
             if user_id:
                 update_user_subscription(
                     int(user_id),
                     plan=plan,
                     stripe_customer_id=customer_id,
                     subscription_id=subscription_id,
-                    subscription_status="active",
+                    subscription_status=subscription_status,
                 )
                 record_subscription_event(int(user_id), event_type, plan, event_id)
 
@@ -128,7 +146,7 @@ def stripe_webhook():
         return jsonify({"received": True})
     except Exception:
         traceback.print_exc()
-        return jsonify({"received": True})
+        return jsonify({"error": "Webhook processing failed"}), 500
 
 
 @stripe_bp.route("/api/stripe/create-portal-session", methods=["POST"])
