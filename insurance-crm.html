@@ -1,0 +1,2117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>InsureCRM — Personal Insurance Lead & CRM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0f1117;
+  --surface: #1a1d27;
+  --border: #2a2d3a;
+  --accent: #4f8ef7;
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --purple: #a78bfa;
+  --orange: #fb923c;
+  --text: #f1f5f9;
+  --text-sec: #94a3b8;
+}
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 14px; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+.font-mono { font-family: 'DM Mono', monospace; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ─── TAB NAV ─────────────────────────────────────────────── */
+.tab-nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+.tab-nav-scroll {
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 0 8px;
+}
+.tab-nav-scroll::-webkit-scrollbar { display: none; }
+.tab-btn {
+  flex-shrink: 0;
+  padding: 14px 20px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-sec);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 150ms, border-color 150ms;
+  white-space: nowrap;
+  margin-bottom: -1px;
+}
+.tab-btn:hover { color: var(--text); }
+.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* ─── MAIN CONTENT ────────────────────────────────────────── */
+.main-content { max-width: 1200px; margin: 0 auto; padding: 24px 16px; }
+.tab-pane { animation: fadein 150ms ease; }
+.tab-pane.hidden { display: none !important; }
+@keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+
+/* ─── PAGE HEADER ─────────────────────────────────────────── */
+.page-header { margin-bottom: 24px; }
+.page-title { font-size: 22px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+.page-subtitle { font-size: 13px; color: var(--text-sec); }
+.page-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.page-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+/* ─── CARDS ───────────────────────────────────────────────── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px;
+}
+.card + .card { margin-top: 16px; }
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.card-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-sec);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* ─── STATS GRID ──────────────────────────────────────────── */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px 20px;
+}
+.stat-value {
+  font-family: 'DM Mono', monospace;
+  font-size: 30px;
+  font-weight: 500;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.stat-label { font-size: 12px; color: var(--text-sec); font-weight: 500; }
+.stat-sub { font-size: 11px; color: var(--accent); margin-top: 4px; cursor: pointer; }
+
+/* ─── STATUS BAR ──────────────────────────────────────────── */
+.status-bar {
+  display: flex;
+  height: 20px;
+  border-radius: 6px;
+  overflow: hidden;
+  gap: 2px;
+}
+.status-seg {
+  position: relative;
+  cursor: default;
+  transition: opacity 150ms;
+  min-width: 4px;
+}
+.status-seg:hover { opacity: 0.85; }
+.status-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin-top: 14px;
+}
+.legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-sec); }
+.legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.legend-count { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--text); margin-left: 2px; }
+
+/* ─── BUTTONS ─────────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  transition: opacity 150ms, background 150ms;
+  white-space: nowrap;
+  line-height: 1.4;
+}
+.btn:hover { opacity: 0.88; }
+.btn:active { opacity: 0.75; }
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-success { background: var(--success); color: #fff; }
+.btn-danger { background: var(--danger); color: #fff; }
+.btn-warning { background: var(--warning); color: #000; }
+.btn-ghost {
+  background: transparent;
+  color: var(--text-sec);
+  border: 1px solid var(--border);
+}
+.btn-ghost:hover { color: var(--text); border-color: var(--text-sec); opacity: 1; }
+.btn-sm { padding: 5px 10px; font-size: 12px; border-radius: 5px; }
+.btn-xs { padding: 3px 7px; font-size: 11px; border-radius: 4px; }
+.icon-btn {
+  background: none;
+  border: none;
+  color: var(--text-sec);
+  cursor: pointer;
+  padding: 5px 7px;
+  border-radius: 4px;
+  font-size: 15px;
+  line-height: 1;
+  transition: color 150ms, background 150ms;
+}
+.icon-btn:hover { color: var(--text); background: rgba(255,255,255,0.06); }
+
+/* ─── BADGES ──────────────────────────────────────────────── */
+.badge {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: opacity 150ms;
+  line-height: 1.5;
+}
+.badge:hover { opacity: 0.8; }
+.badge-not-contacted  { background: rgba(148,163,184,.15); color: #94a3b8; }
+.badge-contacted      { background: rgba(79,142,247,.18); color: #4f8ef7; }
+.badge-appointment    { background: rgba(245,158,11,.18); color: #f59e0b; }
+.badge-quote          { background: rgba(167,139,250,.18); color: #a78bfa; }
+.badge-won            { background: rgba(34,197,94,.18); color: #22c55e; }
+.badge-lost           { background: rgba(239,68,68,.18); color: #ef4444; }
+.badge-followup       { background: rgba(251,146,60,.18); color: #fb923c; }
+.badge-high           { background: rgba(239,68,68,.15); color: #ef4444; }
+.badge-medium         { background: rgba(245,158,11,.15); color: #f59e0b; }
+.badge-low            { background: rgba(148,163,184,.12); color: #94a3b8; }
+.badge-ref            { background: rgba(79,142,247,.12); color: #4f8ef7; font-size: 10px; cursor: pointer; }
+.badge-ref:hover      { background: rgba(79,142,247,.25); }
+
+/* ─── FORM ELEMENTS ───────────────────────────────────────── */
+.form-group { margin-bottom: 14px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.form-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-sec);
+  margin-bottom: 5px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.form-input, .form-select, .form-textarea {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  padding: 8px 11px;
+  outline: none;
+  transition: border-color 150ms;
+  appearance: none;
+  -webkit-appearance: none;
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(79,142,247,.15);
+}
+.form-textarea { min-height: 80px; resize: vertical; line-height: 1.5; }
+.form-select { cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%2394a3b8'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 28px; }
+.form-hint { font-size: 11px; color: var(--text-sec); margin-top: 4px; }
+.form-error { font-size: 11px; color: var(--danger); margin-top: 4px; }
+
+/* ─── FILTER BAR ──────────────────────────────────────────── */
+.filter-bar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 16px;
+  padding: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.filter-bar .form-input,
+.filter-bar .form-select { max-width: 180px; padding: 6px 10px; font-size: 12px; }
+.filter-bar .form-select { max-width: 160px; }
+.filter-search { flex: 1; min-width: 160px; max-width: 280px !important; }
+.filter-label { font-size: 11px; font-weight: 600; color: var(--text-sec); white-space: nowrap; }
+.active-filters { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; }
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  background: rgba(79,142,247,.15);
+  color: var(--accent);
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.filter-chip:hover { background: rgba(79,142,247,.25); }
+
+/* ─── TABLE ───────────────────────────────────────────────── */
+.table-wrap { overflow-x: auto; }
+.data-table { width: 100%; border-collapse: collapse; }
+.data-table th {
+  padding: 9px 12px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-sec);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+.data-table th:hover { color: var(--text); }
+.data-table th .sort-arrow { opacity: .35; margin-left: 3px; }
+.data-table th.sorted .sort-arrow { opacity: 1; color: var(--accent); }
+.data-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(42,45,58,.7);
+  vertical-align: middle;
+  font-size: 13px;
+}
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tbody tr:hover td { background: rgba(255,255,255,.02); }
+.data-table tr.row-contacted td  { background: rgba(79,142,247,.04); }
+.data-table tr.row-appointment td { background: rgba(245,158,11,.04); }
+.data-table tr.row-quote td      { background: rgba(167,139,250,.04); }
+.data-table tr.row-won td        { background: rgba(34,197,94,.04); }
+.data-table tr.row-lost td       { background: rgba(239,68,68,.04); }
+.data-table tr.row-followup td   { background: rgba(251,146,60,.04); }
+.name-cell { font-weight: 500; cursor: pointer; }
+.name-cell:hover { color: var(--accent); text-decoration: underline; }
+.phone-cell { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--text-sec); }
+.actions-cell { display: flex; gap: 4px; align-items: center; }
+
+/* ─── DRAWER ──────────────────────────────────────────────── */
+.drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.55);
+  z-index: 200;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 200ms;
+}
+.drawer-backdrop.open { opacity: 1; pointer-events: all; }
+.drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 420px;
+  max-width: 100vw;
+  height: 100vh;
+  background: var(--surface);
+  border-left: 1px solid var(--border);
+  z-index: 201;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 200ms ease-out;
+  overflow: hidden;
+}
+.drawer.open { transform: translateX(0); }
+.drawer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.drawer-title { font-size: 15px; font-weight: 600; }
+.drawer-body { flex: 1; overflow-y: auto; padding: 20px; }
+.drawer-footer {
+  padding: 16px 20px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  flex-shrink: 0;
+}
+.drawer-warn {
+  background: rgba(245,158,11,.12);
+  border: 1px solid rgba(245,158,11,.3);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 12px;
+  color: var(--warning);
+  margin-bottom: 14px;
+}
+
+/* ─── CONFIRM MODAL ───────────────────────────────────────── */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.6);
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 150ms;
+}
+.modal-backdrop.open { opacity: 1; pointer-events: all; }
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 24px;
+  max-width: 380px;
+  width: 100%;
+  transform: scale(.96);
+  transition: transform 150ms;
+}
+.modal-backdrop.open .modal { transform: scale(1); }
+.modal h3 { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+.modal p { font-size: 13px; color: var(--text-sec); line-height: 1.55; margin-bottom: 20px; }
+.modal-actions { display: flex; gap: 8px; justify-content: flex-end; }
+
+/* ─── FOLLOW-UP BAR ───────────────────────────────────────── */
+.followup-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--surface);
+  border-top: 2px solid var(--accent);
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 400;
+  transform: translateY(100%);
+  transition: transform 200ms ease-out;
+  flex-wrap: wrap;
+  box-shadow: 0 -4px 20px rgba(0,0,0,.4);
+}
+.followup-bar.open { transform: translateY(0); }
+.followup-bar-label { font-size: 13px; font-weight: 500; color: var(--text); flex-shrink: 0; }
+.followup-bar .form-input { width: auto; max-width: 200px; padding: 6px 10px; font-size: 13px; }
+.followup-bar-name { font-size: 12px; color: var(--text-sec); flex-shrink: 0; }
+
+/* ─── EMPTY STATE ─────────────────────────────────────────── */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+}
+.empty-icon { font-size: 44px; margin-bottom: 14px; opacity: .35; }
+.empty-title { font-size: 18px; font-weight: 600; margin-bottom: 6px; }
+.empty-desc { font-size: 13px; color: var(--text-sec); margin-bottom: 22px; max-width: 340px; margin-left: auto; margin-right: auto; line-height: 1.6; }
+
+/* ─── PROSPECT TABLE CARD STACK (MOBILE) ──────────────────── */
+@media (max-width: 600px) {
+  .table-wrap table thead { display: none; }
+  .table-wrap table, .table-wrap tbody, .table-wrap tr, .table-wrap td { display: block; }
+  .table-wrap tbody tr {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 10px;
+    padding: 2px 0;
+  }
+  .table-wrap tbody tr.row-contacted { background: rgba(79,142,247,.05); }
+  .table-wrap tbody tr.row-appointment { background: rgba(245,158,11,.05); }
+  .table-wrap tbody tr.row-quote { background: rgba(167,139,250,.05); }
+  .table-wrap tbody tr.row-won { background: rgba(34,197,94,.05); }
+  .table-wrap tbody tr.row-lost { background: rgba(239,68,68,.05); }
+  .table-wrap tbody tr.row-followup { background: rgba(251,146,60,.05); }
+  .table-wrap tbody td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 7px 12px;
+    border-bottom: 1px solid rgba(42,45,58,.5);
+  }
+  .table-wrap tbody tr td:last-child { border-bottom: none; }
+  .table-wrap tbody td::before {
+    content: attr(data-label);
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-sec);
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    flex-shrink: 0;
+    margin-right: 8px;
+  }
+  .actions-cell { flex-wrap: wrap; gap: 4px; }
+  .filter-bar .form-input,
+  .filter-bar .form-select { max-width: 100%; width: 100%; }
+  .filter-bar { flex-direction: column; align-items: stretch; }
+  .filter-search { max-width: 100% !important; }
+}
+
+/* ─── DAILY PLANNER ───────────────────────────────────────── */
+.planner-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+@media (max-width: 700px) { .planner-grid { grid-template-columns: 1fr; } }
+.planner-section-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+.call-dots { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+.call-dot {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  background: transparent;
+  cursor: pointer;
+  transition: all 150ms;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  color: transparent;
+  font-family: 'DM Mono', monospace;
+}
+.call-dot:hover { border-color: var(--success); }
+.call-dot.done { border-color: var(--success); background: var(--success); color: #fff; }
+.call-progress { font-size: 13px; color: var(--text-sec); }
+.call-progress strong { color: var(--text); font-family: 'DM Mono', monospace; }
+.goal-row { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.goal-input { width: 70px; font-family: 'DM Mono', monospace; text-align: center; }
+
+.followup-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  margin-bottom: 8px;
+}
+.followup-name { font-weight: 500; min-width: 120px; flex-shrink: 0; font-size: 13px; }
+.followup-phone { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--text-sec); flex: 1; }
+.followup-status { flex-shrink: 0; }
+.followup-action { flex-shrink: 0; }
+
+/* ─── SCRIPT CARDS ────────────────────────────────────────── */
+.script-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+.script-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px; display: flex; flex-direction: column; }
+.script-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; gap: 8px; }
+.script-card-title { font-size: 14px; font-weight: 600; color: var(--text); line-height: 1.3; }
+.script-card-cat { font-size: 10px; font-weight: 600; color: var(--accent); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 4px; }
+.script-card-body { font-size: 13px; color: var(--text-sec); line-height: 1.65; flex: 1; margin-bottom: 14px; white-space: pre-wrap; word-break: break-word; }
+.script-card-actions { display: flex; gap: 6px; }
+.script-search-bar { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+.script-search-bar .form-input { flex: 1; min-width: 160px; }
+.script-search-bar .form-select { min-width: 180px; }
+.copy-feedback { font-size: 11px; color: var(--success); display: none; }
+.copy-feedback.show { display: inline; }
+
+/* ─── WARM MARKET BUILDER ─────────────────────────────────── */
+.wm-wrap { max-width: 680px; margin: 0 auto; }
+.wm-progress { display: flex; gap: 5px; margin-bottom: 28px; }
+.wm-dot {
+  flex: 1;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--border);
+  transition: background 300ms;
+}
+.wm-dot.active { background: var(--accent); }
+.wm-dot.done { background: var(--success); }
+.wm-step-label { font-size: 12px; color: var(--text-sec); margin-bottom: 6px; }
+.wm-heading { font-size: 26px; font-weight: 700; margin-bottom: 8px; }
+.wm-prompt { font-size: 14px; color: var(--text-sec); margin-bottom: 20px; line-height: 1.6; }
+.wm-textarea {
+  width: 100%;
+  min-height: 160px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  padding: 14px;
+  outline: none;
+  resize: vertical;
+  transition: border-color 150ms;
+  line-height: 1.6;
+}
+.wm-textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(79,142,247,.15); }
+.wm-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; gap: 12px; }
+.wm-nav-center { font-size: 13px; color: var(--text-sec); }
+
+.wm-review-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+.wm-review-table th { font-size: 11px; font-weight: 600; color: var(--text-sec); text-transform: uppercase; letter-spacing: .05em; padding: 8px 10px; border-bottom: 1px solid var(--border); text-align: left; }
+.wm-review-table td { padding: 8px 10px; border-bottom: 1px solid rgba(42,45,58,.5); vertical-align: middle; }
+.wm-review-table tr:last-child td { border-bottom: none; }
+.wm-review-table .form-input, .wm-review-table .form-select { padding: 5px 8px; font-size: 12px; }
+.wm-review-table .form-select { padding-right: 22px; background-position: right 6px center; }
+.wm-review-skip { color: var(--danger); font-size: 18px; cursor: pointer; background: none; border: none; }
+.wm-dup-warning { font-size: 11px; color: var(--warning); margin-top: 2px; }
+
+/* ─── MISC ────────────────────────────────────────────────── */
+.divider { height: 1px; background: var(--border); margin: 20px 0; }
+.text-sec { color: var(--text-sec); }
+.text-sm { font-size: 12px; }
+.text-xs { font-size: 11px; }
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.gap-8 { gap: 8px; }
+.gap-4 { gap: 4px; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.mb-4 { margin-bottom: 4px; }
+.mb-8 { margin-bottom: 8px; }
+.mb-16 { margin-bottom: 16px; }
+.mt-8 { margin-top: 8px; }
+
+/* Quick Add form */
+.quick-add-row { display: grid; grid-template-columns: 1fr 1fr auto; gap: 8px; align-items: end; }
+@media (max-width: 480px) { .quick-add-row { grid-template-columns: 1fr; } }
+
+.notice {
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  margin-bottom: 14px;
+  line-height: 1.5;
+}
+.notice-info { background: rgba(79,142,247,.12); border: 1px solid rgba(79,142,247,.25); color: var(--accent); }
+.notice-success { background: rgba(34,197,94,.12); border: 1px solid rgba(34,197,94,.25); color: var(--success); }
+.notice-warn { background: rgba(245,158,11,.12); border: 1px solid rgba(245,158,11,.3); color: var(--warning); }
+.notice-danger { background: rgba(239,68,68,.12); border: 1px solid rgba(239,68,68,.25); color: var(--danger); }
+
+.wm-review-overflow { overflow-x: auto; }
+</style>
+</head>
+<body>
+
+<div id="app">
+  <!-- Tab Navigation -->
+  <nav class="tab-nav" id="tabNav">
+    <div class="tab-nav-scroll">
+      <button class="tab-btn active" data-tab="dashboard">Dashboard</button>
+      <button class="tab-btn" data-tab="prospects">Prospect Tracker</button>
+      <button class="tab-btn" data-tab="warmmarket">Warm Market Builder</button>
+      <button class="tab-btn" data-tab="planner">Daily Planner</button>
+      <button class="tab-btn" data-tab="scripts">Script Library</button>
+    </div>
+  </nav>
+
+  <div class="main-content">
+    <div class="tab-pane" id="tab-dashboard"></div>
+    <div class="tab-pane hidden" id="tab-prospects"></div>
+    <div class="tab-pane hidden" id="tab-warmmarket"></div>
+    <div class="tab-pane hidden" id="tab-planner"></div>
+    <div class="tab-pane hidden" id="tab-scripts"></div>
+  </div>
+</div>
+
+<!-- Prospect Drawer -->
+<div class="drawer-backdrop" id="drawerBackdrop"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-header">
+    <span class="drawer-title" id="drawerTitle">Add Prospect</span>
+    <button class="icon-btn" id="drawerClose" aria-label="Close">✕</button>
+  </div>
+  <div class="drawer-body" id="drawerBody"></div>
+  <div class="drawer-footer" id="drawerFooter"></div>
+</div>
+
+<!-- Confirm Modal -->
+<div class="modal-backdrop" id="confirmModal">
+  <div class="modal">
+    <h3 id="confirmTitle">Confirm</h3>
+    <p id="confirmMsg">Are you sure?</p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="confirmCancel">Cancel</button>
+      <button class="btn btn-danger" id="confirmOk">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- Follow-Up Prompt Bar -->
+<div class="followup-bar" id="followupBar">
+  <span class="followup-bar-label">Set next follow-up date?</span>
+  <span class="followup-bar-name" id="followupBarName"></span>
+  <input type="date" class="form-input" id="followupDateInput">
+  <button class="btn btn-primary btn-sm" id="followupSaveBtn">Save Date</button>
+  <button class="btn btn-ghost btn-sm" id="followupDismissBtn">Dismiss</button>
+</div>
+
+<script>
+'use strict';
+
+// ═══════════════════════════════════════════════
+// CONSTANTS
+// ═══════════════════════════════════════════════
+const SOURCES = ['Friend','Family','Coworker','Neighbor','Church/Community','Gym/Sports','Social Media','Business Contact','Referral','Other'];
+const STATUSES = ['Not Contacted','Contacted','Appointment Set','Appointment Done','Quote Sent','Closed - Won','Closed - Lost','Not Interested','Follow Up'];
+const PRIORITIES = ['High','Medium','Low'];
+const SCRIPT_CATS = ['Initial Outreach','Setting Appointment','Follow Up','Handling Objections','Asking for Referrals','Custom'];
+
+const WM_CATS = [
+  { key: 'Family',            source: 'Family',           prompt: 'Think immediate family, parents, siblings, cousins, aunts, uncles, in-laws.' },
+  { key: 'Friends',           source: 'Friend',           prompt: 'Close friends, old school friends, college friends, people you hang out with.' },
+  { key: 'Coworkers',         source: 'Coworker',         prompt: 'Current job, previous jobs, anyone you\'ve worked a project with.' },
+  { key: 'Neighbors',         source: 'Neighbor',         prompt: 'Current neighborhood, previous neighborhoods, people on your street.' },
+  { key: 'Church/Community',  source: 'Church/Community', prompt: 'Church members, club members, volunteer groups, HOA.' },
+  { key: 'Gym/Sports',        source: 'Gym/Sports',       prompt: 'Gym buddies, teammates, coaches, league players.' },
+  { key: 'Social Media',      source: 'Social Media',     prompt: 'Facebook friends, Instagram followers you actually know, LinkedIn connections.' },
+  { key: 'Business Contacts', source: 'Business Contact', prompt: 'Your barber, mechanic, doctor, dentist, accountant, realtor — people you pay for services.' },
+  { key: 'Referrals',         source: 'Referral',         prompt: 'Anyone who has already been referred to you or mentioned to you by someone else.' },
+];
+
+const STATUS_BADGE = {
+  'Not Contacted':   'badge-not-contacted',
+  'Contacted':       'badge-contacted',
+  'Appointment Set': 'badge-appointment',
+  'Appointment Done':'badge-appointment',
+  'Quote Sent':      'badge-quote',
+  'Closed - Won':    'badge-won',
+  'Closed - Lost':   'badge-lost',
+  'Not Interested':  'badge-lost',
+  'Follow Up':       'badge-followup',
+};
+
+const STATUS_ROW = {
+  'Not Contacted':   '',
+  'Contacted':       'row-contacted',
+  'Appointment Set': 'row-appointment',
+  'Appointment Done':'row-appointment',
+  'Quote Sent':      'row-quote',
+  'Closed - Won':    'row-won',
+  'Closed - Lost':   'row-lost',
+  'Not Interested':  'row-lost',
+  'Follow Up':       'row-followup',
+};
+
+const STATUS_COLORS_HEX = {
+  'Not Contacted':   '#94a3b8',
+  'Contacted':       '#4f8ef7',
+  'Appointment Set': '#f59e0b',
+  'Appointment Done':'#f59e0b',
+  'Quote Sent':      '#a78bfa',
+  'Closed - Won':    '#22c55e',
+  'Closed - Lost':   '#ef4444',
+  'Not Interested':  '#ef4444',
+  'Follow Up':       '#fb923c',
+};
+
+const PRIORITY_BADGE = { 'High':'badge-high', 'Medium':'badge-medium', 'Low':'badge-low' };
+
+// ═══════════════════════════════════════════════
+// DATASTORE
+// ═══════════════════════════════════════════════
+const DS = {
+  _k: col => 'insurecrm_' + col,
+
+  getAll(col) {
+    try { return JSON.parse(localStorage.getItem(this._k(col)) || '[]'); }
+    catch { return []; }
+  },
+
+  getById(col, id) {
+    return this.getAll(col).find(x => x.id === id) || null;
+  },
+
+  save(col, item) {
+    const all = this.getAll(col);
+    const i = all.findIndex(x => x.id === item.id);
+    if (i >= 0) all[i] = item; else all.push(item);
+    localStorage.setItem(this._k(col), JSON.stringify(all));
+    return item;
+  },
+
+  remove(col, id) {
+    const all = this.getAll(col).filter(x => x.id !== id);
+    localStorage.setItem(this._k(col), JSON.stringify(all));
+  },
+
+  getLog(date) {
+    return this.getAll('logs').find(l => l.date === date) || {
+      id: date, date, callsGoal: 5, callsCompleted: 0, completedProspectIds: [], notes: ''
+    };
+  },
+
+  saveLog(log) {
+    return this.save('logs', { ...log, id: log.date });
+  },
+
+  getRaw(key) {
+    try { return JSON.parse(localStorage.getItem(key)); } catch { return null; }
+  },
+
+  setRaw(key, val) {
+    localStorage.setItem(key, JSON.stringify(val));
+  }
+};
+
+// ═══════════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════════
+const uid = () => crypto.randomUUID();
+const todayStr = () => new Date().toISOString().slice(0, 10);
+
+function formatDate(iso) {
+  if (!iso) return '—';
+  const d = new Date(iso + 'T00:00:00');
+  const now = new Date(); now.setHours(0,0,0,0);
+  const diff = Math.round((d - now) / 86400000);
+  if (diff === 0) return 'Today';
+  if (diff === 1) return 'Tomorrow';
+  if (diff === -1) return 'Yesterday';
+  if (diff > 1 && diff <= 6) return `In ${diff}d`;
+  if (diff < -1 && diff >= -6) return `${-diff}d ago`;
+  const yr = d.getFullYear() !== now.getFullYear() ? ' ' + d.getFullYear() : '';
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + yr;
+}
+
+function esc(str) {
+  const d = document.createElement('div');
+  d.textContent = str == null ? '' : String(str);
+  return d.innerHTML;
+}
+
+function exportCSV() {
+  const prospects = DS.getAll('prospects');
+  const headers = ['Name','Phone','Email','Age','Source','Referred By','Status','Priority','Notes','Last Contact','Next Follow Up','Created At'];
+  const escField = v => {
+    const s = String(v == null ? '' : v);
+    return /[,"\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+  };
+  const rows = prospects.map(p => {
+    const ref = p.referredBy ? (DS.getById('prospects', p.referredBy)?.name || '') : '';
+    return [p.name,p.phone,p.email,p.age||'',p.source,ref,p.status,p.priority,p.notes,p.lastContactDate||'',p.nextFollowUpDate||'',p.createdAt].map(escField).join(',');
+  });
+  const csv = [headers.join(','), ...rows].join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv'}));
+  a.download = 'prospects_' + todayStr() + '.csv';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function calcStreak() {
+  const dates = new Set(DS.getAll('logs').map(l => l.date));
+  let n = 0;
+  const d = new Date();
+  for (let i = 0; i < 400; i++) {
+    const s = d.toISOString().slice(0, 10);
+    if (dates.has(s)) { n++; d.setDate(d.getDate() - 1); }
+    else break;
+  }
+  return n;
+}
+
+function calcConversion() {
+  const ps = DS.getAll('prospects');
+  const eligible = ps.filter(p => ['Quote Sent','Closed - Won','Closed - Lost'].includes(p.status));
+  if (!eligible.length) return null;
+  const won = ps.filter(p => p.status === 'Closed - Won');
+  return Math.round((won.length / eligible.length) * 100);
+}
+
+function nextStatus(current) {
+  const i = STATUSES.indexOf(current);
+  return STATUSES[(i + 1) % STATUSES.length];
+}
+
+function parseNames(raw) {
+  if (!raw || !raw.trim()) return [];
+  return raw.split(/[\n,]+/).map(s => s.trim()).filter(s => s.length > 0);
+}
+
+// ═══════════════════════════════════════════════
+// DEFAULT SCRIPTS
+// ═══════════════════════════════════════════════
+const DEFAULT_SCRIPTS = [
+  {
+    id: 'ds-1', title: 'Initial Outreach — Text Message', category: 'Initial Outreach', isDefault: true,
+    body: "Hey [Name], this is [Your Name] — I just got licensed in life insurance and I'm reaching out to people I trust first. I'd love to share something that could really benefit you and your family. Would you be open to a quick 15-minute conversation this week?"
+  },
+  {
+    id: 'ds-2', title: 'Initial Outreach — Phone Call Opening', category: 'Initial Outreach', isDefault: true,
+    body: "Hey [Name], it's [Your Name]. I know this might come out of nowhere, but I recently got into life insurance and financial protection — and you're one of the first people I thought of. I'm not here to pressure you into anything — I just want to show you something and get your thoughts. Do you have 15 minutes sometime this week?"
+  },
+  {
+    id: 'ds-3', title: 'Setting the Appointment', category: 'Setting Appointment', isDefault: true,
+    body: "I'm not going to try to sell you anything over the phone — I'd rather just sit down and show you what I'm looking at. It'll take 20–30 minutes. Would [Day] or [Day] work better for you?"
+  },
+  {
+    id: 'ds-4', title: 'Follow-Up After No Response', category: 'Follow Up', isDefault: true,
+    body: "Hey [Name], just following up on my last message. I know life gets busy — no worries at all. I still think what I have could be valuable for you. If you ever want to chat, even just for 10 minutes, I'm here. No pressure."
+  },
+  {
+    id: 'ds-5', title: 'Handling "I\'m Not Interested"', category: 'Handling Objections', isDefault: true,
+    body: "I totally respect that. Can I ask — is it the timing, or is it more that life insurance just isn't something you're thinking about right now? Either way, no pressure. I just want to make sure I'm not missing something that could actually help you."
+  },
+  {
+    id: 'ds-6', title: 'Handling "I Can\'t Afford It"', category: 'Handling Objections', isDefault: true,
+    body: "That's actually why I want to show you this — most people think it costs way more than it does. Some of my clients pay less than a Netflix subscription. Can I just show you the numbers? If it doesn't work, I'll be the first one to tell you."
+  },
+  {
+    id: 'ds-7', title: 'Asking for Referrals After a Meeting', category: 'Asking for Referrals', isDefault: true,
+    body: "Even if this isn't the right fit for you right now, I'd really appreciate it if you could think of one or two people who might benefit from what I showed you. I promise I'll take care of them the same way I've tried to take care of you."
+  }
+];
+
+function seed() {
+  if (!DS.getAll('scripts').length) {
+    DEFAULT_SCRIPTS.forEach(s => DS.save('scripts', s));
+  }
+}
+
+// ═══════════════════════════════════════════════
+// APP STATE
+// ═══════════════════════════════════════════════
+let activeTab = 'dashboard';
+let followupPendingId = null;
+let confirmCallback = null;
+
+// Prospect tracker state
+let pf = { status: [], priority: '', source: '', search: '', sortCol: 'createdAt', sortDir: 'desc' };
+
+// Script library state
+let sf = { search: '', category: '' };
+
+// ═══════════════════════════════════════════════
+// TAB NAVIGATION
+// ═══════════════════════════════════════════════
+function switchTab(tab) {
+  activeTab = tab;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.toggle('hidden', p.id !== 'tab-' + tab));
+  closeFollowupBar();
+  const renders = { dashboard: renderDashboard, prospects: renderProspects, warmmarket: renderWarmMarket, planner: renderPlanner, scripts: renderScripts };
+  renders[tab]?.();
+}
+
+function setupNav() {
+  document.querySelectorAll('.tab-btn').forEach(b => {
+    b.addEventListener('click', () => switchTab(b.dataset.tab));
+  });
+}
+
+// ═══════════════════════════════════════════════
+// CONFIRM DIALOG
+// ═══════════════════════════════════════════════
+function confirm(title, msg, okLabel, cb) {
+  confirmCallback = cb;
+  document.getElementById('confirmTitle').textContent = title;
+  document.getElementById('confirmMsg').textContent = msg;
+  document.getElementById('confirmOk').textContent = okLabel || 'Delete';
+  document.getElementById('confirmOk').className = okLabel === 'Save Anyway' ? 'btn btn-warning' : 'btn btn-danger';
+  document.getElementById('confirmModal').classList.add('open');
+}
+
+document.getElementById('confirmCancel').addEventListener('click', () => {
+  document.getElementById('confirmModal').classList.remove('open');
+  confirmCallback = null;
+});
+document.getElementById('confirmOk').addEventListener('click', () => {
+  document.getElementById('confirmModal').classList.remove('open');
+  if (confirmCallback) { confirmCallback(); confirmCallback = null; }
+});
+
+// ═══════════════════════════════════════════════
+// FOLLOW-UP BAR
+// ═══════════════════════════════════════════════
+function openFollowupBar(prospectId) {
+  followupPendingId = prospectId;
+  const p = DS.getById('prospects', prospectId);
+  const nameEl = document.getElementById('followupBarName');
+  nameEl.textContent = p ? 'for ' + p.name : '';
+  const inp = document.getElementById('followupDateInput');
+  inp.value = p?.nextFollowUpDate || '';
+  document.getElementById('followupBar').classList.add('open');
+  inp.focus();
+}
+
+function closeFollowupBar() {
+  followupPendingId = null;
+  document.getElementById('followupBar').classList.remove('open');
+}
+
+document.getElementById('followupSaveBtn').addEventListener('click', () => {
+  if (!followupPendingId) return;
+  const date = document.getElementById('followupDateInput').value;
+  if (date) {
+    const p = DS.getById('prospects', followupPendingId);
+    if (p) { DS.save('prospects', { ...p, nextFollowUpDate: date }); }
+  }
+  closeFollowupBar();
+  if (activeTab === 'prospects') renderProspects();
+  if (activeTab === 'planner') renderPlanner();
+});
+document.getElementById('followupDismissBtn').addEventListener('click', closeFollowupBar);
+
+// ═══════════════════════════════════════════════
+// DRAWER
+// ═══════════════════════════════════════════════
+function openDrawer(title, bodyHTML, footerHTML) {
+  document.getElementById('drawerTitle').textContent = title;
+  document.getElementById('drawerBody').innerHTML = bodyHTML;
+  document.getElementById('drawerFooter').innerHTML = footerHTML || '';
+  document.getElementById('drawer').classList.add('open');
+  document.getElementById('drawerBackdrop').classList.add('open');
+}
+
+function closeDrawer() {
+  document.getElementById('drawer').classList.remove('open');
+  document.getElementById('drawerBackdrop').classList.remove('open');
+}
+
+document.getElementById('drawerClose').addEventListener('click', closeDrawer);
+document.getElementById('drawerBackdrop').addEventListener('click', closeDrawer);
+
+// ═══════════════════════════════════════════════
+// DASHBOARD
+// ═══════════════════════════════════════════════
+function renderDashboard() {
+  const el = document.getElementById('tab-dashboard');
+  const prospects = DS.getAll('prospects');
+  const total = prospects.length;
+
+  const statusCounts = {};
+  STATUSES.forEach(s => statusCounts[s] = 0);
+  prospects.forEach(p => { statusCounts[p.status] = (statusCounts[p.status] || 0) + 1; });
+
+  const todayFollowUps = prospects.filter(p => p.nextFollowUpDate === todayStr());
+
+  const now = new Date(); now.setHours(0,0,0,0);
+  const in7 = new Date(now); in7.setDate(in7.getDate() + 7);
+  const upcomingAppts = prospects.filter(p => {
+    if (!['Appointment Set'].includes(p.status)) return false;
+    if (!p.nextFollowUpDate) return false;
+    const d = new Date(p.nextFollowUpDate + 'T00:00:00');
+    return d >= now && d <= in7;
+  });
+
+  const conv = calcConversion();
+  const srcSet = new Set(prospects.map(p => p.source));
+  const coveredSrcs = ['Friend','Family','Coworker','Neighbor','Church/Community','Gym/Sports','Social Media','Business Contact','Referral'].filter(s => srcSet.has(s));
+  const str = calcStreak();
+
+  // Build bar segments
+  let barSegs = '';
+  if (total > 0) {
+    STATUSES.forEach(s => {
+      const c = statusCounts[s];
+      if (!c) return;
+      barSegs += `<div class="status-seg" style="flex:${c};background:${STATUS_COLORS_HEX[s]}" title="${esc(s)}: ${c}"></div>`;
+    });
+  }
+
+  let legendHTML = '';
+  if (total > 0) {
+    STATUSES.filter(s => statusCounts[s] > 0).forEach(s => {
+      legendHTML += `<div class="legend-item">
+        <span class="legend-dot" style="background:${STATUS_COLORS_HEX[s]}"></span>
+        <span>${esc(s)}</span>
+        <span class="legend-count">${statusCounts[s]}</span>
+      </div>`;
+    });
+  }
+
+  el.innerHTML = `
+    <div class="page-header-row">
+      <div class="page-header">
+        <div class="page-title">Dashboard</div>
+        <div class="page-subtitle">Your insurance pipeline at a glance.</div>
+      </div>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-value font-mono">${total}</div>
+        <div class="stat-label">Total Prospects</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value font-mono" style="color:var(--warning)">${todayFollowUps.length}</div>
+        <div class="stat-label">Follow-Ups Today${todayFollowUps.length > 0 ? '<br><span class="stat-sub" id="dashFollowLink">View in Tracker →</span>' : ''}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value font-mono" style="color:var(--accent)">${upcomingAppts.length}</div>
+        <div class="stat-label">Appointments (7 Days)</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value font-mono" style="color:var(--success)">${conv !== null ? conv + '%' : '—'}</div>
+        <div class="stat-label">Conversion Rate</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value font-mono" style="color:var(--accent)">${coveredSrcs.length}<span style="font-size:16px;color:var(--text-sec)">/9</span></div>
+        <div class="stat-label">Market Coverage</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value font-mono" style="color:var(--warning)">${str}</div>
+        <div class="stat-label">Day Streak ${str > 0 ? '🔥' : ''}</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:20px">
+      <div class="card-header"><div class="card-title">Status Breakdown</div></div>
+      ${total > 0
+        ? `<div class="status-bar">${barSegs}</div><div class="status-legend">${legendHTML}</div>`
+        : `<div style="color:var(--text-sec);font-size:13px">No prospects yet — add some to see your breakdown.</div>`
+      }
+    </div>
+
+    ${total === 0 ? `
+    <div class="empty-state">
+      <div class="empty-icon">&#128101;</div>
+      <div class="empty-title">Your pipeline is empty</div>
+      <div class="empty-desc">Start with the Warm Market Builder to brainstorm contacts from your network, or add prospects directly.</div>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+        <button class="btn btn-primary" id="dashGoWM">Open Warm Market Builder</button>
+        <button class="btn btn-ghost" id="dashGoProspect">Add Prospect</button>
+      </div>
+    </div>` : ''}
+  `;
+
+  document.getElementById('dashFollowLink')?.addEventListener('click', () => {
+    pf.status = ['Follow Up','Not Contacted'];
+    pf.search = '';
+    switchTab('prospects');
+  });
+  document.getElementById('dashGoWM')?.addEventListener('click', () => switchTab('warmmarket'));
+  document.getElementById('dashGoProspect')?.addEventListener('click', () => {
+    switchTab('prospects');
+    setTimeout(() => openProspectDrawer(null), 100);
+  });
+}
+
+// ═══════════════════════════════════════════════
+// PROSPECT TRACKER
+// ═══════════════════════════════════════════════
+function getFilteredProspects() {
+  let all = DS.getAll('prospects');
+  if (pf.status.length) all = all.filter(p => pf.status.includes(p.status));
+  if (pf.priority) all = all.filter(p => p.priority === pf.priority);
+  if (pf.source) all = all.filter(p => p.source === pf.source);
+  if (pf.search) {
+    const q = pf.search.toLowerCase();
+    all = all.filter(p =>
+      (p.name||'').toLowerCase().includes(q) ||
+      (p.phone||'').toLowerCase().includes(q) ||
+      (p.email||'').toLowerCase().includes(q) ||
+      (p.notes||'').toLowerCase().includes(q)
+    );
+  }
+  all.sort((a, b) => {
+    let av = a[pf.sortCol] || '', bv = b[pf.sortCol] || '';
+    if (typeof av === 'string') av = av.toLowerCase();
+    if (typeof bv === 'string') bv = bv.toLowerCase();
+    if (av < bv) return pf.sortDir === 'asc' ? -1 : 1;
+    if (av > bv) return pf.sortDir === 'asc' ? 1 : -1;
+    return 0;
+  });
+  return all;
+}
+
+function renderProspects() {
+  const el = document.getElementById('tab-prospects');
+  const all = DS.getAll('prospects');
+
+  const makeFilterChips = () => {
+    let chips = '';
+    if (pf.status.length) {
+      pf.status.forEach(s => {
+        chips += `<span class="filter-chip" data-remove-status="${esc(s)}">Status: ${esc(s)} &times;</span>`;
+      });
+    }
+    if (pf.priority) chips += `<span class="filter-chip" data-remove="priority">Priority: ${esc(pf.priority)} &times;</span>`;
+    if (pf.source) chips += `<span class="filter-chip" data-remove="source">Source: ${esc(pf.source)} &times;</span>`;
+    if (pf.search) chips += `<span class="filter-chip" data-remove="search">Search: "${esc(pf.search)}" &times;</span>`;
+    return chips;
+  };
+
+  const filteredProspects = getFilteredProspects();
+
+  const cols = [
+    { label: 'Name', key: 'name' },
+    { label: 'Phone', key: 'phone' },
+    { label: 'Source', key: 'source' },
+    { label: 'Status', key: 'status' },
+    { label: 'Priority', key: 'priority' },
+    { label: 'Next Follow Up', key: 'nextFollowUpDate' },
+    { label: 'Last Contact', key: 'lastContactDate' },
+    { label: 'Actions', key: null },
+  ];
+
+  const th = cols.map(c => {
+    if (!c.key) return `<th>Actions</th>`;
+    const isSorted = pf.sortCol === c.key;
+    const arrow = isSorted ? (pf.sortDir === 'asc' ? '↑' : '↓') : '↕';
+    return `<th class="${isSorted ? 'sorted' : ''}" data-sort="${c.key}">${esc(c.label)} <span class="sort-arrow">${arrow}</span></th>`;
+  }).join('');
+
+  const rows = filteredProspects.map(p => {
+    const rowClass = STATUS_ROW[p.status] || '';
+    const refProspect = p.referredBy ? DS.getById('prospects', p.referredBy) : null;
+    const refBadge = refProspect
+      ? `<span class="badge badge-ref" data-open-prospect="${esc(p.referredBy)}" title="Referred by ${esc(refProspect.name)}">↩ ${esc(refProspect.name)}</span>`
+      : '';
+    const nextFU = p.nextFollowUpDate;
+    const isOverdue = nextFU && nextFU < todayStr();
+    const fuStyle = isOverdue ? 'color:var(--danger)' : '';
+
+    return `<tr class="${rowClass}" data-id="${esc(p.id)}">
+      <td data-label="Name"><span class="name-cell" data-open-prospect="${esc(p.id)}">${esc(p.name)}</span> ${refBadge}</td>
+      <td data-label="Phone" class="phone-cell">${esc(p.phone || '—')}</td>
+      <td data-label="Source">${esc(p.source || '—')}</td>
+      <td data-label="Status"><span class="badge ${STATUS_BADGE[p.status]||''}" data-cycle-status="${esc(p.id)}" title="Click to advance status">${esc(p.status)}</span></td>
+      <td data-label="Priority"><span class="badge ${PRIORITY_BADGE[p.priority]||''}">${esc(p.priority||'—')}</span></td>
+      <td data-label="Next Follow Up" style="${fuStyle}">${esc(formatDate(p.nextFollowUpDate))}</td>
+      <td data-label="Last Contact">${esc(formatDate(p.lastContactDate))}</td>
+      <td data-label="Actions" class="actions-cell">
+        <button class="btn btn-xs btn-ghost" data-open-prospect="${esc(p.id)}" title="Edit">Edit</button>
+        <button class="btn btn-xs btn-primary" data-mark-called="${esc(p.id)}" title="Mark Called">Called</button>
+        <button class="btn btn-xs btn-ghost" data-delete-prospect="${esc(p.id)}" style="color:var(--danger)" title="Delete">Del</button>
+      </td>
+    </tr>`;
+  }).join('');
+
+  const filterChips = makeFilterChips();
+
+  el.innerHTML = `
+    <div class="page-header-row">
+      <div class="page-header">
+        <div class="page-title">Prospect Tracker</div>
+        <div class="page-subtitle">${all.length} total prospect${all.length !== 1 ? 's' : ''}</div>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-ghost btn-sm" id="exportCSVBtn">Export CSV</button>
+        <button class="btn btn-primary" id="addProspectBtn">+ Add Prospect</button>
+      </div>
+    </div>
+
+    <div class="filter-bar">
+      <span class="filter-label">Filter:</span>
+      <input type="text" class="form-input filter-search" id="pfSearch" placeholder="Search name, phone, email..." value="${esc(pf.search)}">
+      <select class="form-select" id="pfStatus">
+        <option value="">All Statuses</option>
+        ${STATUSES.map(s => `<option value="${esc(s)}" ${pf.status.includes(s) ? 'selected' : ''}>${esc(s)}</option>`).join('')}
+      </select>
+      <select class="form-select" id="pfPriority">
+        <option value="">All Priorities</option>
+        ${PRIORITIES.map(p => `<option value="${esc(p)}" ${pf.priority === p ? 'selected' : ''}>${esc(p)}</option>`).join('')}
+      </select>
+      <select class="form-select" id="pfSource">
+        <option value="">All Sources</option>
+        ${SOURCES.map(s => `<option value="${esc(s)}" ${pf.source === s ? 'selected' : ''}>${esc(s)}</option>`).join('')}
+      </select>
+      <button class="btn btn-ghost btn-sm" id="clearFiltersBtn">Clear</button>
+    </div>
+
+    ${filterChips ? `<div class="active-filters">${filterChips}</div>` : ''}
+
+    ${all.length === 0
+      ? `<div class="empty-state">
+          <div class="empty-icon">&#128101;</div>
+          <div class="empty-title">No prospects yet</div>
+          <div class="empty-desc">Start with the Warm Market Builder to brainstorm names from your network.</div>
+          <button class="btn btn-primary" id="goToWMBtn">Open Warm Market Builder</button>
+        </div>`
+      : filteredProspects.length === 0
+        ? `<div class="empty-state">
+            <div class="empty-icon">&#128269;</div>
+            <div class="empty-title">No matching prospects</div>
+            <div class="empty-desc">Try adjusting your filters.</div>
+            <button class="btn btn-ghost" id="clearFiltersBtn2">Clear Filters</button>
+          </div>`
+        : `<div class="card" style="padding:0">
+            <div class="table-wrap">
+              <table class="data-table">
+                <thead><tr>${th}</tr></thead>
+                <tbody>${rows}</tbody>
+              </table>
+            </div>
+          </div>`
+    }
+  `;
+
+  // Events
+  el.querySelector('#addProspectBtn')?.addEventListener('click', () => openProspectDrawer(null));
+  el.querySelector('#exportCSVBtn')?.addEventListener('click', exportCSV);
+  el.querySelector('#goToWMBtn')?.addEventListener('click', () => switchTab('warmmarket'));
+  el.querySelector('#clearFiltersBtn')?.addEventListener('click', clearProspectFilters);
+  el.querySelector('#clearFiltersBtn2')?.addEventListener('click', clearProspectFilters);
+
+  el.querySelector('#pfSearch')?.addEventListener('input', e => { pf.search = e.target.value; renderProspects(); });
+  el.querySelector('#pfStatus')?.addEventListener('change', e => {
+    const v = e.target.value;
+    pf.status = v ? [v] : [];
+    renderProspects();
+  });
+  el.querySelector('#pfPriority')?.addEventListener('change', e => { pf.priority = e.target.value; renderProspects(); });
+  el.querySelector('#pfSource')?.addEventListener('change', e => { pf.source = e.target.value; renderProspects(); });
+
+  // Table interactions - delegate
+  el.querySelector('.data-table')?.addEventListener('click', handleProspectTableClick);
+  el.querySelectorAll('[data-remove-status]').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const s = chip.dataset.removeStatus;
+      pf.status = pf.status.filter(x => x !== s);
+      renderProspects();
+    });
+  });
+  el.querySelectorAll('[data-remove]').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const key = chip.dataset.remove;
+      if (key === 'priority') pf.priority = '';
+      else if (key === 'source') pf.source = '';
+      else if (key === 'search') pf.search = '';
+      renderProspects();
+    });
+  });
+}
+
+function clearProspectFilters() {
+  pf.status = []; pf.priority = ''; pf.source = ''; pf.search = '';
+  renderProspects();
+}
+
+function handleProspectTableClick(e) {
+  const th = e.target.closest('[data-sort]');
+  if (th) {
+    const col = th.dataset.sort;
+    if (pf.sortCol === col) pf.sortDir = pf.sortDir === 'asc' ? 'desc' : 'asc';
+    else { pf.sortCol = col; pf.sortDir = 'asc'; }
+    renderProspects();
+    return;
+  }
+  const openBtn = e.target.closest('[data-open-prospect]');
+  if (openBtn) { openProspectDrawer(openBtn.dataset.openProspect); return; }
+  const cycleBtn = e.target.closest('[data-cycle-status]');
+  if (cycleBtn) { cycleProspectStatus(cycleBtn.dataset.cycleStatus); return; }
+  const calledBtn = e.target.closest('[data-mark-called]');
+  if (calledBtn) { markCalledFromTracker(calledBtn.dataset.markCalled); return; }
+  const delBtn = e.target.closest('[data-delete-prospect]');
+  if (delBtn) { deleteProspect(delBtn.dataset.deleteProspect); return; }
+}
+
+function cycleProspectStatus(id) {
+  const p = DS.getById('prospects', id);
+  if (!p) return;
+  const ns = nextStatus(p.status);
+  DS.save('prospects', { ...p, status: ns, lastContactDate: todayStr() });
+  renderProspects();
+  openFollowupBar(id);
+}
+
+function markCalledFromTracker(id) {
+  const p = DS.getById('prospects', id);
+  if (!p) return;
+  DS.save('prospects', { ...p, lastContactDate: todayStr() });
+  // Log to daily log
+  const log = DS.getLog(todayStr());
+  if (!log.completedProspectIds.includes(id)) {
+    log.completedProspectIds.push(id);
+    log.callsCompleted = Math.max(log.callsCompleted, log.completedProspectIds.length);
+    DS.saveLog(log);
+  }
+  renderProspects();
+  openFollowupBar(id);
+}
+
+function deleteProspect(id) {
+  const p = DS.getById('prospects', id);
+  if (!p) return;
+  confirm('Delete Prospect', `Are you sure you want to delete "${p.name}"? This cannot be undone.`, 'Delete', () => {
+    DS.remove('prospects', id);
+    renderProspects();
+  });
+}
+
+function openProspectDrawer(id) {
+  const p = id ? DS.getById('prospects', id) : null;
+  const allProspects = DS.getAll('prospects').filter(x => x.id !== id);
+  const isEdit = !!p;
+
+  const refOptions = allProspects.map(r => `<option value="${esc(r.id)}" ${p?.referredBy === r.id ? 'selected' : ''}>${esc(r.name)}</option>`).join('');
+
+  const body = `
+    ${isEdit ? '' : '<div class="drawer-warn" id="dupWarning" style="display:none"></div>'}
+    <div class="form-group">
+      <label class="form-label">Full Name *</label>
+      <input type="text" class="form-input" id="fpName" value="${esc(p?.name || '')}" placeholder="Jane Smith" autocomplete="name">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Phone</label>
+        <input type="tel" class="form-input" id="fpPhone" value="${esc(p?.phone || '')}" placeholder="(555) 000-0000">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input type="email" class="form-input" id="fpEmail" value="${esc(p?.email || '')}" placeholder="jane@example.com">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Age</label>
+        <input type="number" class="form-input" id="fpAge" value="${esc(p?.age || '')}" placeholder="35" min="1" max="120">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Source</label>
+        <select class="form-select" id="fpSource">
+          <option value="">— Select —</option>
+          ${SOURCES.map(s => `<option value="${esc(s)}" ${p?.source === s ? 'selected' : ''}>${esc(s)}</option>`).join('')}
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Referred By</label>
+      <select class="form-select" id="fpReferredBy">
+        <option value="">— None —</option>
+        ${refOptions}
+      </select>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Status</label>
+        <select class="form-select" id="fpStatus">
+          ${STATUSES.map(s => `<option value="${esc(s)}" ${(p?.status || 'Not Contacted') === s ? 'selected' : ''}>${esc(s)}</option>`).join('')}
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Priority</label>
+        <select class="form-select" id="fpPriority">
+          <option value="">— Select —</option>
+          ${PRIORITIES.map(pr => `<option value="${esc(pr)}" ${p?.priority === pr ? 'selected' : ''}>${esc(pr)}</option>`).join('')}
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Last Contact Date</label>
+        <input type="date" class="form-input" id="fpLastContact" value="${esc(p?.lastContactDate || '')}">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Next Follow-Up Date</label>
+        <input type="date" class="form-input" id="fpNextFU" value="${esc(p?.nextFollowUpDate || '')}">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Notes</label>
+      <textarea class="form-textarea" id="fpNotes" placeholder="Any relevant notes...">${esc(p?.notes || '')}</textarea>
+    </div>
+  `;
+
+  const footer = `
+    <button class="btn btn-ghost" id="drawerCancelBtn">Cancel</button>
+    <button class="btn btn-primary" id="drawerSaveBtn">${isEdit ? 'Save Changes' : 'Add Prospect'}</button>
+  `;
+
+  openDrawer(isEdit ? 'Edit Prospect' : 'Add Prospect', body, footer);
+
+  // Duplicate detection for new prospects
+  if (!isEdit) {
+    const checkDup = () => {
+      const name = document.getElementById('fpName')?.value.trim().toLowerCase();
+      const phone = document.getElementById('fpPhone')?.value.trim();
+      const warn = document.getElementById('dupWarning');
+      if (!warn) return;
+      const existing = DS.getAll('prospects');
+      const dups = existing.filter(x =>
+        (name && x.name.toLowerCase() === name) ||
+        (phone && phone.length > 5 && x.phone && x.phone.replace(/\D/g,'') === phone.replace(/\D/g,''))
+      );
+      if (dups.length) {
+        warn.style.display = '';
+        warn.textContent = `Warning: A prospect named "${dups[0].name}" with this info may already exist.`;
+      } else {
+        warn.style.display = 'none';
+      }
+    };
+    setTimeout(() => {
+      document.getElementById('fpName')?.addEventListener('blur', checkDup);
+      document.getElementById('fpPhone')?.addEventListener('blur', checkDup);
+    }, 50);
+  }
+
+  document.getElementById('drawerCancelBtn')?.addEventListener('click', closeDrawer);
+  document.getElementById('drawerSaveBtn')?.addEventListener('click', () => {
+    const name = document.getElementById('fpName')?.value.trim();
+    if (!name) { alert('Name is required.'); return; }
+
+    const saveIt = () => {
+      const prospect = {
+        id: id || uid(),
+        name,
+        phone: document.getElementById('fpPhone')?.value.trim() || '',
+        email: document.getElementById('fpEmail')?.value.trim() || '',
+        age: parseInt(document.getElementById('fpAge')?.value) || null,
+        source: document.getElementById('fpSource')?.value || '',
+        referredBy: document.getElementById('fpReferredBy')?.value || null,
+        status: document.getElementById('fpStatus')?.value || 'Not Contacted',
+        priority: document.getElementById('fpPriority')?.value || '',
+        notes: document.getElementById('fpNotes')?.value.trim() || '',
+        lastContactDate: document.getElementById('fpLastContact')?.value || null,
+        nextFollowUpDate: document.getElementById('fpNextFU')?.value || null,
+        createdAt: p?.createdAt || new Date().toISOString(),
+      };
+      DS.save('prospects', prospect);
+      closeDrawer();
+      renderProspects();
+    };
+
+    if (!isEdit) {
+      const phone = document.getElementById('fpPhone')?.value.trim();
+      const nameLower = name.toLowerCase();
+      const existing = DS.getAll('prospects');
+      const dups = existing.filter(x =>
+        x.name.toLowerCase() === nameLower ||
+        (phone && phone.length > 5 && x.phone && x.phone.replace(/\D/g,'') === phone.replace(/\D/g,''))
+      );
+      if (dups.length) {
+        confirm('Duplicate Detected', `"${dups[0].name}" may already be in your system. Save this prospect anyway?`, 'Save Anyway', saveIt);
+        return;
+      }
+    }
+    saveIt();
+  });
+}
+
+// ═══════════════════════════════════════════════
+// WARM MARKET BUILDER
+// ═══════════════════════════════════════════════
+let wmState = { step: 0, inputs: {}, reviewing: false };
+
+function loadWmState() {
+  const saved = DS.getRaw('insurecrm_wm');
+  if (saved) wmState = saved;
+}
+
+function saveWmState() {
+  DS.setRaw('insurecrm_wm', wmState);
+}
+
+function renderWarmMarket() {
+  if (wmState.reviewing) renderWMReview();
+  else renderWMStep();
+}
+
+function renderWMStep() {
+  const el = document.getElementById('tab-warmmarket');
+  const step = wmState.step;
+  const cat = WM_CATS[step];
+
+  const dots = WM_CATS.map((c, i) => {
+    let cls = 'wm-dot';
+    if (i < step) cls += ' done';
+    else if (i === step) cls += ' active';
+    return `<div class="${cls}" title="${esc(c.key)}"></div>`;
+  }).join('');
+
+  // count total names entered
+  let totalEntered = 0;
+  WM_CATS.forEach(c => { totalEntered += parseNames(wmState.inputs[c.key] || '').length; });
+
+  el.innerHTML = `
+    <div class="page-header-row">
+      <div class="page-header">
+        <div class="page-title">Warm Market Builder</div>
+        <div class="page-subtitle">Brainstorm contacts from your existing network.</div>
+      </div>
+      ${totalEntered > 0 || step > 0 ? `<button class="btn btn-ghost btn-sm" id="wmStartOver">Start Over</button>` : ''}
+    </div>
+
+    <div class="wm-wrap">
+      <div class="wm-progress">${dots}</div>
+      <div class="wm-step-label">${step + 1} of ${WM_CATS.length} categories</div>
+      <h2 class="wm-heading">Who do you know from <span style="color:var(--accent)">${esc(cat.key)}</span>?</h2>
+      <div class="wm-prompt">${esc(cat.prompt)}</div>
+      <textarea class="wm-textarea" id="wmTextarea" placeholder="Enter names, one per line or comma-separated...">${esc(wmState.inputs[cat.key] || '')}</textarea>
+      <div class="wm-nav">
+        <button class="btn btn-ghost" id="wmPrev" ${step === 0 ? 'disabled' : ''}>← Previous</button>
+        <span class="wm-nav-center" style="color:var(--text-sec);font-size:12px">${totalEntered} name${totalEntered !== 1 ? 's' : ''} entered so far</span>
+        ${step < WM_CATS.length - 1
+          ? `<button class="btn btn-primary" id="wmNext">Next →</button>`
+          : `<button class="btn btn-success" id="wmReview">Review & Import →</button>`
+        }
+      </div>
+    </div>
+  `;
+
+  const saveStep = () => {
+    wmState.inputs[cat.key] = document.getElementById('wmTextarea')?.value || '';
+    saveWmState();
+  };
+
+  document.getElementById('wmTextarea')?.addEventListener('input', e => {
+    wmState.inputs[cat.key] = e.target.value;
+    saveWmState();
+  });
+
+  document.getElementById('wmPrev')?.addEventListener('click', () => {
+    saveStep();
+    wmState.step = Math.max(0, wmState.step - 1);
+    saveWmState();
+    renderWMStep();
+  });
+
+  document.getElementById('wmNext')?.addEventListener('click', () => {
+    saveStep();
+    wmState.step = Math.min(WM_CATS.length - 1, wmState.step + 1);
+    saveWmState();
+    renderWMStep();
+  });
+
+  document.getElementById('wmReview')?.addEventListener('click', () => {
+    saveStep();
+    wmState.reviewing = true;
+    saveWmState();
+    renderWMReview();
+  });
+
+  document.getElementById('wmStartOver')?.addEventListener('click', () => {
+    confirm('Start Over', 'This will clear all names you\'ve entered. Are you sure?', 'Start Over', () => {
+      wmState = { step: 0, inputs: {}, reviewing: false };
+      saveWmState();
+      renderWMStep();
+    });
+  });
+}
+
+function renderWMReview() {
+  const el = document.getElementById('tab-warmmarket');
+  const existing = DS.getAll('prospects');
+  const existingNames = new Set(existing.map(p => p.name.toLowerCase()));
+  const existingPhones = new Set(existing.map(p => (p.phone||'').replace(/\D/g,'')).filter(p => p.length > 5));
+
+  // Collect all entries
+  const entries = [];
+  WM_CATS.forEach(cat => {
+    const names = parseNames(wmState.inputs[cat.key] || '');
+    names.forEach((name, i) => {
+      entries.push({ id: cat.key + '_' + i, name, source: cat.source, catKey: cat.key, phone: '', email: '', age: '', priority: '', skip: false });
+    });
+  });
+
+  if (entries.length === 0) {
+    el.innerHTML = `
+      <div class="page-header-row">
+        <div class="page-header"><div class="page-title">Warm Market Builder</div></div>
+        <button class="btn btn-ghost btn-sm" id="wmBackToSteps">← Back to Steps</button>
+      </div>
+      <div class="empty-state">
+        <div class="empty-icon">&#128221;</div>
+        <div class="empty-title">No names entered</div>
+        <div class="empty-desc">Go back and enter some names in the category steps.</div>
+        <button class="btn btn-ghost" id="wmBackToSteps2">← Back to Steps</button>
+      </div>
+    `;
+    el.querySelector('#wmBackToSteps')?.addEventListener('click', () => { wmState.reviewing = false; saveWmState(); renderWMStep(); });
+    el.querySelector('#wmBackToSteps2')?.addEventListener('click', () => { wmState.reviewing = false; saveWmState(); renderWMStep(); });
+    return;
+  }
+
+  const tableRows = entries.map((entry, idx) => {
+    const isDup = existingNames.has(entry.name.toLowerCase());
+    return `<tr data-entry-idx="${idx}" ${isDup ? 'style="opacity:.6"' : ''}>
+      <td><input type="text" class="form-input wm-name" data-idx="${idx}" value="${esc(entry.name)}" style="min-width:120px">
+        ${isDup ? '<div class="wm-dup-warning">May already exist</div>' : ''}
+      </td>
+      <td><span class="badge badge-contacted" style="font-size:10px">${esc(entry.catKey)}</span></td>
+      <td><input type="tel" class="form-input wm-phone" data-idx="${idx}" placeholder="(555) 000-0000" style="min-width:120px"></td>
+      <td><input type="email" class="form-input wm-email" data-idx="${idx}" placeholder="email@..." style="min-width:130px"></td>
+      <td><input type="number" class="form-input wm-age" data-idx="${idx}" placeholder="Age" style="width:70px" min="1" max="120"></td>
+      <td>
+        <select class="form-select wm-priority" data-idx="${idx}" style="min-width:100px">
+          <option value="">Priority</option>
+          ${PRIORITIES.map(p => `<option value="${esc(p)}">${esc(p)}</option>`).join('')}
+        </select>
+      </td>
+      <td><button class="wm-review-skip" data-skip-idx="${idx}" title="Remove">✕</button></td>
+    </tr>`;
+  }).join('');
+
+  el.innerHTML = `
+    <div class="page-header-row">
+      <div class="page-header">
+        <div class="page-title">Review & Import</div>
+        <div class="page-subtitle">${entries.length} name${entries.length !== 1 ? 's' : ''} ready to import. Fill in optional details or remove anyone.</div>
+      </div>
+      <button class="btn btn-ghost btn-sm" id="wmBackToSteps">← Back to Steps</button>
+    </div>
+
+    <div class="wm-review-overflow">
+      <table class="wm-review-table" id="wmReviewTable">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Category</th>
+            <th>Phone</th>
+            <th>Email</th>
+            <th>Age</th>
+            <th>Priority</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="wmReviewBody">${tableRows}</tbody>
+      </table>
+    </div>
+
+    <div style="display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap">
+      <button class="btn btn-ghost" id="wmBackToSteps2">← Back</button>
+      <button class="btn btn-primary" id="wmImportBtn">Add All to Prospect Tracker</button>
+    </div>
+  `;
+
+  el.querySelector('#wmBackToSteps')?.addEventListener('click', () => { wmState.reviewing = false; saveWmState(); renderWMStep(); });
+  el.querySelector('#wmBackToSteps2')?.addEventListener('click', () => { wmState.reviewing = false; saveWmState(); renderWMStep(); });
+
+  el.querySelectorAll('[data-skip-idx]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const row = btn.closest('tr');
+      if (row) row.remove();
+    });
+  });
+
+  el.querySelector('#wmImportBtn')?.addEventListener('click', () => {
+    const rows = el.querySelectorAll('#wmReviewBody tr');
+    if (!rows.length) { alert('No entries to import.'); return; }
+
+    const toImport = [];
+    rows.forEach((row, idx) => {
+      const name = row.querySelector('.wm-name')?.value.trim();
+      if (!name) return;
+      const source = entries[parseInt(row.dataset.entryIdx)]?.source || 'Other';
+      toImport.push({
+        id: uid(),
+        name,
+        phone: row.querySelector('.wm-phone')?.value.trim() || '',
+        email: row.querySelector('.wm-email')?.value.trim() || '',
+        age: parseInt(row.querySelector('.wm-age')?.value) || null,
+        source,
+        referredBy: null,
+        status: 'Not Contacted',
+        priority: row.querySelector('.wm-priority')?.value || '',
+        notes: '',
+        lastContactDate: null,
+        nextFollowUpDate: null,
+        createdAt: new Date().toISOString(),
+      });
+    });
+
+    // Dup check
+    const existingNamesNow = new Set(DS.getAll('prospects').map(p => p.name.toLowerCase()));
+    const dupNames = toImport.filter(p => existingNamesNow.has(p.name.toLowerCase())).map(p => p.name);
+
+    const doImport = () => {
+      toImport.forEach(p => DS.save('prospects', p));
+      wmState = { step: 0, inputs: {}, reviewing: false };
+      saveWmState();
+      el.innerHTML = `<div class="notice notice-success" style="max-width:500px;margin:40px auto">
+        Successfully imported ${toImport.length} prospect${toImport.length !== 1 ? 's' : ''}!
+        <br><br><button class="btn btn-primary" id="goToProspectsBtn">View in Prospect Tracker</button>
+      </div>`;
+      el.querySelector('#goToProspectsBtn')?.addEventListener('click', () => switchTab('prospects'));
+    };
+
+    if (dupNames.length) {
+      confirm(
+        'Duplicates Detected',
+        `${dupNames.length} name${dupNames.length > 1 ? 's' : ''} may already exist (e.g. "${dupNames[0]}"). Import all ${toImport.length} entries anyway?`,
+        'Import Anyway',
+        doImport
+      );
+    } else {
+      doImport();
+    }
+  });
+}
+
+// ═══════════════════════════════════════════════
+// DAILY ACTION PLANNER
+// ═══════════════════════════════════════════════
+function renderPlanner() {
+  const el = document.getElementById('tab-planner');
+  const today = todayStr();
+  const log = DS.getLog(today);
+  const prospects = DS.getAll('prospects');
+  const todayFUs = prospects.filter(p => p.nextFollowUpDate === today);
+
+  const fuRows = todayFUs.length > 0
+    ? todayFUs.map(p => `
+      <div class="followup-row" data-id="${esc(p.id)}">
+        <span class="followup-name">${esc(p.name)}</span>
+        <span class="followup-phone">${esc(p.phone || '—')}</span>
+        <span class="followup-status"><span class="badge ${STATUS_BADGE[p.status]||''}">${esc(p.status)}</span></span>
+        <span class="followup-action">
+          <button class="btn btn-sm btn-primary" data-planner-called="${esc(p.id)}">Mark Called</button>
+        </span>
+      </div>`).join('')
+    : `<div style="color:var(--text-sec);font-size:13px;padding:16px 0">No follow-ups scheduled for today. Great work!</div>`;
+
+  const goal = log.callsGoal || 5;
+  const done = Math.min(log.callsCompleted || 0, goal);
+
+  const dots = Array.from({ length: goal }, (_, i) =>
+    `<div class="call-dot ${i < done ? 'done' : ''}" data-call-idx="${i}" title="Call ${i + 1}">✓</div>`
+  ).join('');
+
+  const todayDisplay = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+
+  el.innerHTML = `
+    <div class="page-header-row">
+      <div class="page-header">
+        <div class="page-title">Daily Action Planner</div>
+        <div class="page-subtitle">${esc(todayDisplay)}</div>
+      </div>
+    </div>
+
+    <div class="planner-grid">
+      <!-- LEFT: Follow-ups + Call Tracker -->
+      <div>
+        <div class="card" style="margin-bottom:16px">
+          <div class="planner-section-title">Today's Follow-Ups</div>
+          <div id="plannerFUList">${fuRows}</div>
+        </div>
+
+        <div class="card" style="margin-bottom:16px">
+          <div class="planner-section-title">Call Goal Tracker</div>
+          <div class="goal-row">
+            <label class="form-label" style="margin:0">Daily Goal:</label>
+            <input type="number" class="form-input goal-input" id="callGoalInput" value="${esc(goal)}" min="1" max="50">
+          </div>
+          <div class="call-dots" id="callDots">${dots}</div>
+          <div class="call-progress">
+            <strong id="callDoneCount">${done}</strong>
+            <span style="color:var(--text-sec)"> of </span>
+            <strong id="callGoalCount">${goal}</strong>
+            <span style="color:var(--text-sec)"> calls done${done >= goal ? ' — 🎉 Goal reached!' : ''}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Notes + Quick Add -->
+      <div>
+        <div class="card" style="margin-bottom:16px">
+          <div class="planner-section-title">Daily Notes</div>
+          <label class="form-label">What did I do today / what's working?</label>
+          <textarea class="form-textarea" id="plannerNotes" style="min-height:140px" placeholder="Write anything useful from today...">${esc(log.notes || '')}</textarea>
+        </div>
+
+        <div class="card">
+          <div class="planner-section-title">Quick Add Prospect</div>
+          <div class="form-group">
+            <label class="form-label">Name *</label>
+            <input type="text" class="form-input" id="qaName" placeholder="Full name">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Phone</label>
+            <input type="tel" class="form-input" id="qaPhone" placeholder="(555) 000-0000">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Source</label>
+            <select class="form-select" id="qaSource">
+              <option value="">— Optional —</option>
+              ${SOURCES.map(s => `<option value="${esc(s)}">${esc(s)}</option>`).join('')}
+            </select>
+          </div>
+          <button class="btn btn-primary" id="qaAddBtn">Add Prospect</button>
+          <div id="qaFeedback" style="margin-top:8px;font-size:12px;color:var(--success);display:none"></div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Mark called
+  el.querySelectorAll('[data-planner-called]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.plannerCalled;
+      const p = DS.getById('prospects', id);
+      if (!p) return;
+      DS.save('prospects', { ...p, lastContactDate: today });
+      const log2 = DS.getLog(today);
+      if (!log2.completedProspectIds.includes(id)) {
+        log2.completedProspectIds.push(id);
+        log2.callsCompleted = Math.max(log2.callsCompleted, log2.completedProspectIds.length);
+        DS.saveLog(log2);
+      }
+      renderPlanner();
+      openFollowupBar(id);
+    });
+  });
+
+  // Call goal input
+  el.querySelector('#callGoalInput')?.addEventListener('change', e => {
+    const g = Math.max(1, Math.min(50, parseInt(e.target.value) || 5));
+    e.target.value = g;
+    const log3 = DS.getLog(today);
+    DS.saveLog({ ...log3, callsGoal: g });
+    rerenderDots(g, log3.callsCompleted || 0);
+  });
+
+  // Call dots
+  el.querySelector('#callDots')?.addEventListener('click', e => {
+    const dot = e.target.closest('.call-dot');
+    if (!dot) return;
+    const idx = parseInt(dot.dataset.callIdx);
+    const log4 = DS.getLog(today);
+    const current = log4.callsCompleted || 0;
+    const newVal = idx < current ? idx : idx + 1;
+    const updated = { ...log4, callsCompleted: Math.max(0, Math.min(log4.callsGoal || 5, newVal)) };
+    DS.saveLog(updated);
+    rerenderDots(updated.callsGoal || 5, updated.callsCompleted);
+  });
+
+  // Notes autosave
+  el.querySelector('#plannerNotes')?.addEventListener('blur', e => {
+    const log5 = DS.getLog(today);
+    DS.saveLog({ ...log5, notes: e.target.value });
+  });
+
+  // Quick add
+  el.querySelector('#qaAddBtn')?.addEventListener('click', () => {
+    const name = document.getElementById('qaName')?.value.trim();
+    if (!name) { alert('Name is required.'); return; }
+    DS.save('prospects', {
+      id: uid(), name,
+      phone: document.getElementById('qaPhone')?.value.trim() || '',
+      email: '', age: null,
+      source: document.getElementById('qaSource')?.value || '',
+      referredBy: null,
+      status: 'Not Contacted', priority: '',
+      notes: '', lastContactDate: null, nextFollowUpDate: null,
+      createdAt: new Date().toISOString(),
+    });
+    document.getElementById('qaName').value = '';
+    document.getElementById('qaPhone').value = '';
+    document.getElementById('qaSource').value = '';
+    const fb = document.getElementById('qaFeedback');
+    fb.textContent = `"${name}" added successfully!`;
+    fb.style.display = 'block';
+    setTimeout(() => { fb.style.display = 'none'; }, 3000);
+  });
+}
+
+function rerenderDots(goal, done) {
+  const container = document.getElementById('callDots');
+  if (!container) return;
+  const clampedDone = Math.min(done, goal);
+  container.innerHTML = Array.from({ length: goal }, (_, i) =>
+    `<div class="call-dot ${i < clampedDone ? 'done' : ''}" data-call-idx="${i}" title="Call ${i + 1}">✓</div>`
+  ).join('');
+  const doneEl = document.getElementById('callDoneCount');
+  const goalEl = document.getElementById('callGoalCount');
+  if (doneEl) doneEl.textContent = clampedDone;
+  if (goalEl) goalEl.textContent = goal;
+  // Re-attach listener
+  container.addEventListener('click', e => {
+    const dot = e.target.closest('.call-dot');
+    if (!dot) return;
+    const idx = parseInt(dot.dataset.callIdx);
+    const today = todayStr();
+    const log = DS.getLog(today);
+    const current = log.callsCompleted || 0;
+    const newVal = idx < current ? idx : idx + 1;
+    const updated = { ...log, callsCompleted: Math.max(0, Math.min(log.callsGoal || 5, newVal)) };
+    DS.saveLog(updated);
+    rerenderDots(updated.callsGoal || 5, updated.callsCompleted);
+  });
+}
+
+// ═══════════════════════════════════════════════
+// SCRIPT LIBRARY
+// ═══════════════════════════════════════════════
+function renderScripts() {
+  const el = document.getElementById('tab-scripts');
+  let scripts = DS.getAll('scripts');
+
+  if (sf.search) {
+    const q = sf.search.toLowerCase();
+    scripts = scripts.filter(s => s.title.toLowerCase().includes(q) || s.body.toLowerCase().includes(q));
+  }
+  if (sf.category) {
+    scripts = scripts.filter(s => s.category === sf.category);
+  }
+
+  const cards = scripts.map(s => `
+    <div class="script-card" data-script-id="${esc(s.id)}">
+      <div class="script-card-header">
+        <div>
+          <div class="script-card-cat">${esc(s.category)}</div>
+          <div class="script-card-title">${esc(s.title)} ${s.isDefault ? '<span style="font-size:10px;color:var(--text-sec);font-weight:400">(Default)</span>' : ''}</div>
+        </div>
+      </div>
+      <div class="script-card-body">${esc(s.body)}</div>
+      <div class="script-card-actions">
+        <button class="btn btn-xs btn-ghost" data-copy-script="${esc(s.id)}">Copy</button>
+        <button class="btn btn-xs btn-ghost" data-edit-script="${esc(s.id)}">Edit</button>
+        ${!s.isDefault ? `<button class="btn btn-xs btn-ghost" data-del-script="${esc(s.id)}" style="color:var(--danger)">Delete</button>` : ''}
+        <span class="copy-feedback" id="copied-${esc(s.id)}">Copied!</span>
+      </div>
+    </div>
+  `).join('');
+
+  el.innerHTML = `
+    <div class="page-header-row">
+      <div class="page-header">
+        <div class="page-title">Script Library</div>
+        <div class="page-subtitle">${DS.getAll('scripts').length} scripts</div>
+      </div>
+      <button class="btn btn-primary" id="addScriptBtn">+ Add Script</button>
+    </div>
+
+    <div class="script-search-bar">
+      <input type="text" class="form-input" id="sfSearch" placeholder="Search scripts..." value="${esc(sf.search)}">
+      <select class="form-select" id="sfCat">
+        <option value="">All Categories</option>
+        ${SCRIPT_CATS.map(c => `<option value="${esc(c)}" ${sf.category === c ? 'selected' : ''}>${esc(c)}</option>`).join('')}
+      </select>
+    </div>
+
+    ${scripts.length === 0
+      ? `<div class="empty-state">
+          <div class="empty-icon">&#128221;</div>
+          <div class="empty-title">No scripts found</div>
+          <div class="empty-desc">Try adjusting your search or add a new custom script.</div>
+          <button class="btn btn-primary" id="addScriptBtn2">+ Add Script</button>
+        </div>`
+      : `<div class="script-grid">${cards}</div>`
+    }
+  `;
+
+  el.querySelector('#sfSearch')?.addEventListener('input', e => { sf.search = e.target.value; renderScripts(); });
+  el.querySelector('#sfCat')?.addEventListener('change', e => { sf.category = e.target.value; renderScripts(); });
+  el.querySelector('#addScriptBtn')?.addEventListener('click', () => openScriptDrawer(null));
+  el.querySelector('#addScriptBtn2')?.addEventListener('click', () => openScriptDrawer(null));
+
+  el.querySelectorAll('[data-copy-script]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.copyScript;
+      const s = DS.getById('scripts', id);
+      if (!s) return;
+      navigator.clipboard?.writeText(s.body).catch(() => {});
+      const fb = document.getElementById('copied-' + id);
+      if (fb) { fb.classList.add('show'); setTimeout(() => fb.classList.remove('show'), 2000); }
+    });
+  });
+
+  el.querySelectorAll('[data-edit-script]').forEach(btn => {
+    btn.addEventListener('click', () => openScriptDrawer(btn.dataset.editScript));
+  });
+
+  el.querySelectorAll('[data-del-script]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.delScript;
+      const s = DS.getById('scripts', id);
+      confirm('Delete Script', `Delete "${s?.title}"? This cannot be undone.`, 'Delete', () => {
+        DS.remove('scripts', id);
+        renderScripts();
+      });
+    });
+  });
+}
+
+function openScriptDrawer(id) {
+  const s = id ? DS.getById('scripts', id) : null;
+  const isEdit = !!s;
+
+  const body = `
+    ${isEdit && s.isDefault ? `<div class="drawer-warn">You're editing a default script. Changes are saved but defaults cannot be deleted.</div>` : ''}
+    <div class="form-group">
+      <label class="form-label">Title *</label>
+      <input type="text" class="form-input" id="stTitle" value="${esc(s?.title || '')}" placeholder="Script title">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Category</label>
+      <select class="form-select" id="stCat">
+        ${SCRIPT_CATS.map(c => `<option value="${esc(c)}" ${(s?.category || 'Custom') === c ? 'selected' : ''}>${esc(c)}</option>`).join('')}
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Script Body *</label>
+      <textarea class="form-textarea" id="stBody" style="min-height:200px" placeholder="Write your script here...">${esc(s?.body || '')}</textarea>
+    </div>
+  `;
+
+  const footer = `
+    <button class="btn btn-ghost" id="scriptCancelBtn">Cancel</button>
+    <button class="btn btn-primary" id="scriptSaveBtn">${isEdit ? 'Save Changes' : 'Add Script'}</button>
+  `;
+
+  openDrawer(isEdit ? 'Edit Script' : 'Add Script', body, footer);
+
+  document.getElementById('scriptCancelBtn')?.addEventListener('click', closeDrawer);
+  document.getElementById('scriptSaveBtn')?.addEventListener('click', () => {
+    const title = document.getElementById('stTitle')?.value.trim();
+    const body2 = document.getElementById('stBody')?.value.trim();
+    if (!title) { alert('Title is required.'); return; }
+    if (!body2) { alert('Script body is required.'); return; }
+    DS.save('scripts', {
+      id: id || uid(),
+      title,
+      category: document.getElementById('stCat')?.value || 'Custom',
+      body: body2,
+      isDefault: s?.isDefault || false,
+    });
+    closeDrawer();
+    renderScripts();
+  });
+}
+
+// ═══════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════
+function init() {
+  seed();
+  setupNav();
+  loadWmState();
+  switchTab('dashboard');
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
